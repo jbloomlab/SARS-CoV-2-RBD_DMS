@@ -1,0 +1,69 @@
+# config for analysis
+
+# conda environment file
+environment: environment.yml
+
+# most CPUs to ever use at once
+max_cpus: 16
+
+# amplicon sequenced by PacBio
+amplicon: data/PacBio_amplicon.gb
+
+# how to parse the amplicon
+feature_parse_specs: data/feature_parse_specs.yaml
+
+# do we get the sequencing data from the 'HutchServer' or 'SRA'?
+seqdata_source: HutchServer
+
+# list of PacBio sequencing runs linking barcodes to variants
+pacbio_runs: data/PacBio_runs.csv
+
+# list of Illumina sequencing runs of barcodes
+barcode_runs: data/barcode_runs.csv 
+
+# schematic of experiment
+schematic: data/experimental_schematic.jpg
+
+# output directories / files
+summary_dir: results/summary
+ccs_dir: results/ccs
+process_ccs_dir: results/process_ccs
+processed_ccs_file: results/process_ccs/processed_ccs.csv
+variants_dir: results/variants
+nt_variant_table_file: results/variants/nucleotide_variant_table.csv
+codon_variant_table_file: results/variants/codon_variant_table.csv
+counts_dir: results/counts
+variant_counts_file: results/counts/variant_counts.csv
+func_scores_dir: results/func_scores
+func_scores_by_barcode_file: results/func_scores/func_scores_by_barcode.csv
+func_scores_by_codon_substitutions_file: results/func_scores/func_scores_by_codon_substitutions.csv
+func_scores_by_aa_substitutions_file: results/func_scores/func_scores_by_aa_substitutions.csv
+figs_dir: results/figures
+Titeseq_Kds_dir: results/Titeseq_Kds
+Titeseq_Kds_file: results/Titeseq_Kds/Titeseq_Kds.csv
+expression_sortseq_dir: results/expression_sortseq
+expression_sortseq_file: results/expression_sortseq/expression_meanFs.csv
+global_epistasis_binding_dir: results/global_epistasis_binding
+global_epistasis_expr_dir: results/global_epistasis_expression
+analyze_mut_effects_dir: results/analyze_mut_effects
+
+# parameters for running PacBio `ccs` program
+min_ccs_accuracy: 0.999
+min_ccs_passes: 3
+min_ccs_length: 50
+max_ccs_length: 5000
+
+# max error rate in gene / barcode CCSs retained for consensu building
+max_error_rate: 0.0001
+
+# Parameters for processing Illumina barcodes, assuming this structure:
+#  [R2 binds] - [upstream] - [barcode] - [downstream] - [R1 binds]
+#  This orientation is hard-wired in the barcode parser, but here it is opposite
+#  Therefore, supplied the "downstream" sequence as reverse complemented upstream
+# Passed to `dms_variants.illuminabarcodeparser.IlluminaBarcodeParser`:
+illumina_barcode_parser_params:
+  upstream: CTCACTATAGGGCGAATTGGAGCTCGCGGCCGC
+  downstream: ''
+  minq: 20
+  upstream_mismatch: 1
+  downstream_mismatch: 0

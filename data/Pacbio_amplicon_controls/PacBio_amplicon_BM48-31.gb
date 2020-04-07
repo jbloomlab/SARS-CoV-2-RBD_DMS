@@ -1,0 +1,69 @@
+LOCUS       PacBio_amplicon_        1067 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for BM48-31 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for BM48-31 RBD libraries.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          625..1045
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1046..1061
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1062..1067
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..624
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATAA CCCAGTTGTG TCCCTTTAAT
+       61 GAAGTCTTTA ACATTACCTC CTTCCCGTCC GTCTACGCTT GGGAAAGGAT GAGAATAACT
+      121 AACTGCGTAG CCGACTACTC TGTACTGTAT AACTCATCCG CATCCTTTAG CACTTTCCAA
+      181 TGTTATGGTG TTAGTCCCAC CAAGCTAAAT GATTTGTGCT TCTCTTCCGT GTACGCTGAT
+      241 TACTTCGTAG TAAAGGGAGA TGACGTCAGA CAGATCGCAC CTGCTCAGAC GGGAGTTATT
+      301 GCTGACTATA ATTACAAGCT ACCTGATGAC TTTACTGGGT GTGTAATAGC ATGGAACACA
+      361 AACAGCTTGG ATAGTTCAAA CGAGTTCTTC TACAGGAGGT TTAGACATGG CAAGATCAAG
+      421 CCCTACGGAA GGGATCTTAG CAATGTGCTA TTTAATCCCA GTGGCGGAAC ATGCAGTGCC
+      481 GAAGGGTTAA ATTGTTACAA GCCGTTGGCA AGCTATGGCT TCACGCAATC CAGCGGAATT
+      541 GGATTTCAGC CTTACAGAGT GGTAGTCCTT AGTTTCGAGT TGCTAAACGC TCCAGCGACA
+      601 GTGTGTGGAC CTAAGCAAAG CACGctcgag gggggcggtt ccgaacaaaa gcttatttct
+      661 gaagaggact tgtaatagag atctgataac aacagtgtag atgtaacaaa atcgactttg
+      721 ttcccactgt acttttagct cgtacaaaat acaatatact tttcatttct ccgtaaacaa
+      781 catgttttcc catgtaatat ccttttctat ttttcgttcc gttaccaact ttacacatac
+      841 tttatatagc tattcacttc tatacactaa aaaactaaga caattttaat tttgctgcct
+      901 gccatatttc aatttgttat aaattcctat aatttatcct attagtagct aaaaaaagat
+      961 gaatgtgaat cgaatcctaa gagaattaat gatacggcga ccaccgagat ctacactctt
+     1021 tccctacacg acgctcttcc gatctNNNNN NNNNNNNNNN Ngcggcc 
+//

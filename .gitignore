@@ -1,0 +1,14 @@
+.*
+!.gitignore
+!.gitattributes
+*.pyc
+*.log
+*.Log
+*.out
+_*
+
+src/
+env/
+
+results/*
+!results/summary
