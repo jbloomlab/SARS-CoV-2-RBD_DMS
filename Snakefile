@@ -34,6 +34,7 @@ rule all:
         config['variant_counts_file'],
         config['func_scores_by_barcode_file']
 
+
 rule make_summary:
     """Create Markdown summary of analysis."""
     input:
@@ -80,8 +81,6 @@ rule make_dag:
         workflow.snakefile
     output:
         os.path.join(config['summary_dir'], 'dag.svg')
-    conda:
-        config['environment']
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
 
@@ -94,8 +93,6 @@ rule analyze_counts:
         nb_markdown=nb_markdown('analyze_counts.ipynb')
     params:
         nb='analyze_counts.ipynb'
-    conda:
-        config['environment']
     shell:
         "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
@@ -109,8 +106,6 @@ rule count_variants:
         nb_markdown=nb_markdown('count_variants.ipynb')
     params:
         nb='count_variants.ipynb'
-    conda:
-        config['environment']
     shell:
         "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
@@ -123,8 +118,6 @@ rule build_variants:
         nb_markdown=nb_markdown('build_variants.ipynb')
     params:
         nb='build_variants.ipynb'
-    conda:
-        config['environment']
     shell:
         "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
@@ -143,8 +136,6 @@ rule process_ccs:
         nb_markdown=nb_markdown('process_ccs.ipynb')
     params:
         nb='process_ccs.ipynb'
-    conda:
-        config['environment']
     shell:
         "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
@@ -166,8 +157,6 @@ if config['seqdata_source'] == 'HutchServer':
             min_ccs_passes=config['min_ccs_passes'],
             min_ccs_accuracy=config['min_ccs_accuracy']
         threads: config['max_cpus']
-        conda:
-            config['environment']
         shell:
             """
             ccs \

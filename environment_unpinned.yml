@@ -1,0 +1,17 @@
+name: SARS-CoV-2-RBD_DMS
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.7
+  - pip
+  - pbccs
+  - raxml
+  - sra-tools
+  - pip:
+    - alignparse
+    - dms-variants
+    - jupyter
+    - jupyter_contrib_nbextensions
+    - snakemake

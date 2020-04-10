@@ -1,8 +1,5 @@
 # config for analysis
 
-# conda environment file
-environment: environment.yml
-
 # most CPUs to ever use at once
 max_cpus: 16
 
