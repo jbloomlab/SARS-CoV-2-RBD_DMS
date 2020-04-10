@@ -2,6 +2,7 @@ name: SARS-CoV-2-RBD_DMS
 channels:
   - bioconda
   - conda-forge
+  - salilab
   - defaults
 dependencies:
   - python=3.7
@@ -9,6 +10,7 @@ dependencies:
   - pbccs
   - raxml
   - sra-tools
+  - dssp
   - pip:
     - alignparse
     - dms-variants
