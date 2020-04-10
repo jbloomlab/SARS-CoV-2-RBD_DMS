@@ -1,0 +1,834 @@
+LOCUS       BM48-31                  1067 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for BM48-31 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for BM48-31 RBD libraries.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          625..1045
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1046..1061
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1062..1067
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..624
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATAA CCCAGTTGTG TCCCTTTAAT
+       61 GAAGTCTTTA ACATTACCTC CTTCCCGTCC GTCTACGCTT GGGAAAGGAT GAGAATAACT
+      121 AACTGCGTAG CCGACTACTC TGTACTGTAT AACTCATCCG CATCCTTTAG CACTTTCCAA
+      181 TGTTATGGTG TTAGTCCCAC CAAGCTAAAT GATTTGTGCT TCTCTTCCGT GTACGCTGAT
+      241 TACTTCGTAG TAAAGGGAGA TGACGTCAGA CAGATCGCAC CTGCTCAGAC GGGAGTTATT
+      301 GCTGACTATA ATTACAAGCT ACCTGATGAC TTTACTGGGT GTGTAATAGC ATGGAACACA
+      361 AACAGCTTGG ATAGTTCAAA CGAGTTCTTC TACAGGAGGT TTAGACATGG CAAGATCAAG
+      421 CCCTACGGAA GGGATCTTAG CAATGTGCTA TTTAATCCCA GTGGCGGAAC ATGCAGTGCC
+      481 GAAGGGTTAA ATTGTTACAA GCCGTTGGCA AGCTATGGCT TCACGCAATC CAGCGGAATT
+      541 GGATTTCAGC CTTACAGAGT GGTAGTCCTT AGTTTCGAGT TGCTAAACGC TCCAGCGACA
+      601 GTGTGTGGAC CTAAGCAAAG CACGctcgag gggggcggtt ccgaacaaaa gcttatttct
+      661 gaagaggact tgtaatagag atctgataac aacagtgtag atgtaacaaa atcgactttg
+      721 ttcccactgt acttttagct cgtacaaaat acaatatact tttcatttct ccgtaaacaa
+      781 catgttttcc catgtaatat ccttttctat ttttcgttcc gttaccaact ttacacatac
+      841 tttatatagc tattcacttc tatacactaa aaaactaaga caattttaat tttgctgcct
+      901 gccatatttc aatttgttat aaattcctat aatttatcct attagtagct aaaaaaagat
+      961 gaatgtgaat cgaatcctaa gagaattaat gatacggcga ccaccgagat ctacactctt
+     1021 tccctacacg acgctcttcc gatctNNNNN NNNNNNNNNN Ngcggcc 
+//
+LOCUS       GD-Pangolin              1079 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for GD-Pangolin RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for GD-Pangolin RBD.
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          637..1057
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1058..1073
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1074..1079
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..636
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAATATCA CGAACCTTTG CCCGTTCGGC
+       61 GAAGTATTCA ATGCAACAAC GTTCGCCTCC GTGTACGCAT GGAATAGAAA GCGTATTTCA
+      121 AATTGCGTTG CGGATTACTC CGTTCTATAC AACAGCACGT CATTTAGTAC CTTTAAATGC
+      181 TATGGCGTGT CTCCAACGAA GTTAAATGAC TTGTGTTTCA CAAATGTCTA TGCCGATTCC
+      241 TTCGTAGTCA GAGGCGACGA GGTGAGACAG ATAGCACCCG GACAAACGGG CCGTATCGCA
+      301 GACTATAACT ACAAGCTTCC TGATGACTTC ACAGGGTGTG TAATCGCCTG GAACTCCAAT
+      361 AATCTGGATA GTAAAGTCGG CGGTAATTAT AACTACCTTT ACAGGCTATT CAGGAAGTCT
+      421 AACTTGAAAC CATTTGAGAG GGATATATCC ACCGAAATAT ACCAAGCTGG TAGCACACCT
+      481 TGCAATGGTG TAGAAGGCTT TAATTGTTAT TTCCCGCTAC AATCCTACGG GTTCCATCCC
+      541 ACGAACGGCG TAGGGTATCA GCCGTATAGG GTCGTGGTGC TATCTTTCGA GCTATTGAAC
+      601 GCACCAGCTA CTGTGTGTGG TCCCAAGAAG AGCACActcg aggggggcgg ttccgaacaa
+      661 aagcttattt ctgaagagga cttgtaatag agatctgata acaacagtgt agatgtaaca
+      721 aaatcgactt tgttcccact gtacttttag ctcgtacaaa atacaatata cttttcattt
+      781 ctccgtaaac aacatgtttt cccatgtaat atccttttct atttttcgtt ccgttaccaa
+      841 ctttacacat actttatata gctattcact tctatacact aaaaaactaa gacaatttta
+      901 attttgctgc ctgccatatt tcaatttgtt ataaattcct ataatttatc ctattagtag
+      961 ctaaaaaaag atgaatgtga atcgaatcct aagagaatta atgatacggc gaccaccgag
+     1021 atctacactc tttccctaca cgacgctctt ccgatctNNN NNNNNNNNNN NNNgcggcc
+//
+LOCUS       HKU3-1                   1025 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for HKU3-1 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for  HKU3-1 RBD.
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          583..1003
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1004..1019
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1020..1025
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..582
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATAA CTAACCGTTG TCCGTTCGAT
+       61 AAGGTGTTCA ACGCGACCAG ATTTCCCAAT GTTTATGCAT GGGAACGTAC TAAGATCAGC
+      121 GATTGTGTAG CGGATTACAC GGTACTATAT AACTCTACCT CTTTCTCAAC ATTCAAATGC
+      181 TATGGAGTTT CACCGAGTAA ATTGATCGAC CTGTGCTTTA CGTCAGTCTA TGCCGACACG
+      241 TTCCTTATTA GGTCCTCTGA GGTCAGGCAA GTAGCACCTG GTGAGACGGG TGTTATTGCA
+      301 GACTACAACT ACAAATTGCC AGACGACTTC ACTGGCTGCG TTATCGCCTG GAACACTGCG
+      361 AAACATGACA CCGGTAACTA TTACTATAGG TCACACCGTA AGACAAAGCT GAAACCTTTC
+      421 GAGCGTGATC TGAGCAGCGA TGATGGAAAC GGAGTCTATA CTTTGTCCAC TTATGACTTC
+      481 AACCCTAACG TCCCAGTTGC GTATCAGGCC ACGAGAGTTG TGGTGTTAAG TTTCGAGTTA
+      541 TTGAATGCAC CCGCTACGGT GTGCGGCCCG AAACTTAGTA CCctcgaggg gggcggttcc
+      601 gaacaaaagc ttatttctga agaggacttg taatagagat ctgataacaa cagtgtagat
+      661 gtaacaaaat cgactttgtt cccactgtac ttttagctcg tacaaaatac aatatacttt
+      721 tcatttctcc gtaaacaaca tgttttccca tgtaatatcc ttttctattt ttcgttccgt
+      781 taccaacttt acacatactt tatatagcta ttcacttcta tacactaaaa aactaagaca
+      841 attttaattt tgctgcctgc catatttcaa tttgttataa attcctataa tttatcctat
+      901 tagtagctaa aaaaagatga atgtgaatcg aatcctaaga gaattaatga tacggcgacc
+      961 accgagatct acactctttc cctacacgac gctcttccga tctNNNNNNN NNNNNNNNNg
+     1021 cggcc     
+//
+LOCUS       LYRa11                   1076 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for LYRa11 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for LYRa11 RBD.
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          634..1054
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1055..1070
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1071..1076
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..633
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATAA CGAATTTATG TCCTTTCGGC
+       61 GAAGTGTTTA ACGCTACCAC GTTCCCGTCA GTCTATGCCT GGGAAAGGAA ACGTATAAGC
+      121 AACTGTGTGG CGGACTACAG CGTACTTTAC AACAGTACAT CTTTCTCTAC ATTCAAATGT
+      181 TACGGCGTCT CCGCTATAAA GCTAAATGAC CTTTGCTTCT CCAACGTATA TGCAGATTCC
+      241 TTCGTTGTTA AAGGCGACGA CGTCCGTCAA ATCGCGCCTG GTCAAACTGG CGTCATCGCG
+      301 GATTATAATT ACAAGTTGCC CGACGATTTC ATGGGTTGTG TGCTTGCGTG GAATACGAGG
+      361 AACATCGACG CTACCAGTTC AGGGAATTTC CACTACAAGT ATAGATCACT GAGACATGGA
+      421 AAGTTGAGAC CCTTTGAGAG GGATATTTCA AACGTGCCAT TCTCACCTGA CGGAAAGCCA
+      481 TGCACGCCTC CCGCATTTAA TTGTTACTGG CCGTTAAACG ACTATGGCTT CTACACGACG
+      541 AATGGGATAG GTTACCAGCC ATATCGTGTT GTCGTATTGT CCTTCGAACT TCTAAATGCG
+      601 CCCGCAACGG TATGTGGACC AAAGCTGAGT ACActcgagg ggggcggttc cgaacaaaag
+      661 cttatttctg aagaggactt gtaatagaga tctgataaca acagtgtaga tgtaacaaaa
+      721 tcgactttgt tcccactgta cttttagctc gtacaaaata caatatactt ttcatttctc
+      781 cgtaaacaac atgttttccc atgtaatatc cttttctatt tttcgttccg ttaccaactt
+      841 tacacatact ttatatagct attcacttct atacactaaa aaactaagac aattttaatt
+      901 ttgctgcctg ccatatttca atttgttata aattcctata atttatccta ttagtagcta
+      961 aaaaaagatg aatgtgaatc gaatcctaag agaattaatg atacggcgac caccgagatc
+     1021 tacactcttt ccctacacga cgctcttccg atctNNNNNN NNNNNNNNNN gcggcc
+//
+LOCUS       RaTG13                   1079 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for RaTG13 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for RaTG13 RBD.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          637..1057
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1058..1073
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1074..1079
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..636
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAATATCA CAAACCTATG TCCGTTTGGC
+       61 GAGGTGTTCA ATGCTACTAC CTTCGCTTCA GTGTACGCAT GGAACAGAAA GCGTATTTCC
+      121 AATTGTGTAG CTGACTATAG CGTCCTTTAT AACTCCACCT CATTCTCAAC TTTCAAGTGC
+      181 TACGGCGTTA GTCCGACTAA ACTAAACGAC CTGTGTTTCA CGAATGTCTA TGCCGACTCC
+      241 TTTGTTATTA CGGGCGATGA GGTGCGTCAA ATTGCACCTG GTCAGACAGG TAAGATTGCA
+      301 GATTATAACT ATAAATTGCC GGACGACTTT ACTGGCTGCG TGATAGCATG GAATAGCAAA
+      361 CATATTGACG CCAAGGAGGG TGGCAACTTT AATTATCTAT ATAGGCTGTT CCGTAAGGCC
+      421 AACTTAAAGC CCTTTGAGCG TGATATAAGT ACGGAGATCT ACCAAGCTGG CTCTAAGCCG
+      481 TGCAATGGGC AGACTGGGTT GAATTGCTAC TACCCTCTGT ATCGTTACGG ATTCTATCCG
+      541 ACGGACGGTG TCGGTCATCA ACCGTACAGA GTCGTCGTCC TTAGTTTCGA ACTGCTAAAT
+      601 GCACCAGCGA CGGTATGTGG TCCCAAGAAG AGCACActcg aggggggcgg ttccgaacaa
+      661 aagcttattt ctgaagagga cttgtaatag agatctgata acaacagtgt agatgtaaca
+      721 aaatcgactt tgttcccact gtacttttag ctcgtacaaa atacaatata cttttcattt
+      781 ctccgtaaac aacatgtttt cccatgtaat atccttttct atttttcgtt ccgttaccaa
+      841 ctttacacat actttatata gctattcact tctatacact aaaaaactaa gacaatttta
+      901 attttgctgc ctgccatatt tcaatttgtt ataaattcct ataatttatc ctattagtag
+      961 ctaaaaaaag atgaatgtga atcgaatcct aagagaatta atgatacggc gaccaccgag
+     1021 atctacactc tttccctaca cgacgctctt ccgatctNNN NNNNNNNNNN NNNgcggcc
+//
+LOCUS       Rf1                      1022 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for Rf1 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for Rf1 RBD.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          580..1000
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1001..1016
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1017..1022
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..579
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATAA CTAATTTATG TCCCTTCGAT
+       61 AAGGTCTTCA ACGCTACTAG ATTCCCTTCA GTATATGCAT GGGAGAGGAC CAAGATATCA
+      121 GATTGCGTCG CTGACTACAC GGTATTCTAC AACAGCACGA GTTTCTCCAC ATTCAACTGC
+      181 TATGGCGTGT CACCGTCCAA GTTAATTGAC CTATGCTTTA CCAGTGTTTA CGCGGACACA
+      241 TTTCTAATCA GGTTCAGTGA AGTAAGACAA GTTGCTCCAG GCCAAACCGG CGTGATTGCT
+      301 GACTACAATT ATAAACTGCC GGATGACTTT ACCGGATGCG TTATAGCCTG GAATACCGCA
+      361 AAGCAAGATG TTGGGTCCTA CTTCTATAGA TCTCATCGTA GCTCCAAGTT GAAGCCATTT
+      421 GAGAGAGACC TGAGTAGTGA AGAGAATGGC GTAAGGACTC TTTCTACGTA TGATTTCAAC
+      481 CAGAATGTGC CGCTGGAGTA CCAGGCCACG AGGGTCGTCG TACTATCTTT CGAATTATTA
+      541 AATGCACCTG CCACCGTATG CGGACCGAAG CTAAGTACCc tcgagggggg cggttccgaa
+      601 caaaagctta tttctgaaga ggacttgtaa tagagatctg ataacaacag tgtagatgta
+      661 acaaaatcga ctttgttccc actgtacttt tagctcgtac aaaatacaat atacttttca
+      721 tttctccgta aacaacatgt tttcccatgt aatatccttt tctatttttc gttccgttac
+      781 caactttaca catactttat atagctattc acttctatac actaaaaaac taagacaatt
+      841 ttaattttgc tgcctgccat atttcaattt gttataaatt cctataattt atcctattag
+      901 tagctaaaaa aagatgaatg tgaatcgaat cctaagagaa ttaatgatac ggcgaccacc
+      961 gagatctaca ctctttccct acacgacgct cttccgatct NNNNNNNNNN NNNNNNgcgg
+     1021 cc     
+//
+LOCUS       Rp3                      1022 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for Rp3 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for Rp3 RBD.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          580..1000
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1001..1016
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1017..1022
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..579
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATTA CAAATCGTTG CCCATTTGAT
+       61 AAAGTCTTCA ATGCTACAAG GTTCCCGAAT GTGTACGCCT GGGAAAGGAC TAAGATTTCA
+      121 GATTGTGTCG CAGATTATAC CGTACTTTAC AACAGCACAA GTTTCAGTAC CTTCAAGTGT
+      181 TACGGTGTAT CACCTTCCAA ACTTATTGAC CTGTGTTTCA CTTCCGTTTA CGCTGATACC
+      241 TTCTTGATTA GATCCAGCGA AGTTCGTCAA GTGGCACCCG GTGAGACGGG AGTGATTGCC
+      301 GATTACAATT ACAAGCTTCC AGATGATTTC ACGGGATGTG TTATAGCGTG GAATACGGCC
+      361 AAACAAGACC AAGGGCAATA TTACTACAGG AGCCACAGGA AGACCAAGCT TAAACCTTTC
+      421 GAGCGTGACC TTTCCTCAGA TGAGAACGGC GTTCGTACGC TAAGTACTTA TGACTTCTAT
+      481 CCATCTGTGC CCGTAGCTTA TCAAGCCACC AGAGTAGTTG TTCTTTCATT TGAATTGCTA
+      541 AATGCGCCTG CGACAGTGTG CGGACCCAAA CTTTCTACTc tcgagggggg cggttccgaa
+      601 caaaagctta tttctgaaga ggacttgtaa tagagatctg ataacaacag tgtagatgta
+      661 acaaaatcga ctttgttccc actgtacttt tagctcgtac aaaatacaat atacttttca
+      721 tttctccgta aacaacatgt tttcccatgt aatatccttt tctatttttc gttccgttac
+      781 caactttaca catactttat atagctattc acttctatac actaaaaaac taagacaatt
+      841 ttaattttgc tgcctgccat atttcaattt gttataaatt cctataattt atcctattag
+      901 tagctaaaaa aagatgaatg tgaatcgaat cctaagagaa ttaatgatac ggcgaccacc
+      961 gagatctaca ctctttccct acacgacgct cttccgatct NNNNNNNNNN NNNNNNgcgg
+     1021 cc     
+//
+LOCUS       SARS-CoV-2               1079 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for deep mutational scanning of SARS-CoV-2 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for SARS-CoV-2 RBD libraries.
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          637..1057
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1058..1073
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1074..1079
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..636
+                     /locus_tag="gene"
+                     /label="gene"
+                     /ApEinfo_label="gene"
+                     /ApEinfo_fwdcolor="cyan"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAATATCA CGAACCTTTG TCCTTTCGGT
+       61 GAGGTCTTCA ATGCTACTAG ATTCGCATCC GTGTATGCAT GGAATAGAAA GAGAATTAGT
+      121 AATTGTGTAG CGGACTACTC TGTACTTTAT AACTCCGCCT CCTTCTCCAC ATTCAAGTGT
+      181 TACGGTGTAT CTCCCACCAA GTTGAATGAT CTATGCTTTA CAAACGTTTA CGCCGATAGT
+      241 TTCGTAATTA GAGGCGATGA AGTGCGTCAG ATCGCACCAG GCCAGACGGG CAAGATAGCA
+      301 GACTATAATT ATAAGCTGCC TGATGACTTC ACCGGCTGTG TGATAGCTTG GAACTCAAAT
+      361 AATCTAGATT CCAAGGTGGG AGGCAATTAC AATTATTTGT ACCGTCTGTT CCGTAAAAGC
+      421 AATTTGAAAC CATTTGAAAG AGACATTAGC ACTGAAATTT ATCAAGCAGG GTCCACCCCG
+      481 TGCAACGGCG TAGAAGGCTT TAACTGTTAT TTCCCATTAC AGTCTTATGG TTTCCAACCT
+      541 ACGAACGGAG TCGGGTATCA GCCGTACAGG GTTGTGGTTC TTTCATTTGA ACTGCTGCAC
+      601 GCGCCCGCAA CCGTATGCGG GCCGAAGAAA TCAACGctcg aggggggcgg ttccgaacaa
+      661 aagcttattt ctgaagagga cttgtaatag agatctgata acaacagtgt agatgtaaca
+      721 aaatcgactt tgttcccact gtacttttag ctcgtacaaa atacaatata cttttcattt
+      781 ctccgtaaac aacatgtttt cccatgtaat atccttttct atttttcgtt ccgttaccaa
+      841 ctttacacat actttatata gctattcact tctatacact aaaaaactaa gacaatttta
+      901 attttgctgc ctgccatatt tcaatttgtt ataaattcct ataatttatc ctattagtag
+      961 ctaaaaaaag atgaatgtga atcgaatcct aagagaatta atgatacggc gaccaccgag
+     1021 atctacactc tttccctaca cgacgctctt ccgatctNNN NNNNNNNNNN NNNgcggcc
+//
+LOCUS       SARS-CoV                 1076 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for SARS-CoV RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for SARS-CoV RBD.
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          634..1054
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1055..1070
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1071..1076
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..633
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAATATCA CGAACCTTTG CCCATTTGGT
+       61 GAAGTCTTTA ATGCCACTAA ATTTCCGTCC GTCTACGCAT GGGAGAGGAA GAAGATTTCC
+      121 AACTGCGTAG CCGACTACTC AGTCTTATAC AATAGTACAT TCTTCAGTAC CTTCAAGTGC
+      181 TATGGTGTGT CCGCTACCAA GCTAAATGAC CTTTGTTTCA GTAATGTTTA CGCCGACTCT
+      241 TTCGTTGTTA AAGGTGACGA CGTTAGACAA ATCGCTCCCG GACAAACCGG CGTTATAGCG
+      301 GACTACAATT ATAAGTTGCC CGACGACTTT ATGGGTTGTG TACTGGCTTG GAACACAAGG
+      361 AATATCGACG CGACTTCCAC CGGCAACTAC AATTACAAGT ACAGGTATTT GCGTCATGGT
+      421 AAACTGAGGC CGTTCGAGCG TGACATAAGC AACGTTCCGT TTAGCCCGGA TGGTAAACCT
+      481 TGCACTCCAC CTGCCTTGAA TTGCTATTGG CCATTGAACG ATTATGGTTT CTACACAACA
+      541 ACGGGCATTG GCTATCAACC GTACCGTGTC GTTGTGCTTA GTTTCGAACT GCTTAATGCA
+      601 CCCGCTACGG TTTGCGGCCC TAAGCTTAGC ACGctcgagg ggggcggttc cgaacaaaag
+      661 cttatttctg aagaggactt gtaatagaga tctgataaca acagtgtaga tgtaacaaaa
+      721 tcgactttgt tcccactgta cttttagctc gtacaaaata caatatactt ttcatttctc
+      781 cgtaaacaac atgttttccc atgtaatatc cttttctatt tttcgttccg ttaccaactt
+      841 tacacatact ttatatagct attcacttct atacactaaa aaactaagac aattttaatt
+      901 ttgctgcctg ccatatttca atttgttata aattcctata atttatccta ttagtagcta
+      961 aaaaaagatg aatgtgaatc gaatcctaag agaattaatg atacggcgac caccgagatc
+     1021 tacactcttt ccctacacga cgctcttccg atctNNNNNN NNNNNNNNNN gcggcc
+//
+LOCUS       WIV16                    1076 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for WIV16 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for WIV16 RBD.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          634..1054
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1055..1070
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1071..1076
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..633
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAACATTA CCAACTTATG CCCGTTCGGA
+       61 GAGGTCTTTA ACGCAACGAC GTTTCCCTCA GTCTATGCAT GGGAACGTAA GAGGATAAGC
+      121 AATTGCGTGG CCGATTACTC CGTTCTATAT AATTCCACTT CTTTCAGTAC TTTCAAGTGT
+      181 TACGGCGTCA GCGCAACCAA GTTAAATGAC CTTTGCTTCA GTAACGTGTA TGCGGACTCC
+      241 TTTGTGGTTA AAGGTGACGA CGTTCGTCAG ATCGCACCGG GCCAAACAGG TGTTATTGCA
+      301 GATTATAACT ACAAGCTACC CGATGATTTC ACTGGATGTG TTCTTGCGTG GAATACCAGG
+      361 AACATAGACG CGACGCAAAC GGGAAACTAC AACTATAAGT ATAGGTCTCT GAGGCACGGC
+      421 AAACTACGTC CGTTTGAAAG AGACATCTCA AACGTGCCTT TCAGTCCCGA CGGTAAGCCT
+      481 TGCACTCCGC CCGCTTTCAA CTGCTACTGG CCGTTAAACG ATTATGGTTT CTACATAACA
+      541 AATGGTATAG GTTACCAGCC ATATCGTGTA GTCGTGCTAT CATTCGAACT ATTGAACGCA
+      601 CCTGCAACTG TCTGTGGACC TAAACTAAGT ACGctcgagg ggggcggttc cgaacaaaag
+      661 cttatttctg aagaggactt gtaatagaga tctgataaca acagtgtaga tgtaacaaaa
+      721 tcgactttgt tcccactgta cttttagctc gtacaaaata caatatactt ttcatttctc
+      781 cgtaaacaac atgttttccc atgtaatatc cttttctatt tttcgttccg ttaccaactt
+      841 tacacatact ttatatagct attcacttct atacactaaa aaactaagac aattttaatt
+      901 ttgctgcctg ccatatttca atttgttata aattcctata atttatccta ttagtagcta
+      961 aaaaaagatg aatgtgaatc gaatcctaag agaattaatg atacggcgac caccgagatc
+     1021 tacactcttt ccctacacga cgctcttccg atctNNNNNN NNNNNNNNNN gcggcc
+//
+LOCUS       ZC45                     1022 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for ZC45 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for ZC45 RBD.
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          580..1000
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1001..1016
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1017..1022
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..579
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAATATCA CTAATGTATG CCCGTTCCAC
+       61 AAAGTCTTCA ATGCGACACG TTTCCCATCT GTCTACGCAT GGGAGCGTAC TAAGATAAGC
+      121 GACTGCATCG CAGATTACAC GGTATTCTAC AATTCAACCA GCTTCAGCAC GTTCAAGTGT
+      181 TATGGCGTGT CACCATCCAA GCTAATAGAT CTTTGCTTCA CCTCTGTATA TGCCGATACG
+      241 TTCTTGATAA GATTTAGCGA AGTAAGACAG GTGGCTCCGG GACAGACCGG CGTGATAGCG
+      301 GATTATAATT ACAAACTTCC AGACGACTTT ACCGGTTGCG TAATCGCTTG GAACACTGCT
+      361 AAACAAGATG TGGGAAACTA TTTCTATAGG TCCCACAGAT CAACGAAATT GAAACCGTTT
+      421 GAGAGGGACC TTTCTAGTGA TGAGAACGGC GTCAGAACCT TATCCACCTA CGACTTTAAC
+      481 CCAAATGTGC CTCTGGAATA TCAAGCCACA AGAGTCGTGG TGCTAAGTTT CGAACTTCTT
+      541 AATGCGCCAG CAACTGTCTG TGGGCCGAAA TTAAGTACGc tcgagggggg cggttccgaa
+      601 caaaagctta tttctgaaga ggacttgtaa tagagatctg ataacaacag tgtagatgta
+      661 acaaaatcga ctttgttccc actgtacttt tagctcgtac aaaatacaat atacttttca
+      721 tttctccgta aacaacatgt tttcccatgt aatatccttt tctatttttc gttccgttac
+      781 caactttaca catactttat atagctattc acttctatac actaaaaaac taagacaatt
+      841 ttaattttgc tgcctgccat atttcaattt gttataaatt cctataattt atcctattag
+      901 tagctaaaaa aagatgaatg tgaatcgaat cctaagagaa ttaatgatac ggcgaccacc
+      961 gagatctaca ctctttccct acacgacgct cttccgatct NNNNNNNNNN NNNNNNgcgg
+     1021 cc     
+//
+LOCUS       ZXC21                    1022 bp    DNA        linear       07-APR-2020
+DEFINITION  PacBio amplicon for ZXC21 RBD
+ACCESSION   None
+VERSION     
+SOURCE      Tyler Starr
+  ORGANISM  .
+COMMENT     PacBio amplicon for ZXC21 RBD.
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     termini5        1..33
+                     /locus_tag="termini5"
+                     /label="termini5"
+                     /ApEinfo_label="termini5"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     spacer          580..1000
+                     /locus_tag="spacer"
+                     /label="spacer"
+                     /ApEinfo_label="spacer"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     barcode         1001..1016
+                     /locus_tag="barcode"
+                     /label="barcode"
+                     /ApEinfo_label="barcode"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     termini3        1017..1022
+                     /locus_tag="termini3"
+                     /label="termini3"
+                     /ApEinfo_label="termini3"
+                     /ApEinfo_fwdcolor="#fefb00"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     gene            34..579
+                     /locus_tag="RBD"
+                     /label="RBD"
+                     /ApEinfo_label="RBD"
+                     /ApEinfo_fwdcolor="#00fcff"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 ggccgcggag gcggagggtc ggctagccat atgAATATCA CCAACGTCTG CCCTTTCCAT
+       61 AAGGTCTTTA ACGCTACGAG ATTTCCCAGC GTTTATGCAT GGGAGAGAAC TAAGATATCT
+      121 GATTGTATTG CAGATTATAC CGTGTTCTAC AACAGCACTT CTTTCTCAAC ATTTAAGTGT
+      181 TACGGAGTTA GTCCGTCCAA GCTGATTGAC TTGTGTTTCA CTTCTGTATA CGCTGACACT
+      241 TTCTTAATTA GATTCTCTGA AGTCAGACAA GTGGCACCTG GTCAGACGGG TGTCATTGCG
+      301 GATTACAACT ATAAACTACC AGATGATTTC ACAGGTTGTG TAATAGCTTG GAACACGGCG
+      361 AAACAGGACA CGGGCCACTA CTTCTATAGG AGTCACCGTA GTACGAAACT AAAGCCCTTC
+      421 GAGCGTGATT TAAGTAGTGA CGAGAACGGA GTGAGAACCC TATCCACCTA TGATTTCAAC
+      481 CCTAATGTAC CCTTGGAGTA TCAGGCCACT CGTGTTGTTG TCCTGTCCTT TGAACTGCTT
+      541 AACGCTCCGG CTACCGTATG CGGACCAAAG TTGTCCACGc tcgagggggg cggttccgaa
+      601 caaaagctta tttctgaaga ggacttgtaa tagagatctg ataacaacag tgtagatgta
+      661 acaaaatcga ctttgttccc actgtacttt tagctcgtac aaaatacaat atacttttca
+      721 tttctccgta aacaacatgt tttcccatgt aatatccttt tctatttttc gttccgttac
+      781 caactttaca catactttat atagctattc acttctatac actaaaaaac taagacaatt
+      841 ttaattttgc tgcctgccat atttcaattt gttataaatt cctataattt atcctattag
+      901 tagctaaaaa aagatgaatg tgaatcgaat cctaagagaa ttaatgatac ggcgaccacc
+      961 gagatctaca ctctttccct acacgacgct cttccgatct NNNNNNNNNN NNNNNNgcgg
+     1021 cc     
+//
