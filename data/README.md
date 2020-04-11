@@ -27,7 +27,3 @@ The [./structures/](structures) directory contains information relevant for stru
 Specifically, [./structures/Ab-bound/](structures/Ab-bound) and [./structures/ACE2-bound](./structures/ACE2-bound) contain PDB files of SARS-CoV and SARS-CoV-2 spike and RBD proteins, either free, bound to ACE2, or antibodies. Each subdirectory contains the `.pdb` files, and a `.pse` session illustrating structural alignment of the component `.pdb` files.
 
 The `./structures/annotate-structural-elements.R` script analyzes the various PDB files to create strucutral annotations, including relative solvent accessibility, ACE2 contact residues, and antibody epitope sites. This script was run to create the file `./RBD_sites.csv`
-
-
-`PacBio_amplicon.gb` encodes the PacBio amplicon to map for library variants of the SARS-CoV-2 RBD
-

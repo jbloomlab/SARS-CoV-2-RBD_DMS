@@ -50,10 +50,6 @@ You should modify the analysis by changing this configuration file; do **not** h
 The input files pointed to by [config.yaml](config.yaml) are in the [./data/](data) subdirectory.
 See the [./data/README.md](./data/README.md) file for details.
 
-  - [data/amplicon.gb](data/amplicon.gb): the amplicon being sequenced by PacBio
-  - [data/feature_parse_specs.yaml](data/feature_parse_specs.yaml): how to parse the amplicon when handling the PacBio data
-  - [data/PacBio_runs.csv](data/PacBio_runs.csv): list of the PacBio runs used to call the variants
-  - [data/barcode_runs.csv](data/barcode_runs.csv): list of the Illumina runs used to count the barcodes for different samples
 
 ## Cluster configuration
 There is a cluster configuration file [cluster.yaml](cluster.yaml) that configures [Snakefile](Snakefile) for the Fred Hutch cluster, as recommended by the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html).
