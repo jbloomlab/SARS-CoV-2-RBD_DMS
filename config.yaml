@@ -3,8 +3,8 @@
 # most CPUs to ever use at once
 max_cpus: 16
 
-# amplicon sequenced by PacBio
-amplicon: data/PacBio_amplicon.gb
+# amplicons sequenced by PacBio
+amplicons: data/PacBio_amplicons.gb
 
 # how to parse the amplicon
 feature_parse_specs: data/feature_parse_specs.yaml
