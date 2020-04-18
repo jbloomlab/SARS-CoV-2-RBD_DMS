@@ -1,1 +1,4 @@
 library,run,subreads
+lib1,200415_A,/fh/fast/bloom_j/SR/ngs/pacbio/200415_TylerStarr/r54228_20200414_180011/1_A01/m54228_200414_185350.subreads.bam
+lib1,200415_B,/fh/fast/bloom_j/SR/ngs/pacbio/200415_TylerStarr/r54228_20200414_180011/2_B01/m54228_200415_152345.subreads.bam
+lib2,200415_A,/fh/fast/bloom_j/SR/ngs/pacbio/200415_TylerStarr/r54228_20200414_180011/3_C01/m54228_200416_115520.subreads.bam
