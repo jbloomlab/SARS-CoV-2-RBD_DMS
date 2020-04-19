@@ -16,5 +16,6 @@ dependencies:
     - alignparse
     - dms-variants
     - jupyter
+    - jupyterlab
     - jupyter_contrib_nbextensions
     - snakemake
