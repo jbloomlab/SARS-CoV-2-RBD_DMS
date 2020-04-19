@@ -126,7 +126,7 @@ rule process_ccs:
     input:
         expand(os.path.join(config['ccs_dir'], "{pacbioRun}_ccs.fastq.gz"),
                pacbioRun=pacbio_runs['pacbioRun']),
-        config['amplicon'],
+        config['amplicons'],
         ([] if config['seqdata_source'] != 'HutchServer' else
          expand(os.path.join(config['ccs_dir'], "{pacbioRun}_report.txt"),
                 pacbioRun=pacbio_runs['pacbioRun'])
