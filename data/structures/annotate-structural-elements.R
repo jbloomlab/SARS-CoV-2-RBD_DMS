@@ -29,9 +29,9 @@ RBD2 <- read.pdb(file="data/structures/ACE2-bound/6m0j_no-ACE2.pdb")
 RBD2_atoms <- RBD2$atom
 
 #calculate RSA of free and bound RBD, distance to nearest ACE2 contact residue, for each RBD position
-#installed dssp executable to ./src with wget ftp://ftp.cmbi.ru.nl/pub/software/dssp/dssp-2.0.4-linux-amd64 -O ./src/dssp and chmod a+x ./src/dssp
-dssp_RBD2_ACE2 <- dssp(RBD2_ACE2, exefile="~/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS/src/dssp")
-dssp_RBD2 <- dssp(RBD2, exefile="~/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS/src/dssp")
+#use link to conda installation of dssp executable
+dssp_RBD2_ACE2 <- dssp(RBD2_ACE2, exefile="./env/bin/mkdssp")
+dssp_RBD2 <- dssp(RBD2, exefile="./env/bin/mkdssp")
 
 #seems like the dssp output does not automatically link chain, resi number, and the SASA and SSE stats? Annoying.
 RBD2_ACE2_dssp_summary <- data.frame(chain=rep(NA,length(dssp_RBD2_ACE2$sse)),resi=rep(NA,length(dssp_RBD2_ACE2$sse)),SSE=rep(NA,length(dssp_RBD2_ACE2$sse)),SASA=rep(NA,length(dssp_RBD2_ACE2$sse)))
