@@ -29,7 +29,7 @@ RBD2 <- read.pdb(file="data/structures/ACE2-bound/6m0j_no-ACE2.pdb")
 RBD2_atoms <- RBD2$atom
 
 #calculate RSA of free and bound RBD, distance to nearest ACE2 contact residue, for each RBD position
-#installed dssp executable to ./src with wget ftp://ftp.cmbi.ru.nl/pub/software/dssp/dssp-2.0.4-linux-amd64 -O ./src/dssp and chmod a+x ./src/dssp
+#use link to conda installation of dssp executable
 dssp_RBD2_ACE2 <- dssp(RBD2_ACE2, exefile="./env/bin/mkdssp")
 dssp_RBD2 <- dssp(RBD2, exefile="./env/bin/mkdssp")
 
