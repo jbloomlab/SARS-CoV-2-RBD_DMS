@@ -12,6 +12,7 @@ dependencies:
   - sra-tools
   - dssp
   - minimap2
+  - mafft
   - pip:
     - alignparse
     - dms-variants
