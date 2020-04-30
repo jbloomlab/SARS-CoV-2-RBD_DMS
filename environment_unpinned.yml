@@ -12,12 +12,12 @@ dependencies:
   - sra-tools
   - dssp
   - minimap2
-  - node-js
+  - nodejs
   - mafft
+  - jupyter
+  - jupyterlab
+  - jupyter_contrib_nbextensions
+  - snakemake
   - pip:
     - alignparse
     - dms-variants
-    - jupyter
-    - jupyterlab
-    - jupyter_contrib_nbextensions
-    - snakemake
