@@ -13,6 +13,7 @@ dependencies:
   - dssp
   - minimap2
   - node-js
+  - mafft
   - pip:
     - alignparse
     - dms-variants

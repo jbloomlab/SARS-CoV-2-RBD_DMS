@@ -1,17 +1,15 @@
 name: null
 channels:
-  - salilab
   - bioconda
-  - r
+  - salilab
   - conda-forge
   - defaults
-  - schrodinger
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=0_gnu
   - bzip2=1.0.8=h516909a_2
   - ca-certificates=2020.4.5.1=hecc5488_0
-  - certifi=2020.4.5.1=py37hc8dfbb8_0
+  - certifi=2020.4.5.1=py37_0
   - dssp=3.0.0=hf484d3e_3
   - hdf5=1.10.5=nompi_h3c11f04_1104
   - icu=58.2=hf484d3e_1000
@@ -25,10 +23,10 @@ dependencies:
   - libiconv=1.15=h516909a_1006
   - libstdcxx-ng=9.2.0=hdf63c60_2
   - libxml2=2.9.9=hea5a465_1
+  - mafft=7.464=h516909a_0
   - minimap2=2.17=h8b12597_1
   - ncurses=6.1=hf484d3e_1002
-  - nodejs=6.13.1=0
-  - openssl=1.1.1g=h516909a_0
+  - openssl=1.1.1g=h7b6447c_0
   - pbccs=4.2.0=1
   - perl=5.26.2=h516909a_1006
   - perl-app-cpanminus=1.7044=pl526_1
@@ -161,5 +159,5 @@ dependencies:
     - widgetsnbextension==3.5.1
     - wrapt==1.12.1
     - zipp==3.1.0
-prefix: /fh/fast/bloom_j/computational_notebooks/jbloom/2020/SARS-CoV-2-RBD_DMS/env
+prefix: /fh/fast/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS/env
 
