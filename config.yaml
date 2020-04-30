@@ -6,6 +6,9 @@ max_cpus: 16
 # amplicons sequenced by PacBio
 amplicons: data/PacBio_amplicons.gb
 
+# the primary target for which we are calling mutations
+primary_target: SARS-CoV-2
+
 # how to parse the amplicon
 feature_parse_specs: data/feature_parse_specs.yaml
 
