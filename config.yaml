@@ -62,7 +62,7 @@ max_error_rate: 0.0001
 #  Therefore, supplied the "downstream" sequence as reverse complemented upstream
 # Passed to `dms_variants.illuminabarcodeparser.IlluminaBarcodeParser`:
 illumina_barcode_parser_params:
-  upstream: CTCACTATAGGGCGAATTGGAGCTCGCGGCCGC
+  upstream: GCTCGCGGCCGC
   downstream: ''
   minq: 20
   upstream_mismatch: 1
