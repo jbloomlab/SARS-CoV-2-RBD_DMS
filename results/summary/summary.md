@@ -16,3 +16,5 @@ workflow:
 2. [Build variants from CCSs](build_variants.md).
 
 3. [Count variants by barcode](count_variants.md).
+
+4. [QC analysis of sequencing counts](analyze_counts.md).

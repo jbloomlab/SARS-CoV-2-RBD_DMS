@@ -31,8 +31,7 @@ rule all:
     """Final output of workflow."""
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
-        config['variant_counts_file'],
-#        config['func_scores_by_barcode_file']
+        config['variant_counts_file']
 
 
 rule make_summary:
@@ -42,7 +41,7 @@ rule make_summary:
         process_ccs=nb_markdown('process_ccs.ipynb'),
         build_variants=nb_markdown('build_variants.ipynb'),
         count_variants=nb_markdown('count_variants.ipynb'),
-#        analyze_counts=nb_markdown('analyze_counts.ipynb')
+        analyze_counts=nb_markdown('analyze_counts.ipynb')
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -70,6 +69,8 @@ rule make_summary:
 
             3. [Count variants by barcode]({path(input.count_variants)}).
 
+            4. [QC analysis of sequencing counts]({path(input.analyze_counts)}).
+
             """
             ).strip())
 
@@ -87,7 +88,6 @@ rule analyze_counts:
     input:
         config['variant_counts_file']
     output:
-        config['func_scores_by_barcode_file'],
         nb_markdown=nb_markdown('analyze_counts.ipynb')
     params:
         nb='analyze_counts.ipynb'

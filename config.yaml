@@ -21,9 +21,6 @@ pacbio_runs: data/PacBio_runs.csv
 # list of Illumina sequencing runs of barcodes
 barcode_runs: data/barcode_runs.csv 
 
-# schematic of experiment
-schematic: data/experimental_schematic.jpg
-
 # output directories / files
 summary_dir: results/summary
 ccs_dir: results/ccs

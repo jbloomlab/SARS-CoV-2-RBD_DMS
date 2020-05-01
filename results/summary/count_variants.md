@@ -1612,11 +1612,11 @@ display(HTML(
   <tbody>
     <tr>
       <td>lib1</td>
-      <td>99652</td>
+      <td>99648</td>
     </tr>
     <tr>
       <td>lib2</td>
-      <td>97733</td>
+      <td>97691</td>
     </tr>
   </tbody>
 </table>
@@ -1738,13 +1738,13 @@ display(HTML(fates.head().to_html(index=False)))
   <tbody>
     <tr>
       <td>valid barcode</td>
-      <td>22910663</td>
+      <td>22911930</td>
       <td>lib1</td>
       <td>SortSeq_bin1</td>
     </tr>
     <tr>
       <td>invalid barcode</td>
-      <td>4672063</td>
+      <td>4670796</td>
       <td>lib1</td>
       <td>SortSeq_bin1</td>
     </tr>
@@ -1830,691 +1830,691 @@ display(HTML(fates
       <th rowspan="68" valign="top">lib1</th>
       <th>SortSeq_bin1</th>
       <td>2331253</td>
-      <td>4672063</td>
+      <td>4670796</td>
       <td>2626939</td>
       <td>600832</td>
-      <td>22910663</td>
+      <td>22911930</td>
     </tr>
     <tr>
       <th>SortSeq_bin2</th>
       <td>1045738</td>
-      <td>1135231</td>
+      <td>1137307</td>
       <td>1197536</td>
       <td>248501</td>
-      <td>11264167</td>
+      <td>11262091</td>
     </tr>
     <tr>
       <th>SortSeq_bin3</th>
       <td>889973</td>
-      <td>943428</td>
+      <td>943837</td>
       <td>1012715</td>
       <td>211971</td>
-      <td>9598897</td>
+      <td>9598488</td>
     </tr>
     <tr>
       <th>SortSeq_bin4</th>
       <td>1055757</td>
-      <td>1173112</td>
+      <td>1171914</td>
       <td>1177048</td>
       <td>256339</td>
-      <td>11219673</td>
+      <td>11220871</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin1</th>
       <td>249560</td>
-      <td>268425</td>
+      <td>268373</td>
       <td>277525</td>
       <td>62290</td>
-      <td>2700555</td>
+      <td>2700607</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin2</th>
       <td>109897</td>
-      <td>119092</td>
+      <td>119077</td>
       <td>121114</td>
       <td>36476</td>
-      <td>1187723</td>
+      <td>1187738</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin3</th>
       <td>150504</td>
-      <td>157749</td>
+      <td>158933</td>
       <td>170936</td>
       <td>31196</td>
-      <td>1645237</td>
+      <td>1644053</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin4</th>
       <td>688025</td>
-      <td>881436</td>
+      <td>881308</td>
       <td>792964</td>
       <td>153704</td>
-      <td>7287750</td>
+      <td>7287878</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin1</th>
       <td>257907</td>
-      <td>278055</td>
+      <td>277507</td>
       <td>289607</td>
       <td>72278</td>
-      <td>2808812</td>
+      <td>2809360</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin2</th>
       <td>105114</td>
-      <td>115433</td>
+      <td>115647</td>
       <td>124187</td>
       <td>33065</td>
-      <td>1143521</td>
+      <td>1143307</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin3</th>
       <td>187153</td>
-      <td>196788</td>
+      <td>197639</td>
       <td>213204</td>
       <td>41004</td>
-      <td>2059161</td>
+      <td>2058310</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin4</th>
       <td>685007</td>
-      <td>887004</td>
+      <td>886529</td>
       <td>767887</td>
       <td>167315</td>
-      <td>7312849</td>
+      <td>7313324</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin1</th>
       <td>280668</td>
-      <td>313169</td>
+      <td>313498</td>
       <td>326850</td>
       <td>71373</td>
-      <td>3044753</td>
+      <td>3044424</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin2</th>
       <td>117652</td>
-      <td>127389</td>
+      <td>127576</td>
       <td>130633</td>
       <td>28469</td>
-      <td>1286884</td>
+      <td>1286697</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin3</th>
       <td>191870</td>
-      <td>200964</td>
+      <td>201841</td>
       <td>219892</td>
       <td>41666</td>
-      <td>2050514</td>
+      <td>2049637</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin4</th>
       <td>680189</td>
-      <td>848729</td>
+      <td>848718</td>
       <td>766133</td>
       <td>162972</td>
-      <td>7149690</td>
+      <td>7149701</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin1</th>
       <td>348503</td>
-      <td>382558</td>
+      <td>382615</td>
       <td>383757</td>
       <td>84566</td>
-      <td>3744419</td>
+      <td>3744362</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin2</th>
       <td>138763</td>
-      <td>148059</td>
+      <td>148496</td>
       <td>156487</td>
       <td>31322</td>
-      <td>1504060</td>
+      <td>1503623</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin3</th>
       <td>212244</td>
-      <td>237168</td>
+      <td>238704</td>
       <td>240663</td>
       <td>43537</td>
-      <td>2293844</td>
+      <td>2292308</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin4</th>
       <td>587904</td>
-      <td>839826</td>
+      <td>838239</td>
       <td>754851</td>
       <td>144424</td>
-      <td>7015408</td>
+      <td>7016995</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin1</th>
       <td>352886</td>
-      <td>386348</td>
+      <td>386112</td>
       <td>393734</td>
       <td>82707</td>
-      <td>3852857</td>
+      <td>3853093</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin2</th>
       <td>91013</td>
-      <td>102253</td>
+      <td>102509</td>
       <td>101341</td>
       <td>22148</td>
-      <td>979021</td>
+      <td>978765</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin3</th>
       <td>186949</td>
-      <td>206456</td>
+      <td>207858</td>
       <td>215751</td>
       <td>44648</td>
-      <td>2118190</td>
+      <td>2116788</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin4</th>
       <td>695971</td>
-      <td>915220</td>
+      <td>914535</td>
       <td>790855</td>
       <td>166334</td>
-      <td>7468221</td>
+      <td>7468906</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin1</th>
       <td>381675</td>
-      <td>417240</td>
+      <td>417566</td>
       <td>431501</td>
       <td>85322</td>
-      <td>4147548</td>
+      <td>4147222</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin2</th>
       <td>128504</td>
-      <td>135765</td>
+      <td>136297</td>
       <td>141917</td>
       <td>26575</td>
-      <td>1362677</td>
+      <td>1362145</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin3</th>
       <td>229107</td>
-      <td>361062</td>
+      <td>361140</td>
       <td>255596</td>
       <td>45188</td>
-      <td>2372648</td>
+      <td>2372570</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin4</th>
       <td>691259</td>
-      <td>806105</td>
+      <td>807034</td>
       <td>787906</td>
       <td>164022</td>
-      <td>7497563</td>
+      <td>7496634</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin1</th>
       <td>458133</td>
-      <td>511584</td>
+      <td>511597</td>
       <td>517075</td>
       <td>99670</td>
-      <td>4910745</td>
+      <td>4910732</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin2</th>
       <td>113744</td>
-      <td>157705</td>
+      <td>157422</td>
       <td>129211</td>
       <td>24262</td>
-      <td>1193971</td>
+      <td>1194254</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin3</th>
       <td>206271</td>
-      <td>371678</td>
+      <td>372278</td>
       <td>237680</td>
       <td>40764</td>
-      <td>2137716</td>
+      <td>2137116</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin4</th>
       <td>551861</td>
-      <td>553898</td>
+      <td>553887</td>
       <td>617131</td>
       <td>122640</td>
-      <td>6037513</td>
+      <td>6037524</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin1</th>
       <td>499765</td>
-      <td>588985</td>
+      <td>589565</td>
       <td>567191</td>
       <td>112653</td>
-      <td>5558758</td>
+      <td>5558178</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin2</th>
       <td>154023</td>
-      <td>213163</td>
+      <td>213444</td>
       <td>171180</td>
       <td>35136</td>
-      <td>1597857</td>
+      <td>1597576</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin3</th>
       <td>215697</td>
-      <td>223927</td>
+      <td>225111</td>
       <td>242368</td>
       <td>47350</td>
-      <td>2360619</td>
+      <td>2359435</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin4</th>
       <td>430717</td>
-      <td>445034</td>
+      <td>444656</td>
       <td>484083</td>
       <td>101405</td>
-      <td>4720789</td>
+      <td>4721167</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin1</th>
       <td>580802</td>
-      <td>757168</td>
+      <td>756866</td>
       <td>650007</td>
       <td>126792</td>
-      <td>6175102</td>
+      <td>6175404</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin2</th>
       <td>173319</td>
-      <td>232403</td>
+      <td>232777</td>
       <td>197122</td>
       <td>36345</td>
-      <td>1812605</td>
+      <td>1812231</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin3</th>
       <td>294079</td>
-      <td>303809</td>
+      <td>304012</td>
       <td>327659</td>
       <td>66784</td>
-      <td>3190608</td>
+      <td>3190405</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin4</th>
       <td>188854</td>
-      <td>188377</td>
+      <td>188507</td>
       <td>215909</td>
       <td>45969</td>
-      <td>2048215</td>
+      <td>2048085</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin1</th>
       <td>756872</td>
-      <td>981281</td>
+      <td>981268</td>
       <td>862715</td>
       <td>160892</td>
-      <td>8023471</td>
+      <td>8023484</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin2</th>
       <td>281098</td>
-      <td>320199</td>
+      <td>320450</td>
       <td>322034</td>
       <td>63494</td>
-      <td>3022889</td>
+      <td>3022638</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin3</th>
       <td>290190</td>
-      <td>294239</td>
+      <td>294598</td>
       <td>326509</td>
       <td>69948</td>
-      <td>3159440</td>
+      <td>3159081</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin4</th>
       <td>5516</td>
-      <td>6116</td>
+      <td>6138</td>
       <td>6148</td>
       <td>1470</td>
-      <td>59010</td>
+      <td>58988</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin1</th>
       <td>1219956</td>
-      <td>1605329</td>
+      <td>1605526</td>
       <td>1392119</td>
       <td>253864</td>
-      <td>13017711</td>
+      <td>13017514</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin2</th>
       <td>393748</td>
-      <td>496290</td>
+      <td>496801</td>
       <td>448145</td>
       <td>87951</td>
-      <td>4266614</td>
+      <td>4266103</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin3</th>
       <td>61351</td>
-      <td>64962</td>
+      <td>65219</td>
       <td>68819</td>
       <td>14740</td>
-      <td>681045</td>
+      <td>680788</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin4</th>
       <td>46569</td>
-      <td>52631</td>
+      <td>52769</td>
       <td>54061</td>
       <td>9305</td>
-      <td>499384</td>
+      <td>499246</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin1</th>
       <td>1419373</td>
-      <td>1808551</td>
+      <td>1808954</td>
       <td>1639054</td>
       <td>305186</td>
-      <td>15372497</td>
+      <td>15372094</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin2</th>
       <td>239351</td>
-      <td>257297</td>
+      <td>257391</td>
       <td>269712</td>
       <td>61467</td>
-      <td>2660445</td>
+      <td>2660351</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin3</th>
       <td>137695</td>
-      <td>147194</td>
+      <td>147554</td>
       <td>154579</td>
       <td>34856</td>
-      <td>1504920</td>
+      <td>1504560</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin4</th>
       <td>130862</td>
-      <td>135071</td>
+      <td>134971</td>
       <td>147346</td>
       <td>30231</td>
-      <td>1426876</td>
+      <td>1426976</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin1</th>
       <td>1261264</td>
-      <td>1541305</td>
+      <td>1542427</td>
       <td>1416717</td>
       <td>284478</td>
-      <td>13579622</td>
+      <td>13578500</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin2</th>
       <td>87171</td>
-      <td>95569</td>
+      <td>95693</td>
       <td>98500</td>
       <td>22148</td>
-      <td>939720</td>
+      <td>939596</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin3</th>
       <td>105507</td>
-      <td>109676</td>
+      <td>110039</td>
       <td>120105</td>
       <td>28708</td>
-      <td>1147118</td>
+      <td>1146755</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin4</th>
       <td>28706</td>
-      <td>28092</td>
+      <td>28132</td>
       <td>32055</td>
       <td>6867</td>
-      <td>312846</td>
+      <td>312806</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin1</th>
       <td>1165597</td>
-      <td>1414926</td>
+      <td>1415161</td>
       <td>1349211</td>
       <td>254953</td>
-      <td>12664468</td>
+      <td>12664233</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin2</th>
       <td>62204</td>
-      <td>73378</td>
+      <td>73443</td>
       <td>70335</td>
       <td>16921</td>
-      <td>662094</td>
+      <td>662029</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin3</th>
       <td>153467</td>
-      <td>171757</td>
+      <td>172027</td>
       <td>180392</td>
       <td>36377</td>
-      <td>1696336</td>
+      <td>1696066</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin4</th>
       <td>5747</td>
-      <td>5586</td>
+      <td>6347</td>
       <td>6244</td>
       <td>3275</td>
-      <td>58191</td>
+      <td>57430</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin1</th>
       <td>1050819</td>
-      <td>1256824</td>
+      <td>1258461</td>
       <td>1197625</td>
       <td>237471</td>
-      <td>11323666</td>
+      <td>11322029</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin2</th>
       <td>63789</td>
-      <td>71315</td>
+      <td>71555</td>
       <td>71986</td>
       <td>20132</td>
-      <td>682588</td>
+      <td>682348</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin3</th>
       <td>93947</td>
-      <td>108141</td>
+      <td>108397</td>
       <td>107522</td>
       <td>22866</td>
-      <td>1031912</td>
+      <td>1031656</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin4</th>
       <td>49941</td>
-      <td>51954</td>
+      <td>51920</td>
       <td>56575</td>
       <td>11337</td>
-      <td>555682</td>
+      <td>555716</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin1</th>
       <td>1147190</td>
-      <td>1360337</td>
+      <td>1360402</td>
       <td>1279829</td>
       <td>253843</td>
-      <td>12369759</td>
+      <td>12369694</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin2</th>
       <td>73458</td>
-      <td>83097</td>
+      <td>83023</td>
       <td>83012</td>
       <td>17154</td>
-      <td>790241</td>
+      <td>790315</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin3</th>
       <td>134284</td>
-      <td>129530</td>
+      <td>130652</td>
       <td>152216</td>
       <td>29668</td>
-      <td>1452462</td>
+      <td>1451340</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin4</th>
       <td>26973</td>
-      <td>30747</td>
+      <td>31067</td>
       <td>28653</td>
       <td>6630</td>
-      <td>274905</td>
+      <td>274585</td>
     </tr>
     <tr>
       <th rowspan="68" valign="top">lib2</th>
       <th>SortSeq_bin1</th>
       <td>939431</td>
-      <td>4027329</td>
+      <td>4031189</td>
       <td>2317300</td>
       <td>478426</td>
-      <td>21174145</td>
+      <td>21170285</td>
     </tr>
     <tr>
       <th>SortSeq_bin2</th>
       <td>425911</td>
-      <td>949701</td>
+      <td>952092</td>
       <td>1071412</td>
       <td>217151</td>
-      <td>10536739</td>
+      <td>10534348</td>
     </tr>
     <tr>
       <th>SortSeq_bin3</th>
       <td>395887</td>
-      <td>872110</td>
+      <td>874634</td>
       <td>985042</td>
       <td>198148</td>
-      <td>9750824</td>
+      <td>9748300</td>
     </tr>
     <tr>
       <th>SortSeq_bin4</th>
       <td>395822</td>
-      <td>890838</td>
+      <td>898642</td>
       <td>968900</td>
       <td>192660</td>
-      <td>9681000</td>
+      <td>9673196</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin1</th>
       <td>117390</td>
-      <td>239572</td>
+      <td>240786</td>
       <td>286088</td>
       <td>68200</td>
-      <td>2891437</td>
+      <td>2890223</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin2</th>
       <td>52715</td>
-      <td>109431</td>
+      <td>109567</td>
       <td>126721</td>
       <td>39998</td>
-      <td>1298639</td>
+      <td>1298503</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin3</th>
       <td>78301</td>
-      <td>168484</td>
+      <td>168259</td>
       <td>194403</td>
       <td>37643</td>
-      <td>1955382</td>
+      <td>1955607</td>
     </tr>
     <tr>
       <th>TiteSeq_01_bin4</th>
       <td>360472</td>
-      <td>792671</td>
+      <td>798982</td>
       <td>908696</td>
       <td>167806</td>
-      <td>8899435</td>
+      <td>8893124</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin1</th>
       <td>104277</td>
-      <td>214873</td>
+      <td>216073</td>
       <td>258232</td>
       <td>66285</td>
-      <td>2593390</td>
+      <td>2592190</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin2</th>
       <td>49904</td>
-      <td>99806</td>
+      <td>100231</td>
       <td>122529</td>
       <td>32274</td>
-      <td>1177184</td>
+      <td>1176759</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin3</th>
       <td>73704</td>
-      <td>158538</td>
+      <td>157860</td>
       <td>183496</td>
       <td>37412</td>
-      <td>1851049</td>
+      <td>1851727</td>
     </tr>
     <tr>
       <th>TiteSeq_02_bin4</th>
       <td>301750</td>
-      <td>673386</td>
+      <td>678824</td>
       <td>742427</td>
       <td>160181</td>
-      <td>7560020</td>
+      <td>7554582</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin1</th>
       <td>107621</td>
-      <td>221028</td>
+      <td>221787</td>
       <td>277124</td>
       <td>64585</td>
-      <td>2697248</td>
+      <td>2696489</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin2</th>
       <td>49838</td>
-      <td>105990</td>
+      <td>106978</td>
       <td>122923</td>
       <td>27236</td>
-      <td>1257107</td>
+      <td>1256119</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin3</th>
       <td>85052</td>
-      <td>178302</td>
+      <td>177033</td>
       <td>210010</td>
       <td>42821</td>
-      <td>2050845</td>
+      <td>2052114</td>
     </tr>
     <tr>
       <th>TiteSeq_03_bin4</th>
       <td>332781</td>
-      <td>726928</td>
+      <td>733462</td>
       <td>813183</td>
       <td>169318</td>
-      <td>8090705</td>
+      <td>8084171</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin1</th>
       <td>124766</td>
-      <td>247888</td>
+      <td>249574</td>
       <td>299679</td>
       <td>69283</td>
-      <td>3033284</td>
+      <td>3031598</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin2</th>
       <td>49183</td>
-      <td>105055</td>
+      <td>105868</td>
       <td>121843</td>
       <td>26286</td>
-      <td>1221633</td>
+      <td>1220820</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin3</th>
@@ -2527,354 +2527,354 @@ display(HTML(fates
     <tr>
       <th>TiteSeq_04_bin4</th>
       <td>294911</td>
-      <td>659127</td>
+      <td>664313</td>
       <td>748761</td>
       <td>138151</td>
-      <td>7348458</td>
+      <td>7343272</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin1</th>
       <td>147164</td>
-      <td>300971</td>
+      <td>302515</td>
       <td>359089</td>
       <td>76518</td>
-      <td>3642761</td>
+      <td>3641217</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin2</th>
       <td>44908</td>
-      <td>95947</td>
+      <td>96641</td>
       <td>107778</td>
       <td>24127</td>
-      <td>1085963</td>
+      <td>1085269</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin3</th>
       <td>74746</td>
-      <td>160362</td>
+      <td>159590</td>
       <td>182116</td>
       <td>41460</td>
-      <td>1868218</td>
+      <td>1868990</td>
     </tr>
     <tr>
       <th>TiteSeq_05_bin4</th>
       <td>315787</td>
-      <td>703478</td>
+      <td>709814</td>
       <td>793893</td>
       <td>162522</td>
-      <td>8008668</td>
+      <td>8002332</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin1</th>
       <td>160247</td>
-      <td>333464</td>
+      <td>334950</td>
       <td>399423</td>
       <td>85170</td>
-      <td>4018995</td>
+      <td>4017509</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin2</th>
       <td>52565</td>
-      <td>117908</td>
+      <td>118178</td>
       <td>126153</td>
       <td>25123</td>
-      <td>1259500</td>
+      <td>1259230</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin3</th>
       <td>97821</td>
-      <td>208349</td>
+      <td>208098</td>
       <td>233527</td>
       <td>41622</td>
-      <td>2391610</td>
+      <td>2391861</td>
     </tr>
     <tr>
       <th>TiteSeq_06_bin4</th>
       <td>308284</td>
-      <td>686651</td>
+      <td>691786</td>
       <td>773538</td>
       <td>156772</td>
-      <td>7739948</td>
+      <td>7734813</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin1</th>
       <td>194244</td>
-      <td>392529</td>
+      <td>393612</td>
       <td>472471</td>
       <td>99218</td>
-      <td>4704031</td>
+      <td>4702948</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin2</th>
       <td>52326</td>
-      <td>116242</td>
+      <td>116591</td>
       <td>127321</td>
       <td>24333</td>
-      <td>1264969</td>
+      <td>1264620</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin3</th>
       <td>94985</td>
-      <td>198351</td>
+      <td>198927</td>
       <td>238033</td>
       <td>42824</td>
-      <td>2409696</td>
+      <td>2409120</td>
     </tr>
     <tr>
       <th>TiteSeq_07_bin4</th>
       <td>462266</td>
-      <td>1027066</td>
+      <td>1034529</td>
       <td>1143046</td>
       <td>221380</td>
-      <td>11568091</td>
+      <td>11560628</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin1</th>
       <td>213007</td>
-      <td>464126</td>
+      <td>465389</td>
       <td>539457</td>
       <td>111945</td>
-      <td>5530140</td>
+      <td>5528877</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin2</th>
       <td>69858</td>
-      <td>142979</td>
+      <td>143615</td>
       <td>166406</td>
       <td>34146</td>
-      <td>1677532</td>
+      <td>1676896</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin3</th>
       <td>108385</td>
-      <td>235176</td>
+      <td>236180</td>
       <td>269558</td>
       <td>53212</td>
-      <td>2725534</td>
+      <td>2724530</td>
     </tr>
     <tr>
       <th>TiteSeq_08_bin4</th>
       <td>216238</td>
-      <td>481652</td>
+      <td>485978</td>
       <td>542942</td>
       <td>107967</td>
-      <td>5499905</td>
+      <td>5495579</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin1</th>
       <td>256557</td>
-      <td>540916</td>
+      <td>542537</td>
       <td>624923</td>
       <td>133753</td>
-      <td>6313047</td>
+      <td>6311426</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin2</th>
       <td>95478</td>
-      <td>194763</td>
+      <td>194541</td>
       <td>234969</td>
       <td>47184</td>
-      <td>2332226</td>
+      <td>2332448</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin3</th>
       <td>179993</td>
-      <td>399146</td>
+      <td>401720</td>
       <td>436091</td>
       <td>91279</td>
-      <td>4416826</td>
+      <td>4414252</td>
     </tr>
     <tr>
       <th>TiteSeq_09_bin4</th>
       <td>114639</td>
-      <td>247659</td>
+      <td>250435</td>
       <td>289076</td>
       <td>56223</td>
-      <td>2839859</td>
+      <td>2837083</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin1</th>
       <td>348721</td>
-      <td>726885</td>
+      <td>729809</td>
       <td>862388</td>
       <td>171248</td>
-      <td>8526074</td>
+      <td>8523150</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin2</th>
       <td>149306</td>
-      <td>328321</td>
+      <td>329905</td>
       <td>373681</td>
       <td>72432</td>
-      <td>3689526</td>
+      <td>3687942</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin3</th>
       <td>161087</td>
-      <td>351469</td>
+      <td>355956</td>
       <td>404698</td>
       <td>78560</td>
-      <td>4062087</td>
+      <td>4057600</td>
     </tr>
     <tr>
       <th>TiteSeq_10_bin4</th>
       <td>8010</td>
-      <td>17797</td>
+      <td>18123</td>
       <td>19589</td>
       <td>3829</td>
-      <td>196117</td>
+      <td>195791</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin1</th>
       <td>363214</td>
-      <td>756785</td>
+      <td>758845</td>
       <td>900043</td>
       <td>176714</td>
-      <td>8954965</td>
+      <td>8952905</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin2</th>
       <td>173629</td>
-      <td>374241</td>
+      <td>377209</td>
       <td>424662</td>
       <td>84837</td>
-      <td>4286508</td>
+      <td>4283540</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin3</th>
       <td>21292</td>
-      <td>48033</td>
+      <td>48469</td>
       <td>52690</td>
       <td>11038</td>
-      <td>540744</td>
+      <td>540308</td>
     </tr>
     <tr>
       <th>TiteSeq_11_bin4</th>
       <td>20071</td>
-      <td>38522</td>
+      <td>33682</td>
       <td>50307</td>
       <td>10913</td>
-      <td>495474</td>
+      <td>500314</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin1</th>
       <td>533751</td>
-      <td>1124839</td>
+      <td>1127904</td>
       <td>1321534</td>
       <td>264638</td>
-      <td>13132222</td>
+      <td>13129157</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin2</th>
       <td>148520</td>
-      <td>340562</td>
+      <td>343551</td>
       <td>380409</td>
       <td>80647</td>
-      <td>3908472</td>
+      <td>3905483</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin3</th>
       <td>76583</td>
-      <td>162672</td>
+      <td>163253</td>
       <td>189811</td>
       <td>34082</td>
-      <td>1933949</td>
+      <td>1933368</td>
     </tr>
     <tr>
       <th>TiteSeq_12_bin4</th>
       <td>24482</td>
-      <td>53095</td>
+      <td>57799</td>
       <td>61567</td>
       <td>12824</td>
-      <td>629875</td>
+      <td>625171</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin1</th>
       <td>571104</td>
-      <td>1228804</td>
+      <td>1233749</td>
       <td>1400493</td>
       <td>287259</td>
-      <td>14192969</td>
+      <td>14188024</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin2</th>
       <td>82567</td>
-      <td>180546</td>
+      <td>182114</td>
       <td>205057</td>
       <td>42633</td>
-      <td>2057654</td>
+      <td>2056086</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin3</th>
       <td>60881</td>
-      <td>142225</td>
+      <td>142728</td>
       <td>147827</td>
       <td>33482</td>
-      <td>1452148</td>
+      <td>1451645</td>
     </tr>
     <tr>
       <th>TiteSeq_13_bin4</th>
       <td>20805</td>
-      <td>42495</td>
+      <td>48992</td>
       <td>49723</td>
       <td>20826</td>
-      <td>506916</td>
+      <td>500419</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin1</th>
       <td>403418</td>
-      <td>878010</td>
+      <td>882397</td>
       <td>1028022</td>
       <td>198432</td>
-      <td>10175943</td>
+      <td>10171556</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin2</th>
       <td>45821</td>
-      <td>98622</td>
+      <td>99094</td>
       <td>115065</td>
       <td>25713</td>
-      <td>1132677</td>
+      <td>1132205</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin3</th>
       <td>53711</td>
-      <td>147375</td>
+      <td>145555</td>
       <td>139244</td>
       <td>30359</td>
-      <td>1343688</td>
+      <td>1345508</td>
     </tr>
     <tr>
       <th>TiteSeq_14_bin4</th>
       <td>5516</td>
-      <td>7248</td>
+      <td>7323</td>
       <td>12877</td>
       <td>9214</td>
-      <td>134009</td>
+      <td>133934</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin1</th>
       <td>523616</td>
-      <td>1136164</td>
+      <td>1142280</td>
       <td>1305346</td>
       <td>266661</td>
-      <td>13036558</td>
+      <td>13030442</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin2</th>
       <td>42631</td>
-      <td>93553</td>
+      <td>94072</td>
       <td>106319</td>
       <td>26090</td>
-      <td>1052901</td>
+      <td>1052382</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin3</th>
       <td>43673</td>
-      <td>94439</td>
+      <td>96550</td>
       <td>112206</td>
       <td>27036</td>
-      <td>1134265</td>
+      <td>1132154</td>
     </tr>
     <tr>
       <th>TiteSeq_15_bin4</th>
@@ -2887,34 +2887,34 @@ display(HTML(fates
     <tr>
       <th>TiteSeq_16_bin1</th>
       <td>551301</td>
-      <td>1190548</td>
+      <td>1197974</td>
       <td>1345310</td>
       <td>268847</td>
-      <td>13710030</td>
+      <td>13702604</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin2</th>
       <td>40816</td>
-      <td>90159</td>
+      <td>90957</td>
       <td>102926</td>
       <td>21442</td>
-      <td>1026435</td>
+      <td>1025637</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin3</th>
       <td>83403</td>
-      <td>176518</td>
+      <td>176836</td>
       <td>206767</td>
       <td>35261</td>
-      <td>2048071</td>
+      <td>2047753</td>
     </tr>
     <tr>
       <th>TiteSeq_16_bin4</th>
       <td>22230</td>
-      <td>54692</td>
+      <td>55647</td>
       <td>54124</td>
       <td>21181</td>
-      <td>541916</td>
+      <td>540961</td>
     </tr>
   </tbody>
 </table>
