@@ -1,4 +1,4 @@
-name: null
+name: SARS-CoV-2-RBD_DMS
 channels:
   - salilab
   - bioconda
