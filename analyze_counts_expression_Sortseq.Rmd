@@ -34,7 +34,7 @@ if(!file.exists(config$expression_sortseq_dir)){
 ```
 ## Setup
 First, we will read in metadata on our sort samples and the table giving number of reads of each barcode in each of the sort bins, convert from Illumina read counts to estimates of the number of cells that were sorted into a bin, and add some other useful information to our counts data. Note: we are loading our per-barcode counts in as a `data.table` object, which improves speed by vectorizing many typical dataframe operations and automatically parallelizing when possible, and has more streamlined slicing and dicing operators without requiring all of the same `$` and `""` syntax typically needed in a `data.frame`. Many ways of slicing a typical `data.frame` will not work with the `data.table`, so check out guides on `data.table` if you're going to dig in yourself!
-```{r input data}
+```{r input_data}
 #read dataframe with list of barcode runs
 barcode_runs <- read.csv(file=config$barcode_runs,stringsAsFactors=F); barcode_runs <- subset(barcode_runs, select=-c(R1))
 
@@ -74,7 +74,7 @@ counts_lib2 <- dcast(counts[library=="lib2",], barcode + variant_call_support + 
 ```
 ## Calculating mean fluorescence
 Next, for each barcode, calculate its mean fluorescence as an indicator of RBD expression level. We will use a maximum likelihood approach to determine the mean and standard deviation of fluorescence for a barcode, given its distribution of cell counts across sort bins, and the known fluorescence boundaries of those sort bins from the sorting log. The package `fitdistcens` enables this ML estimation for these type of *censored* observations, where we know we observed a cell within some fluorescence interval but do not know the exact fluorescence value attributed to that observation.
-```{r calculate meanF, error=FALSE, message=FALSE, warning=FALSE, results=F}
+```{r calculate_meanF, error=FALSE, message=FALSE, warning=FALSE, results=F}
 #define function to calculate ML meanF
 calc.MLmean <- function(b1,b2,b3,b4,min.b1,min.b2,min.b3,min.b4,max.b4,min.count=1){ #b1-4 gives observed cell counts in bins 1-4; remaining arguments give fluorescence boundaries of the respective bins; min.count gives minimum number of total observations needed across bins in order to calculate meanF (default 1)
   data <- data.frame(left=c(rep(min.b1,round(b1)),rep(min.b2,round(b2)),rep(min.b3,round(b3)),rep(min.b4,round(b4))),
@@ -92,7 +92,7 @@ invisible(counts_lib1[,c("ML_meanF","ML_sdF") := tryCatch(calc.MLmean(b1=lib1_So
                                                                       b3=lib1_SortSeq_bin3*20,b4=lib1_SortSeq_bin4*20,
                                                                       min.b1=log(20),min.b2=log(1791.5),min.b3=log(5845.5),
                                                                       min.b4=log(16877.5),max.b4=log(200000)),
-                                                          error=function(e){}),by=barcode])
+                                                          error=function(e){return(list(as.numeric(NA),as.numeric(NA)))}),by=barcode])
 counts_lib1[,total_count := sum(lib1_SortSeq_bin1,lib1_SortSeq_bin2,lib1_SortSeq_bin3,lib1_SortSeq_bin4),by=barcode]
 
 #save temp data file for downstream troubleshooting since the ML meanF took >1hr to calculate -- don't use these for final anlaysis though for reproducibility!
@@ -102,7 +102,7 @@ invisible(counts_lib2[,c("ML_meanF","ML_sdF") := tryCatch(calc.MLmean(b1=lib2_So
                                                                       b3=lib2_SortSeq_bin3*20,b4=lib2_SortSeq_bin4*20,
                                                                       min.b1=log(20),min.b2=log(1790.5),min.b3=log(5401.5),
                                                                       min.b4=log(15597.5),max.b4=log(200000)),
-                                                          error=function(e){}),by=barcode])
+                                                          error=function(e){return(list(as.numeric(NA),as.numeric(NA)))}),by=barcode])
 counts_lib2[,total_count := sum(lib2_SortSeq_bin1,lib2_SortSeq_bin2,lib2_SortSeq_bin3,lib2_SortSeq_bin4),by=barcode]
 
 #save temp data file for downstream troubleshooting since the ML meanF took >1hr to calculate -- don't use these for final anlaysis though for reproducibility!
@@ -116,7 +116,7 @@ save(counts_lib2,file=paste(config$expression_sortseq_dir,"/dt.temp.lib2.Rda",se
 
 Distibution of expression scores by variant class for each library
 
-```{r unfiltered expression distribution, echo=T, fig.width=13, fig.height=5, fig.align="center"}
+```{r unfiltered_expression_distribution, echo=T, fig.width=13, fig.height=5, fig.align="center", dpi=300}
 #histograms of lib1 and lib2, separating out by variant class and type
 par(mfrow=c(1,2))
 hist(counts_lib1[variant_class %in% (c("1 nonsynonymous",">1 nonsynonymous")),ML_meanF],col="gray40",main="lib1",breaks=50,xlab="ML mean fluorescence (a.u.)")
@@ -134,7 +134,7 @@ hist(counts_lib2[variant_class %in% (c("stop")),ML_meanF],col="#BE1E2D",add=T,br
 ```
 
 Distributon of cell counts across the four bins for each barcode
-```{r cell count coverage, echo=T, fig.width=13, fig.height=5, fig.align="center"}
+```{r cell_count_coverage, echo=T, fig.width=13, fig.height=5, fig.align="center", dpi=300}
 #histograms
 par(mfrow=c(1,2))
 hist(log10(counts_lib1$total_count+0.1),xlab="cell count (log10, plus 0.1 pseudocount)",main="lib1",col="gray50")
@@ -142,7 +142,7 @@ hist(log10(counts_lib2$total_count+0.1),xlab="cell count (log10, plus 0.1 pseudo
 ```
 
 Next, we want to generate estimates of variance in ML mean fluor measurements. We will use an empirical approach to assign variance estimates as a function of cell count (coverage), which is likely the dominant factor determinig precision of a mean fluor estimate. We have replicate measurements of WT/synonymous variants in the library across a range of `total_count` values. We bin WT/synonymous barcodes within groupings of similar `total_count` values, giving us a sampling distribution of mean fluor across different levels of coverage, from which we can compute variances.
-```{r estimate variance, fig.width=8, fig.height=8,fig.align="center"}
+```{r estimate_variance, fig.width=8, fig.height=8,fig.align="center", dpi=300}
 #estimate variance as a function of cell counts using repeat WT distributions
 #I notice that a small number WT variants, even with high counts, have null-like meanFs. I don't think these are the "experimental noise" I want to capture in this analysis, but rather are genuinely nonexpressing variants -- probably with a mutation outside of the PacBio sequencing or some other phenomenon. I will exclude these for the purpose of estimating variance in the meanF estimates
 
@@ -191,7 +191,7 @@ fit_variance_v_count_lib2 <- lm(log(y1_lib2) ~ log(x1_lib2));summary(fit_varianc
 
 For each library measurement, assign it an estimated variance in the mean fluor estimate based on the empirical variance for the `total_count` bin to which a measurement belongs, based on the empirical relationship between log-variance and log-count. Censor all measurements for fewer than 5 cells, as that's when the estimated variance from the empirical fit begins to really take off. (This removes very few measurements.)
 
-```{r apply variance and minimum coverage}
+```{r apply_variance_and_minimum_coverage}
 #function to estimate variance from cell count given the fits above
 est.var <- function(count,fit){
   return(exp(as.numeric(fit$coefficients[1]) + as.numeric(fit$coefficients[2]) * log(count)))
@@ -213,7 +213,7 @@ print(paste("Generated meanF estimates for ",round(sum(!is.na(counts_filtered_li
 ```
 Final distribution of expression among retained barcodes.
 
-```{r filtered expression distribution, echo=T, fig.width=13, fig.height=5, fig.align="center"}
+```{r filtered_expression_distribution, echo=T, fig.width=13, fig.height=5, fig.align="center", dpi=300}
 #histograms of lib1 and lib2, separating out by variant class and type
 par(mfrow=c(1,2))
 hist(counts_filtered_lib1[variant_class %in% (c("1 nonsynonymous",">1 nonsynonymous")),ML_meanF],col="gray40",breaks=50,xlab="ML mean fluorescence (a.u.)",main="lib1")
@@ -234,7 +234,7 @@ invisible(dev.print(pdf, paste(config$expression_sortseq_dir,"/hist_ML-meanF-per
 
 Output `.csv` of final meanF results for reading into global epistasis models.
 
-```{r output data}
+```{r output_data}
 counts_filtered_lib1[,library:="lib1"]
 counts_filtered_lib2[,library:="lib2"]
 
