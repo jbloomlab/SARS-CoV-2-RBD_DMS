@@ -116,7 +116,7 @@ invisible(counts_lib1[,c("ML_meanF","ML_sdF") := tryCatch(calc.MLmean(b1=lib1_So
                                                                       b3=lib1_SortSeq_bin3*20,b4=lib1_SortSeq_bin4*20,
                                                                       min.b1=log(20),min.b2=log(1791.5),min.b3=log(5845.5),
                                                                       min.b4=log(16877.5),max.b4=log(200000)),
-                                                          error=function(e){}),by=barcode])
+                                                          error=function(e){return(list(as.numeric(NA),as.numeric(NA)))}),by=barcode])
 counts_lib1[,total_count := sum(lib1_SortSeq_bin1,lib1_SortSeq_bin2,lib1_SortSeq_bin3,lib1_SortSeq_bin4),by=barcode]
 
 #save temp data file for downstream troubleshooting since the ML meanF took >1hr to calculate -- don't use these for final anlaysis though for reproducibility!
@@ -126,7 +126,7 @@ invisible(counts_lib2[,c("ML_meanF","ML_sdF") := tryCatch(calc.MLmean(b1=lib2_So
                                                                       b3=lib2_SortSeq_bin3*20,b4=lib2_SortSeq_bin4*20,
                                                                       min.b1=log(20),min.b2=log(1790.5),min.b3=log(5401.5),
                                                                       min.b4=log(15597.5),max.b4=log(200000)),
-                                                          error=function(e){}),by=barcode])
+                                                          error=function(e){return(list(as.numeric(NA),as.numeric(NA)))}),by=barcode])
 counts_lib2[,total_count := sum(lib2_SortSeq_bin1,lib2_SortSeq_bin2,lib2_SortSeq_bin3,lib2_SortSeq_bin4),by=barcode]
 
 #save temp data file for downstream troubleshooting since the ML meanF took >1hr to calculate -- don't use these for final anlaysis though for reproducibility!
@@ -154,7 +154,7 @@ hist(counts_lib2[target != "SARS-CoV-2",ML_meanF],col="#2E3192",add=T,breaks=50)
 hist(counts_lib2[variant_class %in% (c("stop")),ML_meanF],col="#BE1E2D",add=T,breaks=50)
 ```
 
-<img src="results/summary/analyze_counts_expression_Sortseq_files/unfiltered expression distribution-1.svg" style="display: block; margin: auto;" />
+<img src="results/summary/analyze_counts_expression_Sortseq_files/unfiltered_expression_distribution-1.svg" style="display: block; margin: auto;" />
 
 ``` r
 #violin plot, and break out by the different targets?
@@ -169,7 +169,7 @@ hist(log10(counts_lib1$total_count+0.1),xlab="cell count (log10, plus 0.1 pseudo
 hist(log10(counts_lib2$total_count+0.1),xlab="cell count (log10, plus 0.1 pseudocount)",main="lib2",col="gray50")
 ```
 
-<img src="results/summary/analyze_counts_expression_Sortseq_files/cell count coverage-1.svg" style="display: block; margin: auto;" />
+<img src="results/summary/analyze_counts_expression_Sortseq_files/cell_count_coverage-1.svg" style="display: block; margin: auto;" />
 
 Next, we want to generate estimates of variance in ML mean fluor
 measurements. We will use an empirical approach to assign variance
@@ -268,7 +268,7 @@ fit_variance_v_count_lib2 <- lm(log(y1_lib2) ~ log(x1_lib2));summary(fit_varianc
     ## Multiple R-squared:  0.8135, Adjusted R-squared:  0.8068 
     ## F-statistic: 122.1 on 1 and 28 DF,  p-value: 1.013e-11
 
-<img src="results/summary/analyze_counts_expression_Sortseq_files/estimate variance-1.svg" style="display: block; margin: auto;" />
+<img src="results/summary/analyze_counts_expression_Sortseq_files/estimate_variance-1.svg" style="display: block; margin: auto;" />
 
 For each library measurement, assign it an estimated variance in the
 mean fluor estimate based on the empirical variance for the
@@ -320,7 +320,7 @@ hist(counts_filtered_lib2[target != "SARS-CoV-2",ML_meanF],col="#2E3192",add=T,b
 hist(counts_filtered_lib2[variant_class %in% (c("stop")),ML_meanF],col="#BE1E2D",add=T,breaks=50)
 ```
 
-<img src="results/summary/analyze_counts_expression_Sortseq_files/filtered expression distribution-1.svg" style="display: block; margin: auto;" />
+<img src="results/summary/analyze_counts_expression_Sortseq_files/filtered_expression_distribution-1.svg" style="display: block; margin: auto;" />
 
 ``` r
 invisible(dev.print(pdf, paste(config$expression_sortseq_dir,"/hist_ML-meanF-per-barcode.pdf",sep="")))
