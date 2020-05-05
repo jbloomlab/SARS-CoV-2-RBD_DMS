@@ -2,7 +2,9 @@
 title: "Compute per-barcode expression functional score"
 author: "Tyler Starr"
 date: "4/30/2020"
-output: github_document
+output:
+  github_document:
+    html_preview: false
 editor_options: 
   chunk_output_type: inline
 ---
@@ -11,8 +13,6 @@ This notebook reads in per-barcode counts from `count_variants.ipynb` for expres
 ```{r setup, message=FALSE, warning=FALSE, error=FALSE}
 require("knitr")
 knitr::opts_chunk$set(echo = T)
-#set output fig path for github rendering
-knitr::opts_chunk$set(fig.path = "results/summary/compute_expression_meanF_files/")
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load

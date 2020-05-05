@@ -100,10 +100,15 @@ rule compute_Titeseq_Kds:
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
-        nb='compute_binding_Kd.Rmd'
+        nb='compute_binding_Kd.Rmd',
+        md='compute_binding_Kd.md',
+        md_files='compute_binding_Kd_files/',
+        output_dir='results/summary/'
     shell:
         """
-        R -e \"rmarkdown::render(input=\"{params.nb}\", output_file=\"{output.nb_markdown}\")\"
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {params.output_dir};
+        mv {params.md_files} {params.output_dir}
         """
 
 rule compute_expression_meanFs:
@@ -116,10 +121,15 @@ rule compute_expression_meanFs:
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
-        nb='compute_expression_meanF.Rmd'
+        nb='compute_expression_meanF.Rmd',
+        md='compute_expression_meanF.md',
+        md_files='compute_expression_meanF_files/',
+        output_dir='results/summary/'
     shell:
         """
-        R -e \"rmarkdown::render(input=\"compute_expression_meanF.Rmd\", output_file=\"results/summary/compute_expression_meanF.md\")\"
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {params.output_dir};
+        mv {params.md_files} {params.output_dir}
         """
 
 
