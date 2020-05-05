@@ -2,22 +2,22 @@
 title: "Compute per-barcode binding functional score"
 author: "Tyler Starr"
 date: "5/1/2020"
-output: rmarkdown::github_document
+output: github_document
 editor_options: 
   chunk_output_type: inline
 ---
 
 This notebook reads in per-barcode counts from `count_variants.ipynb` for ACE2-binding Tite-seq experiments, computes functional scores for RBD ACE2-binding affiniity, and does some basic QC on variant binding functional scores.
 
-
 ```{r setup, message=FALSE, warning=FALSE, error=FALSE}
 require("knitr")
 knitr::opts_chunk$set(echo = T)
 #set output fig path for github rendering
-knitr::opts_chunk$set(fig.path = "results/summary/analyze_counts_binding_Titeseq_files/")
+knitr::opts_chunk$set(fig.path = "results/summary/compute_binding_Kd_files/")
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse","Hmisc")
+packages = c("yaml","data.table","tidyverse","Hmisc","gridExtra")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -34,6 +34,11 @@ if(!file.exists(config$Titeseq_Kds_dir)){
   dir.create(file.path(config$Titeseq_Kds_dir))
 }
 ```
+Session info for reproducing environment:
+```{r print_sessionInfo}
+sessionInfo()
+```
+
 ## Setup
 First, we will read in metadata on our sort samples and the table giving number of reads of each barcode in each of the sort bins, convert from Illumina read counts to estimates of the number of cells that were sorted into a bin, and add some other useful information to our counts data. 
 
@@ -118,7 +123,7 @@ We will use an empirical approach to assign variance estimates as a function of 
 
 Then, for each library meanbin measurement, we will assign it a variance based on the empirical variance estimate for the given `totalcount` of cells sampled for that barcode at that concentration.
 
-```{r estimate_variance_lib1, fig.width=8, fig.height=4.5,fig.align="center",dpi=300}
+```{r estimate_variance_lib1, fig.width=7.5, fig.height=4,fig.align="center",dpi=300,dev="png"}
 #want to fit titration curve as weighted least squares -- need an estimate of variance. Will use repeated observations of wildtype across different count depths at the s10 concentration (~Kd) to generate these estimated variances?
 wt_lib1 <- counts_lib1[variant_class %in% c("synonymous","wildtype") & !is.na(TiteSeq_10_meanbin) ,]
 #mean(wt_lib1[TiteSeq_10_totalcount>10,TiteSeq_10_meanbin],na.rm=T) #for chocie of sample 10
@@ -143,7 +148,7 @@ plot(log(x_lib1),log(y_lib1),xlab="log(number cells)",ylab="log(variance in mean
 wt.fit_lib1 <- lm(log(y_lib1) ~ log(x_lib1));summary(wt.fit_lib1);abline(wt.fit_lib1)
 ```
 
-```{r estimate_variance_lib2, fig.width=8, fig.height=4.5,fig.align="center",dpi=300}
+```{r estimate_variance_lib2, fig.width=7.5, fig.height=4,fig.align="center",dpi=300,dev="png"}
 #repeat for lib2
 par(mfrow=c(1,2))
 wt_lib2 <- counts_lib2[variant_class %in% c("synonymous","wildtype") & !is.na(TiteSeq_11_meanbin) ,]
@@ -281,14 +286,14 @@ counts_lib2[,c("Kd","Kd_SE","response","baseline","RSE","fit") := tryCatch(fit.t
 
 counts_lib2_unfiltered <- copy(counts_lib2) #copy unfiltered data frame, since we'll be filtering some observations downstream
 ```
-## QC, sanity checks, and filtering for quality titration curves
-We will do some QC to make sure we got good titration curves for most of our library barcodes. We will also spot check titration curves at different boundary conditions from the fitting process, and finally we will filter out titration curves that aren't up to snuff.
+## QC and sanity checks
+We will do some QC to make sure we got good titration curves for most of our library barcodes. We will also spot check titration curves from across our measurement range, and spot check curves whose fit parameters hit the different boundary conditions of the fit variables.
 
 We successfully generated *K*<sub>D,app</sub> estimates for `r sum(!is.na(counts_lib1$Kd))` of our lib1 barcodes (`r round(sum(!is.na(counts_lib1$Kd))/nrow(counts_lib1)*100,digits=2)`%) and `r sum(!is.na(counts_lib2$Kd))` of our lib2 barcodes (`r round(sum(!is.na(counts_lib2$Kd))/nrow(counts_lib2)*100,digits=2)`%). 
 
 Why were estimates not returned for some barcodes? The histograms below show that many barcodes with unsuccessful titration fits have lower average cell counts and more concentrations with fewer than the minimum cutoff number of cells (cutoff=`r cutoff`) than those that were fit. Therefore, we can see the the majority of unfit barcodes come from our minimum read cutoffs, meaning there weren't too many curves that failed to be fit for issues such as nls convergence.
 
-```{r avgcount, fig.width=10, fig.height=10, fig.align="center",dpi=300}
+```{r avgcount, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png"}
 par(mfrow=c(2,2))
 hist(log10(counts_lib1[!is.na(Kd),avgcount]+0.5),breaks=20,xlim=c(0,5),main="lib1",col="gray50",xlab="average cell count across concentration samples")
 hist(log10(counts_lib1[is.na(Kd),avgcount]+0.5),breaks=20,add=T,col="red")
@@ -306,9 +311,9 @@ hist(counts_lib2[is.na(Kd),min_cell_filtered],breaks=16,add=T,col="red")
 
 Let's checkout what the data looks like for some curves that didn't converge on a titration fit, particularly when having high cell counts. I define functions that take a row from one of the `counts_libX` data tables and plot the meanbin estimates and the fit titration curve (if converged). This allows for quick and easy troubleshooting and spot-checking of curves if the `counts_lib1` and `_lib2` data tables are loaded up in an interactive session.
 
-In the plots below for non-converging fits, we can see that the data seem to have very low plateaus/signal over the concentration range and perhaps some noise. I understand why they are difficult to fit, and I am not worried by their exclusion, as I can't by eye tell what their fit should be hitting.
+In the plots below for non-converging fits, we can see that the data seem to have very low plateaus/signal over the concentration range and perhaps some noise. I understand why they are difficult to fit, and I am not worried by their exclusion, as I can't by eye tell what their fit should be hitting. My best guess is they would have a "response" parameter lower than the minimum allowable, but that is also a hard Kd then to estimate reliably so I'm ok not fitting these relatively small number of curves.
 
-```{r check_failed_titrations, fig.align="center", fig.height=8, fig.width=7, dpi=300, message=FALSE, warning=FALSE}
+```{r check_failed_titrations, fig.align="center", fig.height=7.5, fig.width=7, dpi=300, message=FALSE, warning=FALSE,dev="png"}
 #make functions that allows me to plot a titration for any given row from the counts data frames, for spot checking curves
 plot.titration.lib1 <- function(row,output.text=F){
   y.vals <- c();for(sample in samples_lib1$sample){y.vals <- c(y.vals,paste(sample,"_meanbin",sep=""))};y.vals <- unlist(counts_lib1[row,y.vals,with=F])
@@ -353,7 +358,7 @@ plot.titration.lib2(which(counts_lib2$avgcount > 50 & is.na(counts_lib2$Kd))[2])
 
 Next, let's look at our distribution of *K*<sub>D,app</sub> estimates. We can see below that the distribution of wildtype barcodes (purple) is very tight. The homologs in the library (lumped together in blue) show an expected variation: some of the homologs have similar or very slightly reduced or enhanced affinity relative to WT SARS-CoV-2, one shows an intermediate level of binding (RaTG13), and the clade2 genotypes show no binding. The mutant genotypes of SARS-CoV-2 span the spectrum here, with the large bar at 10<sup>-4</sup> reflecting barocdes that had no response even at the highest concentration and thus were assigned the highest allowable value per the fitting constraints.
 
-```{r Kd_distribution, fig.width=10, fig.height=5, fig.align="center",dpi=300}
+```{r Kd_distribution, fig.width=10, fig.height=5, fig.align="center",dpi=300,dev="png"}
 par(mfrow=c(1,2))
 hist(log10(counts_lib1[variant_class %in% (c("1 nonsynonymous",">1 nonsynonymous")),Kd]),col="gray40",breaks=60,xlab="log10(K_D,app) (M)",main="lib1")
 hist(log10(counts_lib1[variant_class %in% (c("synonymous","wildtype")),Kd]),col="#92278F",add=T,breaks=20)
@@ -372,7 +377,7 @@ Let's take a look at some of the curves with *K*<sub>D,app</sub> values across t
 
 First, curves with *K*<sub>D,app</sub> fixed at the 10<sup>-4</sup> maximum. We can see these are all flat-lined curves with no response.
 
-```{r 1e-4_Kd, fig.width=8, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-4_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd==max(counts_lib1$Kd,na.rm=T))[1])
 plot.titration.lib2(which(counts_lib2$Kd==max(counts_lib2$Kd,na.rm=T))[1])
@@ -380,7 +385,7 @@ plot.titration.lib2(which(counts_lib2$Kd==max(counts_lib2$Kd,na.rm=T))[1])
 
 Next, with *K*<sub>D,app</sub> around 10<sup>-5</sup>. These 10<sup>-5</sup> curves are honestly probably not any different than those censored to 10<sup>-4</sup> -- the curve just decides to begin to turn right at the end, perhaps sometimes with genuine signal but perhaps often because of noise.
 
-```{r 1e-5_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-5_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-5 & counts_lib1$Kd < 1.2e-5)[1])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-5 & counts_lib2$Kd < 1.2e-5)[1])
@@ -388,7 +393,7 @@ plot.titration.lib2(which(counts_lib2$Kd > 1e-5 & counts_lib2$Kd < 1.2e-5)[1])
 
 Next, with *K*<sub>D,app</sub> around 10<sup>-6</sup>. These 10<sup>-6</sup> curves are similar to the 10<sup>-5</sup>, though perhaps a bit more belieivable that the curve is bending at the highest concentration. Overall, I think that differences in *K*<sub>D,app</sub> within this large mode in the distribution of all variant *K*<sub>D,app</sub>s probably isn't reporting on much meaningful variation.
 
-```{r 1e-6_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-6_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-6 & counts_lib1$Kd < 1.2e-6)[1])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-6 & counts_lib2$Kd < 1.2e-6)[1])
@@ -396,7 +401,7 @@ plot.titration.lib2(which(counts_lib2$Kd > 1e-6 & counts_lib2$Kd < 1.2e-6)[1])
 
 With *K*<sub>D,app</sub> around 10<sup>-7</sup>, we seem to be picking up more consistent signals. Many of these curves still are showing noise, but not as consistently as the prior curves. (Cherry picked an example below which is not the [1] index example -- this is just to show that some of the curves I spot-checked aren't half bad. But this is not representative of all spot-checks.)
 
-```{r 1e-7_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-7_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-7 & counts_lib1$Kd < 1.2e-7)[2])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-7 & counts_lib2$Kd < 1.2e-7)[1])
@@ -404,7 +409,7 @@ plot.titration.lib2(which(counts_lib2$Kd > 1e-7 & counts_lib2$Kd < 1.2e-7)[1])
 
 At *K*<sub>D,app</sub> of 10<sup>-8</sup>, we are likewise picking up some signal but also many curves with lots of noise.
 
-```{r 1e-8_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-8_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-8 & counts_lib1$Kd < 1.2e-8)[3])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-8 & counts_lib2$Kd < 1.2e-8)[1])
@@ -412,7 +417,7 @@ plot.titration.lib2(which(counts_lib2$Kd > 1e-8 & counts_lib2$Kd < 1.2e-8)[1])
 
 At *K*<sub>D,app</sub> of 10<sup>-9</sup>, now we are starting to get more consistent, genuine signal, with the curves looking *much* better.
 
-```{r 1e-9_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-9_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-9 & counts_lib1$Kd < 1.2e-9)[1])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-9 & counts_lib2$Kd < 1.2e-9)[1])
@@ -420,7 +425,7 @@ plot.titration.lib2(which(counts_lib2$Kd > 1e-9 & counts_lib2$Kd < 1.2e-9)[1])
 
 At *K*<sub>D,app</sub> of 10<sup>-10</sup>, curves are looking beautiful.
 
-```{r 1e-10_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-10_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-10 & counts_lib1$Kd < 1.2e-10)[1])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-10 & counts_lib2$Kd < 1.2e-10)[1])
@@ -428,15 +433,15 @@ plot.titration.lib2(which(counts_lib2$Kd > 1e-10 & counts_lib2$Kd < 1.2e-10)[1])
 
 As do curves with *K*<sub>D,app</sub> ~ 10<sup>-11</sup>.
 
-```{r 1e-11_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-11_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd > 1e-11 & counts_lib1$Kd < 1.2e-11)[1])
 plot.titration.lib2(which(counts_lib2$Kd > 1e-11 & counts_lib2$Kd < 1.2e-11)[1])
 ```
 
-Now, as we get to the other side of the bulk of the distribution, for curves showing improved affinities around *K*<sub>D,app</sub> of 10<sup>-12</sup>, we are once again seeing mainly noise, and in particular, curves with low cell counts, large number of missing meanbin samples, and correspondingly high residual standard error (RSE). This may be exacerbated in lib2, where we are currently missing sample 4 awaiting a redo on a PCR. This may explain the higher frequency (though still a small number) of barcodes in lib2 showing reconstructed *K*<sub>D,app</sub>s substantially lower than wildtype in the histograms above.
+Now, as we get to the other side of the bulk of the distribution, for curves showing improved affinities around *K*<sub>D,app</sub> of 10<sup>-12</sup>, we are once again seeing mainly noise, and in particular, curves with low cell counts, large number of missing meanbin samples, and correspondingly high residuals (so will liikely be eliminated with our filtering step later on). This may be exacerbated in lib2, where we are currently missing sample 4 awaiting a redo on a PCR. This may explain the higher frequency (though still a small number) of barcodes in lib2 showing reconstructed *K*<sub>D,app</sub> substantially lower than wildtype in the histograms above.
 
-```{r 1e-12_Kd, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r 1e-12_Kd, fig.width=8, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd < 5e-12)[1])
 plot.titration.lib2(which(counts_lib2$Kd < 1e-12)[1])
@@ -447,7 +452,7 @@ Next, let's spot check curves at the boundary conditions for the baseline and re
 
 The plots below show the histograms of the titration fit parameter corresponding to the titration baseline, followed by two example titrations that are fixed to the minimal, and then the maximal allowed value for this parameter. These curves aren't always mind-blowingly good, but at least the baseline fits don't seem egregious/divergent from the actual data due to the constrained parameter ranges.
 
-```{r spot_check_baseline, fig.width=6, fig.height=10, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+```{r spot_check_baseline, fig.width=6, fig.height=9.5, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(3,2))
 #first, histograms for the baseline fit parameter
 hist(counts_lib1$baseline,col="gray50",main="lib1",xlab="baseline fit parameter")
@@ -465,7 +470,8 @@ plot.titration.lib2(which(counts_lib2$baseline==1.5)[3])
 ```
 
 Similarly, the plots below show the histograms of the titration fit parameter corresponding to the titration response (the difference between the plateau and baseline), followed by two example titrations that are fixed to the minimal, and then the maximal allowed value for this parameter. Once again, these response calls don't seem egregious/divergent from the actual data.
-```{r spot_check_response, fig.width=6, fig.height=10, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+
+```{r spot_check_response, fig.width=6, fig.height=9.5, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
 par(mfrow=c(3,2))
 #next, histograms for the response fit parameter
 hist(counts_lib1$response,col="gray50",main="lib1",xlab="response fit parameter")
@@ -482,56 +488,247 @@ plot.titration.lib1(which(counts_lib1$response==3)[3])
 plot.titration.lib2(which(counts_lib2$response==3)[2])
 ```
 
-Next, let's look at the distribution of the residual standard error (RSE) from the curve fit. We can see that there is some relationship between fits with higher average cell counts having larger RSE, which probably stems from the count-based variability weights penalizing these high-count fits more heavily for variation.
+## Data filtering
 
+Next, let's compute a quality metric for each curve fit, and filter out poor fits from our final dataset for downstream analyses. For each curve fit, we will compute a *normalized* mean square residual (nMSR). This metric computes the residual between the observed response variable and that predicted from the titration fit, normalizes this residual by the response range of the titration fit (which is allowed to vary between 1.5 and 3 per the titration fits above), and computes the mean-square of these normalized residuals.
 
-```{r RSE_distribution, fig.width=8, fig.height=8, fig.align="center",dpi=300}
-par(mfrow=c(2,2))
-hist(counts_lib1$RSE,main="lib1",xlab="RSE",col="gray50",breaks=40)
-hist(counts_lib2$RSE,main="lib2",xlab="RSE",col="gray50",breaks=30)
+```{r calc_MSR}
+# #function to calculate mean squared residual
+# calc.MSR <- function(y.obs,x.vals,count.vals,fit,cfu.cutoff=cutoff){
+#   indices <- count.vals>cfu.cutoff
+#   y.obs <- y.obs[indices]
+#   x.vals <- x.vals[indices]
+#   y.pred <- predict(fit,newdata=list(x=x.vals))
+#   return(mean((y.obs - y.pred)^2))
+# }
 
-#see some trend between RSE and cell count -- because RSE takes the weights into account, a slight deviation with high cell coverage/weights seems to lead to higher RSE value.
-plot(log10(counts_lib1$avgcount),counts_lib1$RSE,pch=19,col="#00000050",main="lib1",xlab="average cell count (log10)",ylab="RSE",xlim=c(0,5))
-plot(log10(counts_lib2$avgcount),counts_lib2$RSE,pch=19,col="#00000050",main="lib2",xlab="average cell count (log10)",ylab="RSE",xlim=c(0,5))
+#function to calculate mean squared residual normalized to response range
+calc.nMSR <- function(y.obs,x.vals,count.vals,response,fit,cfu.cutoff=cutoff){
+  indices <- count.vals>cfu.cutoff
+  y.obs <- y.obs[indices]
+  x.vals <- x.vals[indices]
+  y.pred <- predict(fit,newdata=list(x=x.vals))
+  resid <- y.obs - y.pred
+  resid.norm <- resid/response
+  return(mean((resid.norm)^2))
+}
+# #calculate MSR for each fit
+# counts_lib1[!is.na(Kd), MSR := calc.MSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,TiteSeq_04_meanbin,
+#                                                 TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
+#                                                 TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
+#                                                 TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
+#                                         x.vals=samples_lib1$conc,
+#                                         count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
+#                                                      TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
+#                                                      TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
+#                                                      TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
+#                                         fit=fit[[1]]),by=barcode]
+# #lib2, excluding sample04 for now
+# counts_lib2[!is.na(Kd), MSR := calc.MSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,
+#                                                 TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
+#                                                 TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
+#                                                 TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
+#                                         x.vals=samples_lib2$conc[-4],
+#                                         count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
+#                                                      TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
+#                                                      TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
+#                                                      TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
+#                                         fit=fit[[1]]),by=barcode]
+#calculate normalized MSR for each fit
+counts_lib1[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,TiteSeq_04_meanbin,
+                                                TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
+                                                TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
+                                                TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
+                                        x.vals=samples_lib1$conc,
+                                        count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
+                                                     TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
+                                                     TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
+                                                     TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
+                                        response=response,
+                                        fit=fit[[1]]),by=barcode]
+#lib2, excluding sample04 for now
+counts_lib2[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,
+                                                TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
+                                                TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
+                                                TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
+                                        x.vals=samples_lib2$conc[-4],
+                                        count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
+                                                     TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
+                                                     TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
+                                                     TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
+                                        response=response,
+                                        fit=fit[[1]]),by=barcode]
 ```
 
-I'm not sure why I didn't see this trend (at least as strongly) in my Ab data, where I just used a 95%ile RSE cutoff to filter out the worst curve fits. It may be because I had higher overall empirical variance in those experiments, so the extremely low variance for high-count samples didn't cause such high up-weighting and therefore contribution to RSE.
 
-In this case, using an RSE cutoff would equally filter out the two following example titrations, which both have `avgcoung` > 500 and RSE around 2.5-2.75 -- though the first curve I would definitely want to keep in the dataset, whereas the second I would not. More generally, this observation suggests a simple RSE cutoff for filtering fits is not the wisest step with these data.
-
-
-```{r example_curves_filtered, fig.width=7.5, fig.height=5, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
-par(mfrow=c(1,2))
-plot.titration.lib1(which(counts_lib1$RSE > quantile(counts_lib1$RSE,probs=0.95,na.rm=T) & counts_lib1$avgcount > 500)[1])
-plot.titration.lib1(which(counts_lib1$RSE > quantile(counts_lib1$RSE,probs=0.95,na.rm=T) & counts_lib1$avgcount > 500)[2])
+```{r MSR_distribution, fig.width=6, fig.height=9, fig.align="center",dpi=300,dev="png",include=F}
+# par(mfrow=c(3,2))
+# hist(counts_lib1$MSR,main="lib1",xlab="Mean squared residual",col="gray50",breaks=40)
+# hist(counts_lib2$MSR,main="lib2",xlab="Mean squared residual",col="gray50",breaks=30)
+# 
+# #As we would expect, the MSR stat decreases with cell count, indicating that higher cell counts leads to better curve fits
+# plot(log10(counts_lib1$avgcount),counts_lib1$MSR,pch=19,col="#00000010",main="lib1",xlab="average cell count (log10)",ylab="MSR",xlim=c(0,5))
+# plot(log10(counts_lib2$avgcount),counts_lib2$MSR,pch=19,col="#00000010",main="lib2",xlab="average cell count (log10)",ylab="MSR",xlim=c(0,5))
+# 
+# #MSR is still higher for curves with lower Kd -- makes sense, becuase opportunity for residuals is higher when there is actual response, and therefore variation to have residuals on
+# plot(log10(counts_lib1$Kd),counts_lib1$MSR,pch=19,col="#00000010",main="lib1",xlab="Kd",ylab="MSR")
+# plot(log10(counts_lib2$Kd),counts_lib2$MSR,pch=19,col="#00000010",main="lib2",xlab="Kd",ylab="MSR")
 ```
-
-Some alternatives that come to mind instead a simple RSE filtering step could be:
-
-  1. Come up with some filtering scheme based on a combination of RSE and avgcount, or some other fit parameter (?). 
-  2. Don't filter any curves, and just let the global epistasis model "see it all"
-  3. Don't weight observations by empirical variance during the `nls` regression. We could possibly justify this by the fact that the average count for a barcode doesn't vary *that* substantially from concentration to concentration, thus assumptions of homoscedasticity might not be too egregiously violated.
-  4. Only weight observations below some empirical variance cutoff. For instance, in the empirical variance versus number cells plots above for binned WT barcodes, we see that variance is more or less stabilized after ~20 or so cells are sampled. We could modify our weighting approach so that we don't further upweight observations beyond e.g. 20 cell counts -- that is, use the variance differences between 1 and 20 cells, but beyond 20 cells use the same empirical variance as 20. This would be a balance then between accounting for heteroscedasticity for low- or moderate-count samples, but not having higher overall residual penalties for high-count barcodes.
-  
-
-(Below I was beginning to look at curves across different ranges of RSE, which is where I began to see the behavior I noticed above. This code is currently not completed until we decide if and how to do any weighting and filtering.)
-```{r example_curves_by_RSE, fig.width=5, fig.height=11, fig.align="center",dpi=300, warning=FALSE, results=FALSE}
+Next, let's look at the normalized MSR metric.
+```{r nMSR_distribution, fig.width=6, fig.height=9, fig.align="center",dpi=300,dev="png"}
 par(mfrow=c(3,2))
-#examples with very low RSE -- many baseline (makes sense low RSE becuase not much variation in the first place), some like ones shown below have responses and look good)
-plot.titration.lib1(which(counts_lib1$RSE<0.5)[2])
-plot.titration.lib2(which(counts_lib2$RSE<0.5)[5])
+hist(counts_lib1$nMSR,main="lib1",xlab="Response-normalized mean squared residual",col="gray50",breaks=40)
+hist(counts_lib2$nMSR,main="lib2",xlab="Response-normalized mean squared residual",col="gray50",breaks=30)
 
-#examples near the median RSE for each lib (1.08 for lib1, 1.3 for lib2), look quite nice
-plot.titration.lib1(which(counts_lib1$RSE<1.1 & counts_lib1$RSE>1)[2])
-plot.titration.lib2(which(counts_lib2$RSE<1.35 & counts_lib2$RSE>1.25)[1])
+# #how does the normalized MSR compare to the MSR computed? Plot as scatter, color points by response fit
+# ggplot(counts_lib1,aes(x=MSR,y=nMSR,color=response))+geom_point()+scale_color_gradient(low="#FFFF0030",high="#0000FF")+ggtitle("lib1")
+# ggplot(counts_lib2,aes(x=MSR,y=nMSR,color=response))+geom_point()+scale_color_gradient(low="#FFFF0030",high="#0000FF")+ggtitle("lib2")
 
-#examples near RSE 2 -- either baselines/nonresponsive with substantial noise, or some like below have a response. Not great but I don't hate the curves
-plot.titration.lib1(which(counts_lib1$RSE<2.05 & counts_lib1$RSE>1.95)[12])#12
-plot.titration.lib2(which(counts_lib1$RSE<2.05 & counts_lib2$RSE>1.95)[1])
+#As we would expect, the MSR stat decreases with cell count, indicating that higher cell counts leads to better curve fits
+plot(log10(counts_lib1$avgcount),counts_lib1$nMSR,pch=19,col="#00000010",main="lib1",xlab="average cell count (log10)",ylab="nMSR",xlim=c(0,5))
+plot(log10(counts_lib2$avgcount),counts_lib2$nMSR,pch=19,col="#00000010",main="lib2",xlab="average cell count (log10)",ylab="nMSR",xlim=c(0,5))
+
+#MSR is still higher for curves with lower Kd -- makes sense, becuase opportunity for residuals is higher when there is actual response, and therefore variation to have residuals on
+plot(log10(counts_lib1$Kd),counts_lib1$nMSR,pch=19,col="#00000010",main="lib1",xlab="Kd",ylab="nMSR")
+plot(log10(counts_lib2$Kd),counts_lib2$nMSR,pch=19,col="#00000010",main="lib2",xlab="Kd",ylab="nMSR")
+```
+Let's see what titration curves look like in different nMSR regimes. First, let's see two titrations from each library at the median nMSR. Suggests that the 'typical' curve looks quite nice.
+
+```{r example_curves_median_nMSR, fig.width=7.5, fig.height=7.5, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+par(mfrow=c(2,2))
+plot.titration.lib1(which(counts_lib1$nMSR > quantile(counts_lib1$nMSR,0.49,na.rm=T) & counts_lib1$nMSR < quantile(counts_lib1$nMSR,0.51,na.rm=T))[1])
+plot.titration.lib1(which(counts_lib1$nMSR > quantile(counts_lib1$nMSR,0.49,na.rm=T) & counts_lib1$nMSR < quantile(counts_lib1$nMSR,0.51,na.rm=T))[2])
+
+plot.titration.lib2(which(counts_lib2$nMSR > quantile(counts_lib2$nMSR,0.49,na.rm=T) & counts_lib2$nMSR < quantile(counts_lib2$nMSR,0.51,na.rm=T))[1])
+plot.titration.lib2(which(counts_lib2$nMSR > quantile(counts_lib2$nMSR,0.49,na.rm=T) & counts_lib2$nMSR < quantile(counts_lib2$nMSR,0.51,na.rm=T))[2])
+```
+
+If we set a cutoff of filtering out the worst 5% of curves based on nMSR, what would the borderline cases look like that we would be retaining?
+
+These curves do indeed look quite noisy! However, these represent the *worst* curves that we would be keeping, and I'm ok with that. Especially compared to the types of curves we would be eliminating, shown in the next section.
+
+```{r example_curves_cutoff_nMSR, fig.width=7.5, fig.height=7.5, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+par(mfrow=c(2,2))
+plot.titration.lib1(which(counts_lib1$nMSR > quantile(counts_lib1$nMSR,0.945,na.rm=T) & counts_lib1$nMSR < quantile(counts_lib1$nMSR,0.955,na.rm=T))[1])
+plot.titration.lib1(which(counts_lib1$nMSR > quantile(counts_lib1$nMSR,0.945,na.rm=T) & counts_lib1$nMSR < quantile(counts_lib1$nMSR,0.955,na.rm=T))[2])
+
+plot.titration.lib2(which(counts_lib2$nMSR > quantile(counts_lib2$nMSR,0.945,na.rm=T) & counts_lib2$nMSR < quantile(counts_lib2$nMSR,0.955,na.rm=T))[1])
+plot.titration.lib2(which(counts_lib2$nMSR > quantile(counts_lib2$nMSR,0.945,na.rm=T) & counts_lib2$nMSR < quantile(counts_lib2$nMSR,0.955,na.rm=T))[2])
+```
+
+Now, let's do a tour-de-crap, and see some example curves that will be eliminated by this 5% nMSR cutoff. For each library, we show one example curve from the *K*<sub>D,app</sub> \<10<sup>-8</sup> range, and one from the \>10<sup>-6</sup> range. Very happy to be removing these!
+```{r example_curves_eliminated_nMSR, fig.width=7.5, fig.height=7.5, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+par(mfrow=c(2,2))
+plot.titration.lib1(which(counts_lib1$nMSR > 0.2 & counts_lib1$Kd < 10^-8)[3])
+plot.titration.lib1(which(counts_lib1$nMSR > 0.2 & counts_lib1$Kd > 10^-6)[1])
+
+plot.titration.lib2(which(counts_lib2$nMSR > 0.2 & counts_lib2$Kd < 10^-8)[1])
+plot.titration.lib2(which(counts_lib2$nMSR > 0.2 & counts_lib2$Kd > 10^-6)[2])
+```
+
+Next, we will apply this filtering step on normalized MSR, removing the worst 5% of curves on this metric.
+```{r filter_curves_by_nMSR}
+counts_lib1[nMSR > quantile(counts_lib1$nMSR,0.95,na.rm=T),c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+counts_lib2[nMSR > quantile(counts_lib2$nMSR,0.95,na.rm=T),c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+```
+This leaves us with filtered *K*<sub>D,app</sub> estimates for `r sum(!is.na(counts_lib1$Kd))` of our lib1 barcodes (`r round(sum(!is.na(counts_lib1$Kd))/nrow(counts_lib1)*100,digits=2)`%) and `r sum(!is.na(counts_lib2$Kd))` of our lib2 barcodes (`r round(sum(!is.na(counts_lib2$Kd))/nrow(counts_lib2)*100,digits=2)`%).  
+
+As a final filtering step, we noticed above that curves with *K*<sub>D,app</sub> between 10<sup>-6</sup> and 10<sup>-4</sup> were more or less indistinguishable. This is consistent with our top labeling concentration being 10<sup>-6</sup>. Therefore, we will squash all *K*<sub>D,app</sub> estimates in this range to a censored at 10<sup>-6</sup>.
+
+```{r squash_high_Kds}
+counts_lib1[Kd > 10^-6,Kd := 10^-6]
+counts_lib2[Kd > 10^-6,Kd := 10^-6]
+```
+
+Last, let's convert our *K*<sub>D,app</sub> to 1) a log<sub>10</sub>-scale, where mutations are expected to combine additively (instead of multiplicatively), and 2) *K*<sub>A,app</sub>, the inverse of *K*<sub>D,app</sub>, such that higher values are associated with tighter binding, as is more intuitive. (If we want to continue to discuss in terms of *K*<sub>D,app</sub>, since people are often more familiar with *K*<sub>D</sub>, we can refer to the log<sub>10</sub>(*K*<sub>A,app</sub>) as -log<sub>10</sub>(*K*<sub>D,app</sub>), which are identical.
+
+```{r convert_log10Ka}
+counts_lib1[,log10Kd := log10(Kd),by=barcode]
+counts_lib2[,log10Kd := log10(Kd),by=barcode]
+
+counts_lib1[,log10Ka := -log10Kd,by=barcode]
+counts_lib2[,log10Ka := -log10Kd,by=barcode]
+
+#error propagation of the SE of the Kd fit onto the log10 scale
+counts_lib1[,log10SE := 0.434*Kd_SE/Kd,by=barcode]
+counts_lib2[,log10SE := 0.434*Kd_SE/Kd,by=barcode]
+```
+
+Some curve fits derived a nonsensically high standard error on the *K*<sub>D,app</sub> estimate, with it being orders and orders of magnitude larger than the *K*<sub>D,app</sub> estimate itself (see histogram below, which is already bounded -- without bounds the largest errors extend out to 10<sup>9</sup>, and this is already on the log10 scale!). This appears to happen in fits where *K*<sub>D,app</sub> is at the maximum of the range -- which makes sense then that there would be large variance in this estimate, since it's just extrapolating out that *K*<sub>D,app</sub> is *somewhere* higher than 10<sup>-6</sup>, without information as to *where* in this range the curve will actually respond.
+
+In our case, we don't want the global epistasis model in the next step to be able to use these large variances to "put" these measurements wherever it needs to to minimize fitting errors -- we'd rather that it take the 10<sup>-6</sup> *K*<sub>D,app</sub> values as provided without crazy high variance, and use the nonlinear curve fit portion of the model to "learn" that these 10<sup>-6</sup> values are really a highly censored indicator of values somewhere at 10<sup>-6</sup> or higher. Therefore, we are going to squash these standard error measures to a maximum value, as well. (And in the global epistasis fits, we will also try fitting without providing per-barcode variance estimates, anyway, since these SE estimates from the curve fit are pretty much unvetted)
+
+```{r censor_log10SE_max, fig.width=6, fig.height=9, fig.align="center",dpi=300,dev="png"}
+par(mfrow=c(3,2))
+hist(counts_lib1$log10SE[counts_lib1$log10SE < 5],breaks=20,main="lib1",xlab="Standard Error of log10(K_A)")
+hist(counts_lib2$log10SE[counts_lib2$log10SE < 5],breaks=20,main="lib2",xlab="Standard Error of log10(K_A)")
+
+plot(counts_lib1$log10Ka,counts_lib1$log10SE,pch=19,col="#00000050",ylim=c(0,5),main="lib1",xlab="log10(Ka)",ylab="SE on log10(Ka)")
+plot(counts_lib2$log10Ka,counts_lib2$log10SE,pch=19,col="#00000050",ylim=c(0,5),main="lib2",xlab="log10(Ka)",ylab="SE on log10(Ka)")
+
+#for now, fix log10SE values >2 to be max 2 
+counts_lib1[log10SE>2, log10SE:=2]
+counts_lib2[log10SE>2, log10SE:=2]
+
+hist(counts_lib1$log10SE,breaks=20,main="lib1",xlab="Standard Error of log10(K_A)")
+hist(counts_lib2$log10SE,breaks=20,main="lib2",xlab="Standard Error of log10(K_A)")
+```
+
+Let's visualize the final binding measurements as violin plots, faceted by variant class. Repeat separately for variant classes of SARS-CoV-2, and one for the different RBD homologs.
+
+```{r final_pheno_DFE, fig.width=9, fig.height=9, fig.align="center",dpi=300,dev="png"}
+#remove stop variants
+counts_lib1[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit","log10Kd","log10Ka","log10SE") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
+counts_lib2[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit","log10Kd","log10Ka","log10SE") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
+
+p1 <- ggplot(counts_lib1[target=="SARS-CoV-2" & !is.na(log10Ka),],aes(x=variant_class,y=log10Ka))+
+  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
+  ggtitle("lib1")+xlab("variant class")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  scale_y_continuous(limits=c(6,12))
+
+p2 <- ggplot(counts_lib2[target=="SARS-CoV-2" & !is.na(log10Ka),],aes(x=variant_class,y=log10Ka))+
+  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
+  ggtitle("lib2")+xlab("variant class")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  scale_y_continuous(limits=c(6,12))
+
+p3 <- ggplot(counts_lib1[!is.na(log10Ka) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous")),],aes(x=target,y=log10Ka))+
+  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
+  ggtitle("lib1")+xlab("variant class")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  scale_y_continuous(limits=c(6,12))
+
+p4 <- ggplot(counts_lib2[!is.na(log10Ka) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous")),],aes(x=target,y=log10Ka))+
+  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
+  ggtitle("lib2")+xlab("variant class")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  scale_y_continuous(limits=c(6,12))
+
+grid.arrange(p1,p2,p3,p4,ncol=2)
+
+#save pdf
+invisible(dev.print(pdf, paste(config$Titeseq_Kds_dir,"/violin-plot_log10Ka-by-target.pdf",sep="")))
 
 ```
 
+## Data Output
 
+Finally, let's output our measurements for downstream analyses. Since only the SARS-CoV-2 data is going into the global epistasis models, we will output separate files, for all barcodes, and for barcodes for SARS-CoV-2 targets only
+
+```{r output_data}
+counts_lib1[,library:="lib1"]
+counts_lib2[,library:="lib2"]
+
+write.csv(rbind(counts_lib1[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+                               baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
+                counts_lib2[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+                               baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]),
+          file=config$Titeseq_Kds_all_targets_file)
+
+write.csv(rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+                                                   baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
+                counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+                                                   baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]),
+          file=config$Titeseq_Kds_file)
+
+```
 
 
 
