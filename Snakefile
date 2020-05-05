@@ -102,7 +102,7 @@ rule compute_Titeseq_Kds:
     params:
         nb='compute_binding_Kd.Rmd',
         md='compute_binding_Kd.md',
-        md_files='compute_binding_Kd_files/',
+        md_files='compute_binding_Kd_files',
         output_dir='results/summary/'
     shell:
         """
@@ -123,7 +123,7 @@ rule compute_expression_meanFs:
     params:
         nb='compute_expression_meanF.Rmd',
         md='compute_expression_meanF.md',
-        md_files='compute_expression_meanF_files/',
+        md_files='compute_expression_meanF_files',
         output_dir='results/summary/'
     shell:
         """
