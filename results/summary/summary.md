@@ -18,3 +18,7 @@ workflow:
 3. [Count variants by barcode](count_variants.md).
 
 4. [QC analysis of sequencing counts](analyze_counts.md).
+
+5. [Computation of ACE2-binding *K*_D](compute_binding_Kd.md)
+
+6. [Computation of expression mean fluorescence](compute_expression_meanF.md)
