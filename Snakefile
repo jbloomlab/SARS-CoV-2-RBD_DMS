@@ -31,7 +31,8 @@ rule all:
     """Final output of workflow."""
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
-        config['variant_counts_file']
+        config['Titeseq_Kds_file'],
+        config['expression_sortseq_file']
 
 
 rule make_summary:
@@ -41,7 +42,9 @@ rule make_summary:
         process_ccs=nb_markdown('process_ccs.ipynb'),
         build_variants=nb_markdown('build_variants.ipynb'),
         count_variants=nb_markdown('count_variants.ipynb'),
-        analyze_counts=nb_markdown('analyze_counts.ipynb')
+        analyze_counts=nb_markdown('analyze_counts.ipynb'),
+        compute_Kd='results/summary/compute_binding_Kd.md',
+        compute_meanF='results/summary/compute_expression_meanF.md'
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -70,6 +73,10 @@ rule make_summary:
             3. [Count variants by barcode]({path(input.count_variants)}).
 
             4. [QC analysis of sequencing counts]({path(input.analyze_counts)}).
+            
+            5. [Computation of ACE2-binding *K*_D]({path(input.compute_Kd)})
+            
+            6. [Computation of expression mean fluorescence]({path(input.compute_meanF)})
 
             """
             ).strip())
@@ -82,6 +89,39 @@ rule make_dag:
         os.path.join(config['summary_dir'], 'dag.svg')
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
+
+rule compute_Titeseq_Kds:
+    input:
+        config['variant_counts_file']
+    output:
+        config['Titeseq_Kds_file'],
+        config['Titeseq_Kds_all_targets_file'],
+        nb_markdown='results/summary/compute_binding_Kd.md'
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='compute_binding_Kd.Rmd'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\"{params.nb}\", output_file=\"{output.nb_markdown}\")\"
+        """
+
+rule compute_expression_meanFs:
+    input:
+        config['variant_counts_file']
+    output:
+        config['expression_sortseq_file'],
+        config['expression_sortseq_all_targets_file'],
+        nb_markdown='results/summary/compute_expression_meanF.md'
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='compute_expression_meanF.Rmd'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\"compute_expression_meanF.Rmd\", output_file=\"results/summary/compute_expression_meanF.md\")\"
+        """
+
 
 rule analyze_counts:
     """Analyze variant counts and compute functional scores."""

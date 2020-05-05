@@ -36,10 +36,12 @@ func_scores_by_barcode_file: results/func_scores/func_scores_by_barcode.csv
 func_scores_by_codon_substitutions_file: results/func_scores/func_scores_by_codon_substitutions.csv
 func_scores_by_aa_substitutions_file: results/func_scores/func_scores_by_aa_substitutions.csv
 figs_dir: results/figures
-Titeseq_Kds_dir: results/Titeseq_Kds
-Titeseq_Kds_file: results/Titeseq_Kds/Titeseq_Kds.csv
-expression_sortseq_dir: results/expression_sortseq
-expression_sortseq_file: results/expression_sortseq/expression_meanFs.csv
+Titeseq_Kds_dir: results/binding_Kds
+Titeseq_Kds_file: results/binding_Kds/binding_Kds.csv
+Titeseq_Kds_all_targets_file: results/binding_Kds/binding_Kds_all_targets.csv
+expression_sortseq_dir: results/expression_meanFs
+expression_sortseq_file: results/expression_meanFs/expression_meanFs.csv
+expression_sortseq_all_targets_file: results/expression_meanFs/expression_meanFs_all_targets.csv
 global_epistasis_binding_dir: results/global_epistasis_binding
 global_epistasis_expr_dir: results/global_epistasis_expression
 analyze_mut_effects_dir: results/analyze_mut_effects

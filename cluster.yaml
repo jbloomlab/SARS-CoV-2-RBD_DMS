@@ -23,3 +23,13 @@ count_variants:
   cpus: 16
   partition: largenode
   mem: 100000
+
+compute_Titeseq_Kds:
+  cpus: 16
+  partition: largenode
+  mem: 100000
+
+compute_expression_meanFs:
+  cpus: 16
+  partition: largenode
+  mem: 100000
