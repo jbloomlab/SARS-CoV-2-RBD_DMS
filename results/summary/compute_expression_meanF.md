@@ -384,22 +384,22 @@ look at this metric across the unmutated versions of each of our RBD
 homologs in the library.
 
 ``` r
-p1 <- ggplot(counts_lib1[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(x=variant_class,y=ML_meanF))+
+p1 <- ggplot(counts_filtered_lib1[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(x=variant_class,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
   scale_y_continuous(limits=c(5,11))
 
-p2 <- ggplot(counts_lib2[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(x=variant_class,y=ML_meanF))+
+p2 <- ggplot(counts_filtered_lib2[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(x=variant_class,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
   scale_y_continuous(limits=c(6,12))
 
-p3 <- ggplot(counts_lib1[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
+p3 <- ggplot(counts_filtered_lib1[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
   ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
   scale_y_continuous(limits=c(6,12))
 
-p4 <- ggplot(counts_lib2[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
+p4 <- ggplot(counts_filtered_lib2[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
   ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
   scale_y_continuous(limits=c(6,12))
@@ -407,9 +407,9 @@ p4 <- ggplot(counts_lib2[!is.na(ML_meanF) & !(variant_class %in% c("synonymous",
 grid.arrange(p1,p2,p3,p4,ncol=2)
 ```
 
-    ## Warning: Removed 9092 rows containing non-finite values (stat_ydensity).
+    ## Warning: Removed 9087 rows containing non-finite values (stat_ydensity).
 
-    ## Warning: Removed 9092 rows containing non-finite values (stat_summary).
+    ## Warning: Removed 9087 rows containing non-finite values (stat_summary).
 
     ## Warning: Removed 40 rows containing non-finite values (stat_ydensity).
 
