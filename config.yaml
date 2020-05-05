@@ -46,6 +46,8 @@ global_epistasis_binding_dir: results/global_epistasis_binding
 global_epistasis_binding_file: results/global_epistasis_binding/global_epistasis_binding_predictions.csv
 global_epistasis_expr_dir: results/global_epistasis_expression
 global_epistasis_expr_file: results/global_epistasis_expression/global_epistasis_expression_predictions.csv
+single_mut_effects_dir: results/single_mut_effects
+single_mut_effects_file: results/single_mut_effects/single_mut_effects.csv
 
 # parameters for running PacBio `ccs` program
 min_ccs_accuracy: 0.999

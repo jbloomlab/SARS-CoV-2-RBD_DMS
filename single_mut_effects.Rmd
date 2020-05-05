@@ -1,0 +1,323 @@
+---
+title: "Derive final single mutation functional scores from global epistasis fits"
+author: "Tyler Starr"
+date: "5/5/2020"
+output:
+  github_document:
+    html_preview: false
+editor_options: 
+  chunk_output_type: inline
+---
+
+This notebook reads in the coefficients from the global epistasis fits for binding and expression. It assesses correlations between replicates and decides on which models to use moving forward, and consolidates the final single mutant functional scores. Finally, it generates some basic summary figures, including distributions of mutational effects and summaries of the phenotypes of the sarbecovirus homolog RBDs, and validates these measurements with comparisons to isogenic and literature reported functional measurements.
+
+```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+
+#list of packages to install/load
+packages = c("yaml","data.table","tidyverse")
+#install any packages not already installed
+installed_packages <- packages %in% rownames(installed.packages())
+if(any(installed_packages == F)){
+  install.packages(packages[!installed_packages])
+}
+#load packages
+invisible(lapply(packages, library, character.only=T))
+
+#read in config file
+config <- read_yaml("config.yaml")
+
+#make output directory
+if(!file.exists(config$single_mut_effects_dir)){
+ dir.create(file.path(config$single_mut_effects_dir))
+}
+```
+Session info for reproducing environment:
+```{r print_sessionInfo}
+sessionInfo()
+```
+## Setup
+
+Read in tables of per-barcode measured and predicted phenotypes. With these, we can reproduce the plots from the global epistasis notebooks.
+
+```{r bc_tables, fig.width=5,fig.height=5,fig.align="center"}
+bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))
+bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))
+
+#can reproduce figures from global epistasis notebooks, e.g.:
+plot(bc_bind[library=="lib1",latent_phenotype_Cauchy_1],bc_bind[library=="lib1",log10Ka],pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="Tite-seq log10(Ka)")
+points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],bc_bind[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=3)
+
+```
+
+Next, read in coefficients from each global episitasis model fit, and look at the correlation between model coefficients.
+
+First, binding models. Let's look at the correlation between the Cauchy likelihood models, on the "observed" and "latent" scales, and then with no global epistasis correction. We'll look both with and without including the estimates of variance in the likelihood calculations.
+```{r betas_Cauchy_bind, fig.width=8,fig.height=13,fig.align="center"}
+par(mfrow=c(3,2))
+#observed "log10Ka" scale
+betas_bind_observed_Cauchy <- merge(read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_observed_Cauchy$effect_lib1; y <- betas_bind_observed_Cauchy$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("binding, Cauchy observed, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+betas_bind_observed_Cauchy_novar <- merge(read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_1_novar.csv',stringsAsFactors=F),
+                                          read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_2_novar.csv',stringsAsFactors=F),
+                                          by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_observed_Cauchy_novar$effect_lib1; y <- betas_bind_observed_Cauchy_novar$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("binding, Cauchy observed, no variance, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+#underlying latent scale
+betas_bind_latent_Cauchy <- merge(read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_1.csv',stringsAsFactors=F),
+                                  read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_2.csv',stringsAsFactors=F),
+                                  by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_latent_Cauchy$effect_lib1; y <- betas_bind_latent_Cauchy$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("binding, Cauchy latent, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+betas_bind_latent_Cauchy_novar <- merge(read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_1_novar.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_2_novar.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_latent_Cauchy_novar$effect_lib1; y <- betas_bind_latent_Cauchy_novar$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("binding, Cauchy latent, no variance, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+#no nonlinear transform
+betas_bind_nonepistatic_Cauchy <- merge(read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_nonepistatic_Cauchy$effect_lib1; y <- betas_bind_nonepistatic_Cauchy$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 beta (no nonlinearity)",main=paste("binding, Cauchy nonepistatic, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+betas_bind_nonepistatic_Cauchy_novar <- merge(read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_1_novar.csv',stringsAsFactors=F),
+                                              read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_2_novar.csv',stringsAsFactors=F),
+                                              by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_nonepistatic_Cauchy_novar$effect_lib1; y <- betas_bind_nonepistatic_Cauchy_novar$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 beta (no nonlinearity)",main=paste("binding, Cauchy nonepistatic, no variance, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+```
+We can see, reassuringly, that our single mutation effect estimates are better when we incorporate the nonlinearity -- this shows that the global epistasis transform improves this single mutation deconvolution from the multi-mutants in the library. Furthermore, we can see that, at least for the Cauchy likelihood, keeping things at least somewhat constrained on the likelihood calculation with variance estimates is important to keep things from going off the rails!
+
+One interesting observation is that, in the latent space (which at least from my Ab work, I suspected was also picking up on the *stability* effects of mutations), there do seem to be a substantial number of mutations with positive values -- but when transformed to the observed log10Ka scale, these are squashed to zero. This is something we'll need to look into further (direct measurements from single mutant barcodes will help here!) -- it did seem like perhaps SARS-CoV-2 had a decreased expression/stability relative to the other homologs, so perhaps there are many stabilizing mutations which would be interesting to follow up on.
+
+Next, let's repeat these figures for the binding models fit under a Gaussian likelihood model.
+
+```{r betas_Gaussian_bind, fig.width=8,fig.height=13,fig.align="center"}
+par(mfrow=c(3,2))
+#observed "log10Ka" scale
+betas_bind_observed_Gaussian <- merge(read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_observed_Gaussian$effect_lib1; y <- betas_bind_observed_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("binding, Gaussian observed, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+betas_bind_observed_Gaussian_novar <- merge(read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_1_novar.csv',stringsAsFactors=F),
+                                          read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_2_novar.csv',stringsAsFactors=F),
+                                          by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_observed_Gaussian_novar$effect_lib1; y <- betas_bind_observed_Gaussian_novar$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("binding, Gaussian observed, no variance, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+#underlying latent scale
+betas_bind_latent_Gaussian <- merge(read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_1.csv',stringsAsFactors=F),
+                                  read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_2.csv',stringsAsFactors=F),
+                                  by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_latent_Gaussian$effect_lib1; y <- betas_bind_latent_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("binding, Gaussian latent, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+betas_bind_latent_Gaussian_novar <- merge(read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_1_novar.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_2_novar.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_latent_Gaussian_novar$effect_lib1; y <- betas_bind_latent_Gaussian_novar$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("binding, Gaussian latent, no variance, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+#no nonlinear transform
+betas_bind_nonepistatic_Gaussian <- merge(read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_nonepistatic_Gaussian$effect_lib1; y <- betas_bind_nonepistatic_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 beta (no nonlinearity)",main=paste("binding, Gaussian nonepistatic, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+betas_bind_nonepistatic_Gaussian_novar <- merge(read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_1_novar.csv',stringsAsFactors=F),
+                                              read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_2_novar.csv',stringsAsFactors=F),
+                                              by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+
+x <- betas_bind_nonepistatic_Gaussian_novar$effect_lib1; y <- betas_bind_nonepistatic_Gaussian_novar$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 beta (no nonlinearity)",main=paste("binding, Gaussian nonepistatic, no variance, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+```
+In contrast to the Cauchy likelihood models, with the Gaussian likelihood models, parameters are estimated more consistently when the estimated variances are *not* included in the likelihood model. Perhpas the Cauchy likelihood "needs" some bounds of variance, because its fat tails otherwise allow it to place observations all over the place -- whereas a Gaussian curve has smaller tails.
+
+We once again see a preponderance of single mutations with positive effects on the latent scale that are squashed to zero on the observed log10Ka scale.
+
+It is not immediately obvious to me yet whether to prefer the Cauchy/variance model compared to the Gaussian/no variance model...
+
+Let's compare these measurements to those inferred directly in the Tite-seq assay from barcodes bearing only single mutations.
+
+
+
+
+
+Observed scale, Gaussian likelihood:
+```{r betas_Gaussian_observed_bind, fig.width=5,fig.height=5,fig.align="center"}
+betas_bind_observed_Gaussian_1 <- read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_1.csv',stringsAsFactors=F)
+betas_bind_observed_Gaussian_2 <- read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_2.csv',stringsAsFactors=F)
+betas_bind_observed_Gaussian <- merge(betas_bind_observed_Gaussian_1,betas_bind_observed_Gaussian_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_bind_observed_Gaussian_1);rm(betas_bind_observed_Gaussian_2)
+
+x <- betas_bind_observed_Gaussian$effect_lib1; y <- betas_bind_observed_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("Binding, Gaussian nonepistatic, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+Latent scale, Gaussian likelihood:
+```{r betas_Gaussian_latent_bind, fig.width=5,fig.height=5,fig.align="center"}
+betas_bind_latent_Gaussian_1 <- read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_1.csv',stringsAsFactors=F)
+betas_bind_latent_Gaussian_2 <- read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_2.csv',stringsAsFactors=F)
+betas_bind_latent_Gaussian <- merge(betas_bind_latent_Gaussian_1,betas_bind_latent_Gaussian_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_bind_latent_Gaussian_1);rm(betas_bind_latent_Gaussian_2)
+
+x <- betas_bind_latent_Gaussian$effect_lib1; y <- betas_bind_latent_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("Binding, Gaussian latent, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+Now, expression effects of mutations.
+
+Cauchy likelihood, observed scale:
+```{r betas_Cauchy_observed_expr, fig.width=5,fig.height=5,fig.align="center"}
+betas_expr_observed_Cauchy_1 <- read.csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_1.csv',stringsAsFactors=F)
+betas_expr_observed_Cauchy_2 <- read.csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_2.csv',stringsAsFactors=F)
+betas_expr_observed_Cauchy <- merge(betas_expr_observed_Cauchy_1,betas_expr_observed_Cauchy_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_expr_observed_Cauchy_1);rm(betas_expr_observed_Cauchy_2)
+
+x <- betas_expr_observed_Cauchy$effect_lib1; y <- betas_expr_observed_Cauchy$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("expression, Cauchy observed, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+Cauchy likelihood, latent-scale mutational effects:
+```{r betas_Cauchy_latent_expr, fig.width=5,fig.height=5,fig.align="center"}
+betas_expr_latent_Cauchy_1 <- read.csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_1.csv',stringsAsFactors=F)
+betas_expr_latent_Cauchy_2 <- read.csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_2.csv',stringsAsFactors=F)
+betas_expr_latent_Cauchy <- merge(betas_expr_latent_Cauchy_1,betas_expr_latent_Cauchy_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_expr_latent_Cauchy_1);rm(betas_expr_latent_Cauchy_2)
+
+x <- betas_expr_latent_Cauchy$effect_lib1; y <- betas_expr_latent_Cauchy$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("expression, Cauchy latent, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+Cauchy likelihood, no nonlinear correction:
+
+```{r betas_Cauchy_nonepistatic_expr, fig.width=5,fig.height=5,fig.align="center"}
+# betas_expr_nonepistatic_Cauchy_1 <- read.csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_1.csv',stringsAsFactors=F)
+# betas_expr_nonepistatic_Cauchy_2 <- read.csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_2.csv',stringsAsFactors=F)
+# betas_expr_nonepistatic_Cauchy <- merge(betas_expr_nonepistatic_Cauchy_1,betas_expr_nonepistatic_Cauchy_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_expr_nonepistatic_Cauchy_1);rm(betas_expr_nonepistatic_Cauchy_2)
+# 
+# x <- betas_expr_nonepistatic_Cauchy$effect_lib1; y <- betas_expr_nonepistatic_Cauchy$effect_lib2; fit <- lm(y~x)
+# plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (nonepistatic scale)",ylab="lib2 beta (nonepistatic scale)",main=paste("expression, Cauchy nonepistatic, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+Observed scale, Gaussian likelihood:
+```{r betas_Gaussian_observed_expr, fig.width=5,fig.height=5,fig.align="center"}
+betas_expr_observed_Gaussian_1 <- read.csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_1.csv',stringsAsFactors=F)
+betas_expr_observed_Gaussian_2 <- read.csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_2.csv',stringsAsFactors=F)
+betas_expr_observed_Gaussian <- merge(betas_expr_observed_Gaussian_1,betas_expr_observed_Gaussian_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_expr_observed_Gaussian_1);rm(betas_expr_observed_Gaussian_2)
+
+x <- betas_expr_observed_Gaussian$effect_lib1; y <- betas_expr_observed_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (observed scale)",ylab="lib2 beta (observed scale)",main=paste("expression, Gaussian observed, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+Latent scale, Gaussian likelihood:
+```{r betas_Gaussian_latent_expr, fig.width=5,fig.height=5,fig.align="center"}
+betas_expr_latent_Gaussian_1 <- read.csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_1.csv',stringsAsFactors=F)
+betas_expr_latent_Gaussian_2 <- read.csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_2.csv',stringsAsFactors=F)
+betas_expr_latent_Gaussian <- merge(betas_expr_latent_Gaussian_1,betas_expr_latent_Gaussian_2,by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));rm(betas_expr_latent_Gaussian_1);rm(betas_expr_latent_Gaussian_2)
+
+x <- betas_expr_latent_Gaussian$effect_lib1; y <- betas_expr_latent_Gaussian$effect_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (latent scale)",ylab="lib2 beta (latent scale)",main=paste("expression, Gaussian latent, R-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+
+
+Last, what about just the direct measurements of single mutants?
+
+```{r measure_correlation_bind_direct_singles, fig.width=8,fig.height=5,fig.align="center"}
+names(betas_bind_latent_Cauchy)[names(betas_bind_latent_Cauchy)=="effect_lib1"] <- "bind_latent_lib1"
+names(betas_bind_latent_Cauchy)[names(betas_bind_latent_Cauchy)=="effect_lib2"] <- "bind_latent_lib2"
+names(betas_bind_latent_Cauchy)[names(betas_bind_latent_Cauchy)=="effect_lib1"] <- "bind_latent_lib1"
+names(betas_bind_latent_Cauchy)[names(betas_bind_latent_Cauchy)=="effect_lib2"] <- "bind_latent_lib2"
+names(betas_bind_observed_Cauchy)[names(betas_bind_observed_Cauchy)=="effect_lib1"] <- "bind_observed_lib1"
+names(betas_bind_observed_Cauchy)[names(betas_bind_observed_Cauchy)=="effect_lib2"] <- "bind_observed_lib2"
+names(betas_bind_observed_Cauchy)[names(betas_bind_observed_Cauchy)=="effect_lib1"] <- "bind_observed_lib1"
+names(betas_bind_observed_Cauchy)[names(betas_bind_observed_Cauchy)=="effect_lib2"] <- "bind_observed_lib2"
+names(betas_expr_latent_Cauchy)[names(betas_expr_latent_Cauchy)=="effect_lib1"] <- "expr_latent_lib1"
+names(betas_expr_latent_Cauchy)[names(betas_expr_latent_Cauchy)=="effect_lib2"] <- "expr_latent_lib2"
+names(betas_expr_latent_Cauchy)[names(betas_expr_latent_Cauchy)=="effect_lib1"] <- "expr_latent_lib1"
+names(betas_expr_latent_Cauchy)[names(betas_expr_latent_Cauchy)=="effect_lib2"] <- "expr_latent_lib2"
+names(betas_expr_observed_Cauchy)[names(betas_expr_observed_Cauchy)=="effect_lib1"] <- "expr_observed_lib1"
+names(betas_expr_observed_Cauchy)[names(betas_expr_observed_Cauchy)=="effect_lib2"] <- "expr_observed_lib2"
+names(betas_expr_observed_Cauchy)[names(betas_expr_observed_Cauchy)=="effect_lib1"] <- "expr_observed_lib1"
+names(betas_expr_observed_Cauchy)[names(betas_expr_observed_Cauchy)=="effect_lib2"] <- "expr_observed_lib2"
+
+betas_bind <- merge(betas_bind_latent_Cauchy,betas_bind_observed_Cauchy,by=c("mutation","wildtype","site","mutant"),all=T,sort=F)
+betas_expr <- merge(betas_expr_latent_Cauchy,betas_expr_observed_Cauchy,by=c("mutation","wildtype","site","mutant"),all=T,sort=F)
+
+betas <- merge(betas_bind,betas_expr, by=c("site","mutation","wildtype","mutant"),sort=T,all=T)
+betas <- data.table(betas)
+
+bc_bind[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
+bc_expr[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
+
+#gives number of barcodes with a phenotype on which a genotype was sampled
+betas[,n_bc_bind_1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_bind_2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+
+for(i in 1:nrow(betas)){
+  print(i)
+  log10Ka_1 <- bc_bind[aa_substitutions==betas[i,"mutation"] & library=="lib1",log10Ka]
+  log10Ka_2 <- bc_bind[aa_substitutions==betas[i,"mutation"] & library=="lib2",log10Ka]
+  meanFs_1 <- bc_expr[aa_substitutions==betas[i,"mutation"] & library=="lib1",ML_meanF]
+  meanFs_2 <- bc_expr[aa_substitutions==betas[i,"mutation"] & library=="lib2",ML_meanF]
+  betas$n_bc_1mut_bind_lib1[i] <- sum(!is.na(log10Ka_1)) #gives number of single-mutant barcodes with a phenotype on which a genotype was sampled
+  betas$n_bc_1mut_bind_lib2[i] <- sum(!is.na(log10Ka_2))
+  betas$n_bc_1mut_expr_lib1[i] <- sum(!is.na(meanFs_1))
+  betas$n_bc_1mut_expr_lib2[i] <- sum(!is.na(meanFs_2))
+  betas$bc_1mut_bind_lib1[i] <- mean(log10Ka_1,na.rm=T)
+  betas$bc_1mut_bind_lib2[i] <- mean(log10Ka_2,na.rm=T)
+  betas$bc_1mut_expr_lib1[i] <- mean(meanFs_1,na.rm=T)
+  betas$bc_1mut_expr_lib2[i] <- mean(meanFs_2,na.rm=T)
+}
+
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_bind_lib1"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant ,])
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_bind_lib2"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant,])
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_bind_lib1"]) | !is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_bind_lib2"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant,])
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_bind_lib1"]) & !is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_bind_lib2"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant,])
+#86.5% single mutants directly measured in titration lib1, 87.0% in lib2, 95.0% in at least one rep, 78.5% in both
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_expr_lib1"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant ,])
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_expr_lib2"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant,])
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_expr_lib1"]) | !is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_expr_lib2"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant,])
+sum(!is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_expr_lib1"]) & !is.na(betas[betas$mutant!="*" & wildtype!=mutant,"bc_1mut_expr_lib2"]))/nrow(betas[betas$mutant!="*" & wildtype!=mutant,])
+#87.4% single mutants directly measured in titration lib1, 87.6% in lib2, 95.5% in at least one rep, 79.6% in both
+```
+
+```{r plot_correlation_bind_direct_singles, fig.width=9,fig.height=5,fig.align="center"}
+par(mfrow=c(1,2)) 
+x <- betas[betas$mutant!="*" & wildtype!=mutant,bc_1mut_bind_lib1]; y <- betas[betas$mutant!="*" & wildtype!=mutant,bc_1mut_bind_lib2]; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1, log10Ka_mut",ylab="lib2, log10Ka_mut",main=paste("binding, single-mut bcs, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+x <- betas[wildtype!=mutant,bc_1mut_expr_lib1]; y <- betas[wildtype!=mutant,bc_1mut_expr_lib2]; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1, ML mean fluor",ylab="lib2, ML mean fluor",main=paste("expression, single-mut bcs, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+
+```
+
+
+
+
