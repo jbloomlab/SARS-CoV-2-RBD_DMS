@@ -23,3 +23,23 @@ count_variants:
   cpus: 16
   partition: largenode
   mem: 100000
+
+compute_Titeseq_Kds:
+  cpus: 16
+  partition: largenode
+  mem: 100000
+
+compute_expression_meanFs:
+  cpus: 16
+  partition: largenode
+  mem: 100000
+
+global_epistasis_binding:
+  cpus: 16
+  partition: largenode
+  mem: 100000
+
+global_epistasis_expression:
+  cpus: 16
+  partition: largenode
+  mem: 100000

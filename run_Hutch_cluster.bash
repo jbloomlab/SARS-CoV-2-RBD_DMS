@@ -5,5 +5,6 @@ snakemake \
     --cluster-config cluster.yaml \
     --cluster "sbatch -p {cluster.partition} -c {cluster.cpus} --mem={cluster.mem} -t {cluster.time} -J {cluster.name}" \
     --latency-wait 30 \
+    --use-envmodules \
     --use-conda \
     --conda-prefix ./env

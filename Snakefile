@@ -31,7 +31,8 @@ rule all:
     """Final output of workflow."""
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
-        config['variant_counts_file']
+        config['global_epistasis_binding_file'],
+        config['global_epistasis_expr_file']
 
 
 rule make_summary:
@@ -41,7 +42,11 @@ rule make_summary:
         process_ccs=nb_markdown('process_ccs.ipynb'),
         build_variants=nb_markdown('build_variants.ipynb'),
         count_variants=nb_markdown('count_variants.ipynb'),
-        analyze_counts=nb_markdown('analyze_counts.ipynb')
+        analyze_counts=nb_markdown('analyze_counts.ipynb'),
+        compute_Kd='results/summary/compute_binding_Kd.md',
+        compute_meanF='results/summary/compute_expression_meanF.md',
+        global_epistasis_binding=nb_markdown('global_epistasis_binding.ipynb'),
+        global_epistasis_expression=nb_markdown('global_epistasis_expression.ipynb')
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -70,6 +75,14 @@ rule make_summary:
             3. [Count variants by barcode]({path(input.count_variants)}).
 
             4. [QC analysis of sequencing counts]({path(input.analyze_counts)}).
+            
+            5. [Computation of ACE2-binding *K*_D]({path(input.compute_Kd)}).
+            
+            6. [Computation of expression mean fluorescence]({path(input.compute_meanF)}).
+            
+            7. [Global epistasis decomposition of binding effects]({path(input.global_epistasis_binding)}).
+            
+            8. [Global epistasis decomposition of expression effects]({path(input.global_epistasis_expression)}).
 
             """
             ).strip())
@@ -82,6 +95,71 @@ rule make_dag:
         os.path.join(config['summary_dir'], 'dag.svg')
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
+
+rule global_epistasis_binding:
+    input:
+        config['Titeseq_Kds_file']
+    output:
+        config['global_epistasis_binding_file'],
+        nb_markdown=nb_markdown('global_epistasis_binding.ipynb')
+    params:
+        nb='global_epistasis_binding.ipynb'
+    shell:
+        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
+
+rule global_epistasis_expression:
+    input:
+        config['expression_sortseq_file']
+    output:
+        config['global_epistasis_expr_file'],
+        nb_markdown=nb_markdown('global_epistasis_expression.ipynb')
+    params:
+        nb='global_epistasis_expression.ipynb'
+    shell:
+        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
+
+rule compute_Titeseq_Kds:
+    input:
+        config['variant_counts_file']
+    output:
+        config['Titeseq_Kds_file'],
+        config['Titeseq_Kds_all_targets_file'],
+        nb_markdown='results/summary/compute_binding_Kd.md'
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='compute_binding_Kd.Rmd',
+        md='compute_binding_Kd.md',
+        md_files='compute_binding_Kd_files',
+        output_dir='results/summary/'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {params.output_dir};
+        mv {params.md_files} {params.output_dir}
+        """
+
+rule compute_expression_meanFs:
+    input:
+        config['variant_counts_file']
+    output:
+        config['expression_sortseq_file'],
+        config['expression_sortseq_all_targets_file'],
+        nb_markdown='results/summary/compute_expression_meanF.md'
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='compute_expression_meanF.Rmd',
+        md='compute_expression_meanF.md',
+        md_files='compute_expression_meanF_files',
+        output_dir='results/summary/'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {params.output_dir};
+        mv {params.md_files} {params.output_dir}
+        """
+
 
 rule analyze_counts:
     """Analyze variant counts and compute functional scores."""
