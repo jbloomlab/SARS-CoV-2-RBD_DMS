@@ -45,7 +45,7 @@ sessionInfo()
 
 Read in tables of per-barcode measured and predicted phenotypes. With these, we can reproduce the plots from the global epistasis notebooks.
 
-```{r bc_tables, fig.width=5,fig.height=5,fig.align="center", dpi=300,dev="png"}
+```{r bc_tables, fig.width=4,fig.height=4,fig.align="center", dpi=300,dev="png"}
 bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))
 bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))
 
@@ -183,9 +183,9 @@ betas <- data.table(betas_bind_latent_Gaussian_novar[,c("site","site_S","mutatio
 
 bc_bind[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
-#gives total number of barcodes with a determined binding phenotype in each library on which a genotype was sampled
-betas[,n_bc_bind_1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-betas[,n_bc_bind_2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+# #gives total number of barcodes with a determined binding phenotype in each library on which a genotype was sampled
+# betas[,n_bc_bind_1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+# betas[,n_bc_bind_2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   log10Ka_1 <- bc_bind[aa_substitutions==betas[i,"mutation"] & library=="lib1",log10Ka]
@@ -207,7 +207,7 @@ First, let's see how well these direct measurements correlate between libraries.
 x <- betas$bc_1mut_bind_lib1; y <- betas$bc_1mut_bind_lib2; fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect from single mut bcs",ylab="lib2 mutational effect from single mut bcs",main=paste("binding, single mut direct measurements\nR-squared:",round(summary(fit)$r.squared,digits=3)))
 ```
-Let's look at the sites with directly measured beneficial mutations (output below). As you can see [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=367%2C453%2C484%2C498%2C501%2C505), four of the five of the sites with the strongest beneficial directly measured mutations are at the ACE2 interface, suggesting these might be valid affinity-enhancing mutations...
+Let's look at the sites with directly measured beneficial mutations (output below). As you can see [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=367%2C453%2C484%2C498%2C501%2C505), four of the five of the sites with the strongest beneficial directly measured mutations are at the ACE2 interface, suggesting these might be valid affinity-enhancing mutations... and in contrast to the >0 effects in the latent space, which seemed to be a combination of contact residues and residues far away (stabilizing?), these direct measurements seem to pick up sites more enriched for interface (and therefore, likely, pure binding effects).
 
 ```{r direct_singles_beneficial_binding}
 betas[bc_1mut_bind_lib1>0.1 & bc_1mut_bind_lib2>0.1,c("mutation","site_S")]
@@ -272,7 +272,7 @@ plot(x,y,pch=16,col="#00000067",xlab="beta, Gaussian latent with no variance",yl
 
 ```
 
-Overall, the Cauchy likelihood models including the estimated variances appear to most faithfully match the directly measured mutational effects. Together with the shape of the correlation between beta coefficients from the two libraries and my intuition about the shapes of the original global epistasis curves, I am happy moving forward with the Cauchy likelihood model incorporating estimated variances. The one sticking point, for me, is that the *observed scale* measurements, as expected, seem to most directly report on the log10(*K*<sub>A,app</sub>) scale on which we should keep our reported measurements -- however, this observed scale has a harsh truncation of beneficial mutations, such that no fit beta has a positive mutational effect on binding. How can we ameliorate this issue? Fiddle with curve fits, number of knots in the ispline, better estimates of variance, pool observations from both libraries for global epistasis fitting ... ?
+Overall, the Cauchy likelihood models including the estimated variances appear to most faithfully match the directly measured mutational effects. Together with the shape of the correlation between beta coefficients from the two libraries and my intuition about the shapes of the original global epistasis curves, I am happy moving forward with the Cauchy likelihood model incorporating estimated variances. The one sticking point, for me, is that the *observed scale* measurements, as expected, seem to most directly report on the log10(*K*<sub>A,app</sub>) scale on which we should keep our reported measurements -- however, this observed scale has a harsh truncation of beneficial mutations, such that no fit beta has a positive mutational effect on binding. How can we deal with this issue? Proceed with latent-space effects instead of observed-scale log10(*K*<sub>A,app</sub>) effects? Fiddle with curve fits, number of knots in the ispline, better estimates of variance, pool observations from both libraries for global epistasis fitting ... ? Or is it not a fitting issue but a biological issue? The observation above was that the directly measured mutations >0 are primarily contact residues, while the latent space mutations with effects >0 are both contact and ACE2-distal, perhaps stabilizing mutations. If the global epistasis is trying to weigh two different mechanisms of affinity enhancement -- a) direct affinity enhancement from rare contact mutations, and b) additive, stability-mediated compensation (which enhances binding via stability in multi-mutants within a destabilized regime, but does not enhance binding at WT levels away from the stability threshold) -- and type (b) is more common, this might dominate the nonlinear transform and therefore suppress the potential for type (a) mutations to be revealed in the global epistasis coefficients?
 
 
 ## Assessing global epistasis models for expression data
@@ -401,9 +401,9 @@ for(i in 1:nrow(betas_expr)){
 
 bc_expr[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
-#gives total number of barcodes with a determined expression phenotype in each library on which a genotype was sampled
-betas_expr[,n_bc_expr_1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-betas_expr[,n_bc_expr_2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+# #gives total number of barcodes with a determined expression phenotype in each library on which a genotype was sampled
+# betas_expr[,n_bc_expr_1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+# betas_expr[,n_bc_expr_2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
 
 for(i in 1:nrow(betas_expr)){
   meanF_1 <- bc_expr[aa_substitutions==betas_expr[i,"mutation"] & library=="lib1",ML_meanF]
