@@ -104,7 +104,7 @@ rule censored_regression_binding:
     output:
         #config['tobit_regression_binding_file'], temporarily an intermediate file
         'results/tobit_regression_binding/tobit_1.Rda',
-        'results/tobit_regression_binding/tobit_2.Rda',
+        'results/tobit_regression_binding/tobit_
         nb_markdown='results/summary/tobit_regression_binding.Rmd'
     envmodules:
         'R/3.6.1-foss-2016b'
