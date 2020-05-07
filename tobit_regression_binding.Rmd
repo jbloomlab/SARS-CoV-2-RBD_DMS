@@ -54,7 +54,7 @@ dt <- data.table(read.csv(file=config$Titeseq_Kds_file,stringsAsFactors = F)) #l
 
 Our -log10(*K*<sub>D,app</sub>) scale is additive, meaning the effect of a double mutant as change in -log10(*K*<sub>D,app</sub>) is expressed as the sum of the two component single mutational effects on -log10(*K*<sub>D,app</sub>). The exception to this is that we have known, harsh censoring of our measurements at the boundary condition of 10<sup>-6</sup>M (we could also consider an upper boundary of 10<sup>-13</sup>M, as we still have the 0M point, plus we didn't end up having any variants with binding at this boundary condition anyway) imposed by our concentration range in the assay. (The validity of this additive linear range, apart from range censoring, is supported from our initial attempts to fit an Otwinowski et al. style global epistasis model to these data, which essentially fit strong censoring at the lower boundary, and a more-or less linear response through the dynamic range of our assay.) We will therefore use this knowledge of the underlying nonlinearity to motivate the use of *censored linear regression* models to decompose single mutant effects from our barcode-level measurements.
 
-```{r setup_model_matrix}
+```{r fit_tobit}
 #split concatenated aa_substitutions, which will become our model factors
 dt[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=(barcode)]
 
@@ -73,8 +73,8 @@ matrix_2 <- as.matrix(do.call(rbind, lapply(lapply(dt_2[,aa_subs_list], factor, 
 stopifnot(rowSums(matrix_1)==dt_1$n_aa_substitutions)
 stopifnot(rowSums(matrix_2)==dt_2$n_aa_substitutions)
 
-# tobit_1 <- censReg(dt_1$log10Ka ~ matrix_1, left=6)
-# save(tobit_1,file=paste(config$tobit_regression_binding_dir,"/tobit_1.Rda",sep=""))
+tobit_1 <- censReg(dt_1$log10Ka ~ matrix_1, left=6)
+save(tobit_1,file=paste(config$tobit_regression_binding_dir,"/tobit_1.Rda",sep=""))
 tobit_2 <- censReg(dt_2$log10Ka ~ matrix_2, left=6)
 save(tobit_2,file=paste(config$tobit_regression_binding_dir,"/tobit_2.Rda",sep=""))
 
