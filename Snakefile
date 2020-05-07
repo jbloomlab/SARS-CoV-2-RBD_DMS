@@ -31,9 +31,7 @@ rule all:
     """Final output of workflow."""
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
-        #config['tobit_regression_binding_file'], temporarily replaced with intermediate files
-        'results/tobit_regression_binding/tobit_1.Rda',
-        'results/tobit_regression_binding/tobit_2.Rda',
+        config['global_epistasis_binding_file'],
         config['global_epistasis_expr_file']
 
 
@@ -47,7 +45,7 @@ rule make_summary:
         analyze_counts=nb_markdown('analyze_counts.ipynb'),
         compute_Kd='results/summary/compute_binding_Kd.md',
         compute_meanF='results/summary/compute_expression_meanF.md',
-        tobit_regression_binding='results/summary/tobit_regression_binding.md',
+        global_epistasis_binding=nb_markdown('global_epistasis_binding.ipynb'),
         global_epistasis_expression=nb_markdown('global_epistasis_expression.ipynb')
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
@@ -78,11 +76,11 @@ rule make_summary:
 
             4. [QC analysis of sequencing counts]({path(input.analyze_counts)}).
             
-            5. [Computation of ACE2-binding *K*<sub>D</sub>]({path(input.compute_Kd)}).
+            5. [Computation of ACE2-binding *K*_D]({path(input.compute_Kd)}).
             
             6. [Computation of expression mean fluorescence]({path(input.compute_meanF)}).
             
-            7. [Censored regression decomposition of binding effects]({path(input.tobit_regression_binding)}).
+            7. [Global epistasis decomposition of binding effects]({path(input.global_epistasis_binding)}).
             
             8. [Global epistasis decomposition of expression effects]({path(input.global_epistasis_expression)}).
 
@@ -98,38 +96,16 @@ rule make_dag:
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
 
-rule censored_regression_binding:
+rule global_epistasis_binding:
     input:
         config['Titeseq_Kds_file']
     output:
-        #config['tobit_regression_binding_file'], temporarily an intermediate file
-        'results/tobit_regression_binding/tobit_1.Rda',
-        'results/tobit_regression_binding/tobit_
-        nb_markdown='results/summary/tobit_regression_binding.Rmd'
-    envmodules:
-        'R/3.6.1-foss-2016b'
+        config['global_epistasis_binding_file'],
+        nb_markdown=nb_markdown('global_epistasis_binding.ipynb')
     params:
-        nb='tobit_regression_binding.Rmd',
-        md='tobit_regression_binding.md',
-        md_files='tobit_regression_binding_files',
-        output_dir='results/summary/'
+        nb='global_epistasis_binding.ipynb'
     shell:
-        """
-        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
-        mv {params.md} {params.output_dir};
-        mv {params.md_files} {params.output_dir}
-        """
-
-#rule global_epistasis_binding: #currently removed from pipeline
-#    input:
-#        config['Titeseq_Kds_file']
-#    output:
-#        config['global_epistasis_binding_file'],
-#        nb_markdown=nb_markdown('global_epistasis_binding.ipynb')
-#    params:
-#        nb='global_epistasis_binding.ipynb'
-#    shell:
-#        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
+        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
 rule global_epistasis_expression:
     input:
