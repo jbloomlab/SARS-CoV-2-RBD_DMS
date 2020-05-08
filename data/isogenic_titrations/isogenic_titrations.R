@@ -3,6 +3,8 @@
 
 #script to read in results of flow cytometry of isogenic mutants (for various purposes), fit titration curves and some interpretation from each experiment
 
+setwd("/fh/fast/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS/data/isogenic_titrations")
+
 #library(ggplot2)
 #library(data.table)
 
@@ -22,7 +24,7 @@ fit_20200501_pooled <- nls(mean_bin ~ a*(conc_M/(conc_M+Kd))+b,
 
 
 #plot results
-pdf(file="20200501_individual.pdf",width=3,height=8,useDingbats=F)
+pdf(file="20200501_individual.pdf",width=3.2,height=8.5,useDingbats=F)
 #plot three separate fits with their Kd
 options(scipen=1)
 par(mfrow=c(3,1),oma=c(4,4,0,0),mar=c(1,1,1,1))
@@ -65,5 +67,36 @@ legend("topleft",bty="n",cex=0.75,
 mtext("ligand concentration (M, log scale)", side=1, outer=TRUE, line=2)
 mtext("mean bin of FITC+ cells", side=2, outer=TRUE, line=2)
 dev.off()
+
+#plot the three titrations with their pooled fit
+pdf(file="20200501_pooled.pdf",width=4,height=4.5,useDingbats=F)
+plot(dt_20200501$conc_M,
+     dt_20200501$mean_bin,
+     pch=19,log="x",main="SARS-CoV-2 RBD",ylim=c(ymin,ymax),xlim=c(1e-14,1e-7),ylab="mean bin of FITC+ cells",xlab="ligand concentration (M, log scale)")
+points(rep(1e-14,length(dt_20200501[dt_20200501$conc_M==0, "mean_bin"])), dt_20200501[dt_20200501$conc_M==0, "mean_bin"])
+lines(seq(1e-13,1e-7,1e-14),predict(fit_20200501_pooled,list(conc_M=seq(1e-13,1e-7,1e-14))),col="red")
+legend("topleft",bty="n",cex=0.75,
+       legend=c(paste("log10(Kd)",formatC(log10(summary(fit_20200501_pooled)$coefficients["Kd","Estimate"]),format='f',digits=2),
+                      "+/-",formatC(0.434*summary(fit_20200501_pooled)$coefficients["Kd","Std. Error"]/summary(fit_20200501_pooled)$coefficients["Kd","Estimate"],format='f',digits=2))))
+dev.off()
+
+#save a table collating all isogenic fit Kds
+summary <- data.frame(expt=rep("20200501",4),genotype=rep("SARS-CoV-2",4),replicate=c("1","2","3","pooled"),
+                      Kd=c(summary(fit_20200501_1)$coefficients["Kd","Estimate"],
+                           summary(fit_20200501_2)$coefficients["Kd","Estimate"],
+                           summary(fit_20200501_3)$coefficients["Kd","Estimate"],
+                           summary(fit_20200501_pooled)$coefficients["Kd","Estimate"]),
+                      Kd_SE=c(summary(fit_20200501_1)$coefficients["Kd","Std. Error"],
+                              summary(fit_20200501_2)$coefficients["Kd","Std. Error"],
+                              summary(fit_20200501_3)$coefficients["Kd","Std. Error"],
+                              summary(fit_20200501_pooled)$coefficients["Kd","Std. Error"]),
+                      avg_FITCpos=c(mean(dt_20200501[dt_20200501$titration==1,"FITC_percent"],na.rm=T),
+                                    mean(dt_20200501[dt_20200501$titration==2,"FITC_percent"],na.rm=T),
+                                    mean(dt_20200501[dt_20200501$titration==3,"FITC_percent"],na.rm=T),
+                                    mean(dt_20200501[dt_20200501$titration %in% c(1,2,3),"FITC_percent"],na.rm=T)),
+                      avg_FITC_meanF=rep(NA,4))
+
+write.csv(summary,file="isogenic_titrations_summary.csv",row.names=F)
+
 
 
