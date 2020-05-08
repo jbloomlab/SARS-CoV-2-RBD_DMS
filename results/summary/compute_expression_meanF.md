@@ -391,7 +391,7 @@ p1 <- ggplot(counts_filtered_lib1[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(
 
 p2 <- ggplot(counts_filtered_lib2[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(x=variant_class,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  ggtitle("lib2")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
   scale_y_continuous(limits=c(6,12))
 
 p3 <- ggplot(counts_filtered_lib1[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
@@ -401,7 +401,7 @@ p3 <- ggplot(counts_filtered_lib1[!is.na(ML_meanF) & !(variant_class %in% c("syn
 
 p4 <- ggplot(counts_filtered_lib2[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
-  ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  ggtitle("lib2")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
   scale_y_continuous(limits=c(6,12))
 
 grid.arrange(p1,p2,p3,p4,ncol=2)

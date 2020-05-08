@@ -244,14 +244,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 138.9 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.4 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 3.9 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 5.3 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 96.6 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.6 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 329.5 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 4.9 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 129.1 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.3 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 3.6 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 4.9 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 87.2 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.5 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 296.0 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 4.5 sec.
 
 
 Now we want to see which model fits the data better.
@@ -832,14 +832,14 @@ for (lib), scores in func_scores_novar.groupby(['library']):
         models_novar[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 140.0 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.4 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 380.8 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 5.4 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 160.8 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.4 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 338.4 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 5.0 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 120.9 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.3 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 327.2 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 5.1 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 144.2 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.3 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 301.6 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 4.6 sec.
 
 
 

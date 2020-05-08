@@ -1003,7 +1003,7 @@ display(HTML(barcode_runs.to_html(index=False)))
       <td>4.0</td>
       <td>200422</td>
       <td>889705</td>
-      <td>[/shared/ngs/illumina/tstarr/200427_D00300_0953_BHFCMKBCX3/Unaligned/Project_tstarr/Sample_200422_s04-b3/200422_s04-b3_AACGCTTA_L001_R1_001.fastq.gz, /shared/ngs/illumina/tstarr/200427_D00300_0953_BHFCMKBCX3/Unaligned/Project_tstarr/Sample_200422_s04-b3/200422_s04-b3_AACGCTTA_L002_R1_001.fastq.gz]</td>
+      <td>[/shared/ngs/illumina/agreaney/200506_M03100_0566_000000000-CY95L/Data/Intensities/BaseCalls/lib2-s4-b3_S1_L001_R1_001.fastq.gz]</td>
     </tr>
     <tr>
       <td>lib2</td>
@@ -2518,11 +2518,11 @@ display(HTML(fates
     </tr>
     <tr>
       <th>TiteSeq_04_bin3</th>
-      <td>159</td>
-      <td>8</td>
-      <td>16</td>
-      <td>564</td>
-      <td>63</td>
+      <td>0</td>
+      <td>982650</td>
+      <td>1421722</td>
+      <td>303225</td>
+      <td>10654028</td>
     </tr>
     <tr>
       <th>TiteSeq_04_bin4</th>
@@ -2921,7 +2921,7 @@ display(HTML(fates
 
 
 Now we plot the barcode-read fates for each library / sample, showing the bars for valid barcodes in orange and the others in gray.
-We see that the largest fraction of barcode reads correspond to valid barcodes, and most of the others are invalid barcodes (probably because the map to variants that aren't present in our variant table since we didn't associate all variants with barcodes):
+We see that the largest fraction of barcode reads correspond to valid barcodes, and most of the others are invalid barcodes (probably because the map to variants that aren't present in our variant table since we didn't associate all variants with barcodes). The exception to this is lib2 Titeseq_03_bin3; the PCR for this sample in the original sequencing run failed, so we followed it up with a single MiSeq lane. We did not filter out the PhiX reads from this data before parsing, so these PhiX reads will deflate the fraction of valid barcode reads as expected, but does not indicate any problems.
 
 
 ```python

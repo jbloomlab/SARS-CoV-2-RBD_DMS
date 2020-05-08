@@ -125,11 +125,7 @@ for(i in 1:nrow(barcode_runs)){
     counts[library==lib & sample==bin, count.norm := as.numeric(count/ratio)] #normalize read counts by the average read:cell ratio, report in new "count.norm" column
   }
 }
-```
 
-    ## [1] "reads < cells for lib2 TiteSeq_04_bin3 , un-normalized"
-
-``` r
 #annotate each barcode as to whether it's a homolog variant, SARS-CoV-2 wildtype, synonymous muts only, stop, nonsynonymous, >1 nonsynonymous mutations
 counts[target != "SARS-CoV-2", variant_class := target]
 counts[target == "SARS-CoV-2" & n_codon_substitutions==0, variant_class := "wildtype"]
@@ -333,10 +329,6 @@ include a minimum cell count that is required for a meanbin estimate to
 be used in the titration fit, and a minimum number of concentrations
 with determined meanbin that is required for a titration to be reported.
 
-**NOTE, for lib2 for the time being, we are excluding sample04, whose
-PCR for bin3 evidently failed and needs to be redone. We will add this
-concentration back to the lib2 titration series once re-sequenced.**
-
 ``` r
 #For QC and filtering, output columns giving the average number of cells that were sampled for a barcode across the 16 sample concnetrations, and a value for the number of meanbin estimates that were removed for being below the # of cells cutoff
 cutoff <- 2
@@ -344,7 +336,7 @@ counts_lib1[,avgcount := mean(c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,Tite
                                 TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
                                 TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
                                 TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount)),by=barcode]
-counts_lib2[,avgcount := mean(c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
+counts_lib2[,avgcount := mean(c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
                                 TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
                                 TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
                                 TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount)),by=barcode]
@@ -353,7 +345,7 @@ counts_lib1[,min_cell_filtered := sum(c(TiteSeq_01_totalcount,TiteSeq_02_totalco
                                         TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
                                         TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,
                                         TiteSeq_16_totalcount)<cutoff),by=barcode]
-counts_lib2[,min_cell_filtered := sum(c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
+counts_lib2[,min_cell_filtered := sum(c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
                                         TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
                                         TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
                                         TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,
@@ -421,13 +413,13 @@ fit.titration.lib2 <- function(y.vals,x.vals,count.vals,min.cfu=cutoff,min.means
 }
 
 #fit titration to lib2 Titeseq data for each barcode
-counts_lib2[,c("Kd","Kd_SE","response","baseline","RSE","fit") := tryCatch(fit.titration.lib2(y.vals=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin, #remove y-val 4
+counts_lib2[,c("Kd","Kd_SE","response","baseline","RSE","fit") := tryCatch(fit.titration.lib2(y.vals=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,TiteSeq_04_meanbin,
                                                                                                        TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
                                                                                                        TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
                                                                                                        TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
-                                                                                              x.vals=samples_lib2$conc[-4], #remove concentration 4
+                                                                                              x.vals=samples_lib2$conc,
                                                                                               count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
-                                                                                                           TiteSeq_05_totalcount,TiteSeq_06_totalcount, #remove count-val 4
+                                                                                                           TiteSeq_04_totalcount,TiteSeq_05_totalcount,TiteSeq_06_totalcount, 
                                                                                                            TiteSeq_07_totalcount,TiteSeq_08_totalcount,TiteSeq_09_totalcount,
                                                                                                            TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
                                                                                                            TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,
@@ -445,7 +437,7 @@ across our measurement range, and spot check curves whose fit parameters
 hit the different boundary conditions of the fit variables.
 
 We successfully generated *K*<sub>D,app</sub> estimates for 79583 of our
-lib1 barcodes (79.86%) and 78950 of our lib2 barcodes (80.82%).
+lib1 barcodes (79.86%) and 78651 of our lib2 barcodes (80.51%).
 
 Why were estimates not returned for some barcodes? The histograms below
 show that many barcodes with unsuccessful titration fits have lower
@@ -507,10 +499,10 @@ plot.titration.lib1 <- function(row,output.text=F){
   }
 }
 
-plot.titration.lib2 <- function(row, output.text=F){ #currently excludes sample4
-  y.vals <- c();for(sample in samples_lib2$sample){y.vals <- c(y.vals,paste(sample,"_meanbin",sep=""))};y.vals <- unlist(counts_lib2[row,y.vals,with=F])[-4]
-  x.vals <- samples_lib2$conc[-4]
-  count.vals <- c();for(sample in samples_lib2$sample){count.vals <- c(count.vals,paste(sample,"_totalcount",sep=""))};count.vals <- unlist(counts_lib2[row,count.vals,with=F])[-4]
+plot.titration.lib2 <- function(row, output.text=F){
+  y.vals <- c();for(sample in samples_lib2$sample){y.vals <- c(y.vals,paste(sample,"_meanbin",sep=""))};y.vals <- unlist(counts_lib2[row,y.vals,with=F])
+  x.vals <- samples_lib2$conc
+  count.vals <- c();for(sample in samples_lib2$sample){count.vals <- c(count.vals,paste(sample,"_totalcount",sep=""))};count.vals <- unlist(counts_lib2[row,count.vals,with=F])
   plot(x.vals[count.vals>cutoff],y.vals[count.vals>cutoff],xlab="[ACE2] (M)",
        ylab="mean bin",log="x",ylim=c(1,4),xlim=c(1e-13,1e-6),pch=19,main=counts_lib2[row,aa_substitutions])
   fit <- counts_lib2[row,fit[[1]]]
@@ -532,6 +524,36 @@ plot.titration.lib2(which(counts_lib2$avgcount > 50 & is.na(counts_lib2$Kd))[2])
 ```
 
 <img src="compute_binding_Kd_files/figure-gfm/check_failed_titrations-1.png" style="display: block; margin: auto;" />
+
+Some stop variants eked through our RBD+ selection, either perhaps
+because of stop codon readthrough, improper PacBio sequence annotation,
+or other weirdness. Either way, the vast majority of nonsense mutants
+were purged before this step, and the remaining ones are unreliable and
+muddy the waters\!
+
+``` r
+#remove stop variants, which even if they eke through, either a) still have low counts and give poor fits as a result, or b) seem to be either dubious PacBio calls (lower variant_call_support) or have late stop codons which perhaps don't totally ablate funciton. Either way, the vast majority were purged before this step and we don't want to deal with the remaining ones!
+counts_lib1[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+counts_lib2[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+```
+
+Also, downstream vetting showed that there is one curve in lib2 that is
+fit to the minimum boundary of 10<sup>-15</sup>. It’s curve is
+visualizied below. It does have a mean bin of 4 at the lowest sample
+concentration, but it also has many missing observations and is just
+above the average of 5 cell count per mean bin estimate. I am therefore
+going to veto this curve and just manually censor it given its extremity
+on Kd, cell count, and min\_cell\_filtered boundary conditions.
+
+``` r
+plot.titration.lib2(which(counts_lib2$Kd == 1e-15)[1])
+```
+
+<img src="compute_binding_Kd_files/figure-gfm/1e-15_Kd-1.png" style="display: block; margin: auto;" />
+
+``` r
+counts_lib2[counts_lib2$Kd==1e-15,c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+```
 
 Next, let’s look at our distribution of *K*<sub>D,app</sub> estimates.
 We can see below that the distribution of wildtype barcodes (purple) is
@@ -669,17 +691,13 @@ Now, as we get to the other side of the bulk of the distribution, for
 curves showing improved affinities around *K*<sub>D,app</sub> of
 10<sup>-12</sup>, we are once again seeing mainly noise, and in
 particular, curves with low cell counts, large number of missing meanbin
-samples, and correspondingly high residuals (so will liikely be
-eliminated with our filtering step later on). This may be exacerbated in
-lib2, where we are currently missing sample 4 awaiting a redo on a PCR.
-This may explain the higher frequency (though still a small number) of
-barcodes in lib2 showing reconstructed *K*<sub>D,app</sub> substantially
-lower than wildtype in the histograms above.
+samples, and correspondingly high residuals (so will likely be
+eliminated with our filtering step later on).
 
 ``` r
 par(mfrow=c(1,2))
 plot.titration.lib1(which(counts_lib1$Kd < 5e-12)[1])
-plot.titration.lib2(which(counts_lib2$Kd < 1e-12)[1])
+plot.titration.lib2(which(counts_lib2$Kd < 5e-12)[1])
 ```
 
 <img src="compute_binding_Kd_files/figure-gfm/1e-12_Kd-1.png" style="display: block; margin: auto;" />
@@ -752,15 +770,6 @@ response range of the titration fit (which is allowed to vary between
 these normalized residuals.
 
 ``` r
-# #function to calculate mean squared residual
-# calc.MSR <- function(y.obs,x.vals,count.vals,fit,cfu.cutoff=cutoff){
-#   indices <- count.vals>cfu.cutoff
-#   y.obs <- y.obs[indices]
-#   x.vals <- x.vals[indices]
-#   y.pred <- predict(fit,newdata=list(x=x.vals))
-#   return(mean((y.obs - y.pred)^2))
-# }
-
 #function to calculate mean squared residual normalized to response range
 calc.nMSR <- function(y.obs,x.vals,count.vals,response,fit,cfu.cutoff=cutoff){
   indices <- count.vals>cfu.cutoff
@@ -771,33 +780,13 @@ calc.nMSR <- function(y.obs,x.vals,count.vals,response,fit,cfu.cutoff=cutoff){
   resid.norm <- resid/response
   return(mean((resid.norm)^2))
 }
-# #calculate MSR for each fit
-# counts_lib1[!is.na(Kd), MSR := calc.MSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,TiteSeq_04_meanbin,
-#                                                 TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
-#                                                 TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
-#                                                 TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
-#                                         x.vals=samples_lib1$conc,
-#                                         count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
-#                                                      TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
-#                                                      TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
-#                                                      TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
-#                                         fit=fit[[1]]),by=barcode]
-# #lib2, excluding sample04 for now
-# counts_lib2[!is.na(Kd), MSR := calc.MSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,
-#                                                 TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
-#                                                 TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
-#                                                 TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
-#                                         x.vals=samples_lib2$conc[-4],
-#                                         count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
-#                                                      TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
-#                                                      TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
-#                                                      TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
-#                                         fit=fit[[1]]),by=barcode]
+
 #calculate normalized MSR for each fit
+#lib1
 counts_lib1[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,TiteSeq_04_meanbin,
-                                                TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
-                                                TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
-                                                TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
+                                                  TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
+                                                  TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
+                                                  TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
                                         x.vals=samples_lib1$conc,
                                         count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
                                                      TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
@@ -805,13 +794,13 @@ counts_lib1[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_
                                                      TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
                                         response=response,
                                         fit=fit[[1]]),by=barcode]
-#lib2, excluding sample04 for now
-counts_lib2[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,
-                                                TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
-                                                TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
-                                                TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
-                                        x.vals=samples_lib2$conc[-4],
-                                        count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,
+#lib2
+counts_lib2[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_meanbin,TiteSeq_03_meanbin,TiteSeq_04_meanbin,
+                                                  TiteSeq_05_meanbin,TiteSeq_06_meanbin,TiteSeq_07_meanbin,TiteSeq_08_meanbin,
+                                                  TiteSeq_09_meanbin,TiteSeq_10_meanbin,TiteSeq_11_meanbin,TiteSeq_12_meanbin,
+                                                  TiteSeq_13_meanbin,TiteSeq_14_meanbin,TiteSeq_15_meanbin,TiteSeq_16_meanbin),
+                                        x.vals=samples_lib2$conc,
+                                        count.vals=c(TiteSeq_01_totalcount,TiteSeq_02_totalcount,TiteSeq_03_totalcount,TiteSeq_04_totalcount,
                                                      TiteSeq_05_totalcount,TiteSeq_06_totalcount,TiteSeq_07_totalcount,TiteSeq_08_totalcount,
                                                      TiteSeq_09_totalcount,TiteSeq_10_totalcount,TiteSeq_11_totalcount,TiteSeq_12_totalcount,
                                                      TiteSeq_13_totalcount,TiteSeq_14_totalcount,TiteSeq_15_totalcount,TiteSeq_16_totalcount),
@@ -899,8 +888,8 @@ counts_lib1[nMSR > quantile(counts_lib1$nMSR,0.95,na.rm=T),c("Kd","Kd_SE","respo
 counts_lib2[nMSR > quantile(counts_lib2$nMSR,0.95,na.rm=T),c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
 ```
 
-This leaves us with filtered *K*<sub>D,app</sub> estimates for 75603 of
-our lib1 barcodes (75.87%) and 75002 of our lib2 barcodes (76.77%).
+This leaves us with filtered *K*<sub>D,app</sub> estimates for 74917 of
+our lib1 barcodes (75.18%) and 73691 of our lib2 barcodes (75.43%).
 
 As a final filtering step, we noticed above that curves with
 *K*<sub>D,app</sub> between 10<sup>-6</sup> and 10<sup>-4</sup> were
@@ -947,17 +936,16 @@ large variance in this estimate, since it’s just extrapolating out that
 *K*<sub>D,app</sub> is *somewhere* higher than 10<sup>-6</sup>, without
 information as to *where* in this range the curve will actually respond.
 
-In our case, we don’t want the global epistasis model in the next step
-to be able to use these large variances to “put” these measurements
-wherever it needs to to minimize fitting errors – we’d rather that it
-take the 10<sup>-6</sup> *K*<sub>D,app</sub> values as provided without
-crazy high variance, and use the nonlinear curve fit portion of the
-model to “learn” that these 10<sup>-6</sup> values are really a highly
-censored indicator of values somewhere at 10<sup>-6</sup> or higher.
-Therefore, we are going to squash these standard error measures to a
-maximum value, as well. (And in the global epistasis fits, we will also
-try fitting without providing per-barcode variance estimates, anyway,
-since these SE estimates from the curve fit are pretty much unvetted)
+In our case, we may be usinig these SE estimaes in global epistasis
+model fits. (We don’t use them for any other purpose). In that case, we
+don’t want the global epistasis model to be able to use these large
+variances to “put” these measurements wherever it needs to to minimize
+fitting errors – we’d rather that it take the 10<sup>-6</sup>
+*K*<sub>D,app</sub> values as provided without crazy high variance, and
+use the nonlinear curve fit portion of the model to “learn” that these
+10<sup>-6</sup> values are really a highly censored indicator of values
+somewhere at 10<sup>-6</sup> or higher. Therefore, we are going to
+squash these standard error measures to a maximum value, as well.
 
 ``` r
 par(mfrow=c(3,2))
@@ -982,10 +970,6 @@ by variant class. Repeat separately for variant classes of SARS-CoV-2,
 and one for the different RBD homologs.
 
 ``` r
-#remove stop variants
-counts_lib1[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit","log10Kd","log10Ka","log10SE") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
-counts_lib2[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit","log10Kd","log10Ka","log10SE") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
-
 p1 <- ggplot(counts_lib1[target=="SARS-CoV-2" & !is.na(log10Ka),],aes(x=variant_class,y=log10Ka))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   ggtitle("lib1")+xlab("variant class")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
