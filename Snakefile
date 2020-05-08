@@ -105,19 +105,19 @@ rule censored_regression_binding:
         #config['tobit_regression_binding_file'], temporarily an intermediate file
         'results/tobit_regression_binding/tobit_1_vglm.Rda',
         'results/tobit_regression_binding/tobit_2_vglm.Rda',
-        nb_markdown='results/summary/tobit_regression_binding.Rmd'
+        md='results/summary/tobit_regression_binding.md',
+        md_files = directory('results/summary/tobit_regression_binding_files')
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
         nb='tobit_regression_binding.Rmd',
         md='tobit_regression_binding.md',
-        md_files='tobit_regression_binding_files',
-        output_dir='results/summary/'
+        md_files='tobit_regression_binding_files'
     shell:
         """
         R -e \"rmarkdown::render(input=\'{params.nb}\')\";
-        mv {params.md} {params.output_dir};
-        mv {params.md_files} {params.output_dir}
+        mv {params.md} {output.md};
+        mv {params.md_files} {output.md_files}
         """
 
 #rule global_epistasis_binding:
@@ -148,19 +148,19 @@ rule compute_Titeseq_Kds:
     output:
         config['Titeseq_Kds_file'],
         config['Titeseq_Kds_all_targets_file'],
-        nb_markdown='results/summary/compute_binding_Kd.md'
+        md='results/summary/compute_binding_Kd.md',
+        md_files=directory('results/summary/compute_binding_Kd_files')
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
         nb='compute_binding_Kd.Rmd',
         md='compute_binding_Kd.md',
-        md_files='compute_binding_Kd_files',
-        output_dir='results/summary/'
+        md_files='compute_binding_Kd_files'
     shell:
         """
         R -e \"rmarkdown::render(input=\'{params.nb}\')\";
-        mv {params.md} {params.output_dir};
-        mv {params.md_files} {params.output_dir}
+        mv {params.md} {output.md};
+        mv {params.md_files} {output.md_files}
         """
 
 rule compute_expression_meanFs:
@@ -169,19 +169,19 @@ rule compute_expression_meanFs:
     output:
         config['expression_sortseq_file'],
         config['expression_sortseq_all_targets_file'],
-        nb_markdown='results/summary/compute_expression_meanF.md'
+        md='results/summary/compute_expression_meanF.md',
+        md_files=directory('results/summary/compute_expression_meanF')
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
         nb='compute_expression_meanF.Rmd',
         md='compute_expression_meanF.md',
-        md_files='compute_expression_meanF_files',
-        output_dir='results/summary/'
+        md_files='compute_expression_meanF_files'
     shell:
         """
         R -e \"rmarkdown::render(input=\'{params.nb}\')\";
-        mv {params.md} {params.output_dir};
-        mv {params.md_files} {params.output_dir}
+        mv {params.md} {output.md};
+        mv {params.md_files} {output.md_files}
         """
 
 
