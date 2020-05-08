@@ -82,16 +82,20 @@ Initial attempts at fitting Tobit regressions for lib1 revelaed the matrix is no
 
 ```{r eliminate_linear_combinations}
 #check whether any mutations in each matrix are non-identifiable
-matrix_1_linearCombos <- findLinearCombos(matrix_1)
+#matrix_1_linearCombos <- findLinearCombos(matrix_1)
 #save(matrix_1_linearCombos, file="results/tobit_regression_binding/matrix_1_linearCombos.Rda")
-matrix_2_linearCombos <- findLinearCombos(matrix_2)
+#matrix_2_linearCombos <- findLinearCombos(matrix_2)
 #save(matrix_2_linearCombos, file="results/tobit_regression_binding/matrix_2_linearCombos.Rda")
+load(file="results/tobit_regression_binding/matrix_1_linearCombos.Rda")
+load(file="results/tobit_regression_binding/matrix_2_linearCombos.Rda")
+
 
 #matrix 1, need to remove column 3332 and 3064 to get a solvable regression. For matrix 2, it's solvable as is.
 #first, need to remove rows from dt_1 that have the co-linear mutations
 dt_1_tofit <- dt_1[-which(matrix_1[,matrix_1_linearCombos$remove]==1),]
-#and remove these columns from the model matrix
-matrix_1_tofit <- matrix_1[,-matrix_1_linearCombos$linearCombos[[1]]]
+#and remove these columns and rows from the model matrix
+matrix_1_tofit <- matrix_1[-which(matrix_1[,matrix_1_linearCombos$remove]==1),]
+matrix_1_tofit <- matrix_1_tofit[,-matrix_1_linearCombos$linearCombos[[1]]]
 
 dt_2_tofit <- dt_2
 matrix_2_tofit <- matrix_2
