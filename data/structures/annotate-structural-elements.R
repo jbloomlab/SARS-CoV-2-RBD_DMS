@@ -8,7 +8,7 @@ setwd("/fh/fast/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS")
 library(bio3d)
 
 #read in file that gives concordance between numbering of SARS-CoV-2 and SARS-CoV RBDs
-sites_alignment <- read.csv(file="data/RBD_sites.csv",stringsAsFactors=F)
+sites_alignment <- read.csv(file="data/structures/RBD_sites_input.csv",stringsAsFactors=F)
 
 #annotate residues as belonging to the RBM (SARS-CoV-2 residues N437-Y508)
 sites_alignment$RBM <- F
@@ -141,6 +141,22 @@ RBD1_80R <- read.pdb(file="data/structures/Ab-bound/80R_2ghw.pdb")
 RBD1_80R_contacts <- binding.site(RBD1_80R, a.inds=atom.select(RBD1_80R, chain="A"), b.inds=atom.select(RBD1_80R, chain=c("B")),cutoff=4, hydrogens=F)
 sites_alignment$epitope_80R <- F
 sites_alignment[sites_alignment$site_SARS1 %in% RBD1_80R_contacts$resno & !is.na(sites_alignment$site_SARS1),"epitope_80R"] <- T
+
+#annotate positions that are buried with the rest of spike trimer in the RBD down conformations.
+#in pdb 6vsb, we want to identify RBD residues witin 4A from non-RBD resiidues in chains B and/or C, but not A
+STrimer_2 <- clean.pdb(read.pdb(file="data/structures/ACE2-bound/6vsb.pdb"), rm.wat=T, rm.lig=T)
+STrimer_upA_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="A",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="A",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)
+STrimer_downB_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="B",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="B",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)
+STrimer_downC_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="C",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="C",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)  
+
+#keep only residues that are contacts in the B or C down conformations but not the A up conformation
+contacts <- unique(STrimer_downB_contacts$resno,STrimer_downC_contacts$resno)
+contacts <- contacts[!(contacts %in% STrimer_upA_contacts$resno)]
+#remove sites 331 and 332, which are the first two in my RBD cutoffs but are unstructured in the up chain A conformation, otherwise would be excluded
+contacts <- contacts[!(contacts %in% c(331,332))]
+
+sites_alignment$buried_downRBD <- F
+sites_alignment[sites_alignment$site_SARS2 %in% contacts,"buried_downRBD"] <- T
 
 #save RBD_sites.csv with structural annotations for downstream data analysis
 write.csv(sites_alignment,file="data/RBD_sites.csv",row.names=F)
