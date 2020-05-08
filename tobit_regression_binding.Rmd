@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("data.table","tidyverse","VGAM","censReg")
+packages = c("yaml","data.table","tidyverse","censReg","AER","VGAM","caret")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -54,7 +54,9 @@ dt <- data.table(read.csv(file=config$Titeseq_Kds_file,stringsAsFactors = F)) #l
 
 Our -log10(*K*<sub>D,app</sub>) scale is additive, meaning the effect of a double mutant as change in -log10(*K*<sub>D,app</sub>) is expressed as the sum of the two component single mutational effects on -log10(*K*<sub>D,app</sub>). The exception to this is that we have known, harsh censoring of our measurements at the boundary condition of 10<sup>-6</sup>M (we could also consider an upper boundary of 10<sup>-13</sup>M, as we still have the 0M point, plus we didn't end up having any variants with binding at this boundary condition anyway) imposed by our concentration range in the assay. (The validity of this additive linear range, apart from range censoring, is supported from our initial attempts to fit an Otwinowski et al. style global epistasis model to these data, which essentially fit strong censoring at the lower boundary, and a more-or less linear response through the dynamic range of our assay.) We will therefore use this knowledge of the underlying nonlinearity to motivate the use of *censored linear regression* models to decompose single mutant effects from our barcode-level measurements.
 
-```{r fit_tobit}
+First, we will set up our model matrix encoding our factor variables for the regression. We remove columns that are unidentifiable
+
+```{r setup_data_matrix}
 #split concatenated aa_substitutions, which will become our model factors
 dt[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=(barcode)]
 
@@ -72,11 +74,52 @@ matrix_2 <- as.matrix(do.call(rbind, lapply(lapply(dt_2[,aa_subs_list], factor, 
 #check that the number of mutations in each barcode as the matrix rowSum matches the number of mutations annotated in the dt table
 stopifnot(rowSums(matrix_1)==dt_1$n_aa_substitutions)
 stopifnot(rowSums(matrix_2)==dt_2$n_aa_substitutions)
+```
 
-tobit_1 <- censReg(dt_1$log10Ka ~ matrix_1, left=6)
-save(tobit_1,file=paste(config$tobit_regression_binding_dir,"/tobit_1.Rda",sep=""))
-tobit_2 <- censReg(dt_2$log10Ka ~ matrix_2, left=6)
-save(tobit_2,file=paste(config$tobit_regression_binding_dir,"/tobit_2.Rda",sep=""))
+Initial attempts at fitting Tobit regressions for lib1 revelaed the matrix is not full-order -- that is, there are probably some combination of at least 2 mutants which are only found together, and not resolvable from one another. Let's identify co-linear mutation factor combinations that need to be removed. We then remove any barcodes that carry these mutations, and remove them from the model matrix.
+
+(The mutations are T193Y and V194G, which are found on 14 (!) barcodes, but only together in combination.)
+
+```{r eliminate_linear_combinations}
+#check whether any mutations in each matrix are non-identifiable
+matrix_1_linearCombos <- findLinearCombos(matrix_1)
+#save(matrix_1_linearCombos, file="results/tobit_regression_binding/matrix_1_linearCombos.Rda")
+matrix_2_linearCombos <- findLinearCombos(matrix_2)
+#save(matrix_2_linearCombos, file="results/tobit_regression_binding/matrix_2_linearCombos.Rda")
+
+#matrix 1, need to remove column 3332 and 3064 to get a solvable regression. For matrix 2, it's solvable as is.
+#first, need to remove rows from dt_1 that have the co-linear mutations
+dt_1_tofit <- dt_1[-which(matrix_1[,matrix_1_linearCombos$remove]==1),]
+#and remove these columns from the model matrix
+matrix_1_tofit <- matrix_1[,-matrix_1_linearCombos$linearCombos[[1]]]
+
+dt_2_tofit <- dt_2
+matrix_2_tofit <- matrix_2
+
+```
+Fit tobit regressions to the data.
+
+```{r fit_tobits}
+#lm_1 <- lm(dt_1$log10Ka ~ matrix_1)
+#save(lm_1, file="results/tobit_regression_binding/lm_1.Rda")
+#lm_2 <- lm(dt_2$log10Ka ~ matrix_2)
+
+#first tried using VGAM package tobit function, on counts_1. This probably got the closest to a fit I've got (for lib1, at least -- the censReg implementation seems to be running on lib2)
+#it failed saying it can only run on full-rank models -- suggesting at least one of the mutations in my library is non-identifiable
+#would probably be a low count, and perhaps only observed on a background with another set of mutations?
+tobit_1_vglm <- vglm(dt_1_tofit$log10Ka ~ matrix_1_tofit, tobit(Lower=6,imethod=3), trace=T)
+save(tobit_1_vglm, file=paste(config$tobit_regression_binding_dir,"/tobit_1_vglm.Rda",sep=""))
+
+tobit_2_vglm <- vglm(dt_2_tofit$log10Ka ~ matrix_2_tofit, tobit(Lower=6,imethod=3), trace=T)
+save(tobit_2_vglm, file=paste(config$tobit_regression_binding_dir,"/tobit_2_vglm.Rda",sep=""))
+
+# tobit_1 <- censReg(dt_1$log10Ka ~ matrix_1, left=6)
+# save(tobit_1,file=paste(config$tobit_regression_binding_dir,"/tobit_1.Rda",sep=""))
+# tobit_2 <- censReg(dt_2$log10Ka ~ matrix_2, left=6) #this is currently being fit and saved as tobit_2 by the script running through snakemake
+# save(tobit_2,file=paste(config$tobit_regression_binding_dir,"/tobit_2.Rda",sep=""))
+
+#try out tobit() function in the AER package
+# tobit_1_AER <- tobit(dt_1$log10Ka ~ matrix_1, left = 6)
 
 ```
 

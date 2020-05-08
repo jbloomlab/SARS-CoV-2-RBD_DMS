@@ -354,6 +354,19 @@ plot.titration.lib2(which(counts_lib2$avgcount > 50 & is.na(counts_lib2$Kd))[2])
 
 ```
 
+Some stop variants eked through our RBD+ selection, either perhaps because of stop codon readthrough, improper PacBio sequence annotation, or other weirdness. Either way, the vast majority of nonsense mutants were purged before this step, and the remaining ones are unreliable and muddy the waters!
+```{r remove_stops}
+#remove stop variants, which even if they eke through, either a) still have low counts and give poor fits as a result, or b) seem to be either dubious PacBio calls (lower variant_call_support) or have late stop codons which perhaps don't totally ablate funciton. Either way, the vast majority were purged before this step and we don't want to deal with the remaining ones!
+counts_lib1[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+counts_lib2[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+```
+
+Also, downstream vetting showed that there is one curve in lib2 that is fit to the minimum boundary of 10<sup>-15</sup>. It's curve is visualizied below. It does have a mean bin of 4 at the lowest sample concentration, but it also has many missing observations and is just above the average of 5 cell count per mean bin estimate. I am therefore going to veto this curve and just manually censor it given its extremity on Kd, cell count, and min_cell_filtered boundary conditions.
+```{r 1e-15_Kd, fig.width=4.25, fig.height=4.25, fig.align="center",dpi=300, warning=FALSE, results=FALSE,dev="png"}
+plot.titration.lib2(which(counts_lib2$Kd == 1e-15)[1])
+counts_lib2[counts_lib2$Kd==1e-15,c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+```
+
 Next, let's look at our distribution of *K*<sub>D,app</sub> estimates. We can see below that the distribution of wildtype barcodes (purple) is very tight. The homologs in the library (lumped together in blue) show an expected variation: some of the homologs have similar or very slightly reduced or enhanced affinity relative to WT SARS-CoV-2, one shows an intermediate level of binding (RaTG13), and the clade2 genotypes show no binding. The mutant genotypes of SARS-CoV-2 span the spectrum here, with the large bar at 10<sup>-4</sup> reflecting barocdes that had no response even at the highest concentration and thus were assigned the highest allowable value per the fitting constraints.
 
 ```{r Kd_distribution, fig.width=10, fig.height=5, fig.align="center",dpi=300,dev="png"}
@@ -599,6 +612,7 @@ Next, we will apply this filtering step on normalized MSR, removing the worst 5%
 ```{r filter_curves_by_nMSR}
 counts_lib1[nMSR > quantile(counts_lib1$nMSR,0.95,na.rm=T),c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
 counts_lib2[nMSR > quantile(counts_lib2$nMSR,0.95,na.rm=T),c("Kd","Kd_SE","response","baseline","RSE","fit") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA))]
+
 ```
 This leaves us with filtered *K*<sub>D,app</sub> estimates for `r sum(!is.na(counts_lib1$Kd))` of our lib1 barcodes (`r round(sum(!is.na(counts_lib1$Kd))/nrow(counts_lib1)*100,digits=2)`%) and `r sum(!is.na(counts_lib2$Kd))` of our lib2 barcodes (`r round(sum(!is.na(counts_lib2$Kd))/nrow(counts_lib2)*100,digits=2)`%).  
 
@@ -646,10 +660,6 @@ hist(counts_lib2$log10SE,breaks=20,main="lib2",xlab="Standard Error of log10(K_A
 Let's visualize the final binding measurements as violin plots, faceted by variant class. Repeat separately for variant classes of SARS-CoV-2, and one for the different RBD homologs.
 
 ```{r final_pheno_DFE, fig.width=9, fig.height=9, fig.align="center",dpi=300,dev="png"}
-#remove stop variants
-counts_lib1[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit","log10Kd","log10Ka","log10SE") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
-counts_lib2[variant_class == "stop",c("Kd","Kd_SE","response","baseline","RSE","fit","log10Kd","log10Ka","log10SE") := list(as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA),as.list(NA),as.numeric(NA),as.numeric(NA),as.numeric(NA))]
-
 p1 <- ggplot(counts_lib1[target=="SARS-CoV-2" & !is.na(log10Ka),],aes(x=variant_class,y=log10Ka))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   ggtitle("lib1")+xlab("variant class")+theme(axis.text.x=element_text(angle=-45,hjust=0))+

@@ -32,8 +32,8 @@ rule all:
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
         #config['tobit_regression_binding_file'], temporarily replaced with intermediate files
-        'results/tobit_regression_binding/tobit_1.Rda',
-        'results/tobit_regression_binding/tobit_2.Rda',
+        'results/tobit_regression_binding/tobit_1_vglm.Rda',
+        'results/tobit_regression_binding/tobit_2_vglm.Rda',
         config['global_epistasis_expr_file']
 
 
@@ -103,8 +103,8 @@ rule censored_regression_binding:
         config['Titeseq_Kds_file']
     output:
         #config['tobit_regression_binding_file'], temporarily an intermediate file
-        'results/tobit_regression_binding/tobit_1.Rda',
-        'results/tobit_regression_binding/tobit_2.Rda',
+        'results/tobit_regression_binding/tobit_1_vglm.Rda',
+        'results/tobit_regression_binding/tobit_2_vglm.Rda',
         nb_markdown='results/summary/tobit_regression_binding.Rmd'
     envmodules:
         'R/3.6.1-foss-2016b'

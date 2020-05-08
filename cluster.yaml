@@ -40,9 +40,8 @@ compute_expression_meanFs:
 #  mem: 100000
 
 censored_regression_binding:
-  cpus: 16
+  cpus: 24
   partition: largenode
-  time: 2-0
   mem: 250000
 
 global_epistasis_expression:
