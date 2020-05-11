@@ -808,8 +808,6 @@ counts_lib2[!is.na(Kd), nMSR := calc.nMSR(y.obs=c(TiteSeq_01_meanbin,TiteSeq_02_
                                         fit=fit[[1]]),by=barcode]
 ```
 
-Next, let’s look at the normalized MSR metric.
-
 ``` r
 par(mfrow=c(3,2))
 hist(counts_lib1$nMSR,main="lib1",xlab="Response-normalized mean squared residual",col="gray50",breaks=40)
@@ -911,7 +909,9 @@ associated with tighter binding, as is more intuitive. (If we want to
 continue to discuss in terms of *K*<sub>D,app</sub>, since people are
 often more familiar with *K*<sub>D</sub>, we can refer to the
 log<sub>10</sub>(*K*<sub>A,app</sub>) as
--log<sub>10</sub>(*K*<sub>D,app</sub>), which are identical.
+-log<sub>10</sub>(*K*<sub>D,app</sub>), which are identical. We will
+also compute the change in log<sub>10</sub>(*K*<sub>A,app</sub>)
+relative to the median wildtype value in each library.
 
 ``` r
 counts_lib1[,log10Kd := log10(Kd),by=barcode]
@@ -923,6 +923,9 @@ counts_lib2[,log10Ka := -log10Kd,by=barcode]
 #error propagation of the SE of the Kd fit onto the log10 scale
 counts_lib1[,log10SE := 0.434*Kd_SE/Kd,by=barcode]
 counts_lib2[,log10SE := 0.434*Kd_SE/Kd,by=barcode]
+
+counts_lib1$delta_log10Ka <- counts_lib1$log10Ka - median(counts_lib1[variant_class %in% c("synonymous","wildtype"),log10Ka],na.rm=T)
+counts_lib2$delta_log10Ka <- counts_lib2$log10Ka - median(counts_lib2[variant_class %in% c("synonymous","wildtype"),log10Ka],na.rm=T)
 ```
 
 Some curve fits derived a nonsensically high standard error on the
@@ -1011,15 +1014,15 @@ SARS-CoV-2 targets only
 counts_lib1[,library:="lib1"]
 counts_lib2[,library:="lib2"]
 
-write.csv(rbind(counts_lib1[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+write.csv(rbind(counts_lib1[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
                                baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_lib2[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+                counts_lib2[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
                                baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]),
           file=config$Titeseq_Kds_all_targets_file)
 
-write.csv(rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+write.csv(rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
                                                    baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, log10SE, Kd, Kd_SE, response,
+                counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
                                                    baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]),
           file=config$Titeseq_Kds_file)
 ```

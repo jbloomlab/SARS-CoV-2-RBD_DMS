@@ -19,10 +19,12 @@ workflow:
 
 4. [QC analysis of sequencing counts](analyze_counts.md).
 
-5. [Computation of ACE2-binding *K*_D](compute_binding_Kd.md).
+5. [Computation of ACE2-binding *K*<sub>D</sub>](compute_binding_Kd.md).
 
 6. [Computation of expression mean fluorescence](compute_expression_meanF.md).
 
 7. [Global epistasis decomposition of binding effects](global_epistasis_binding.md).
+
+7. (alt)[Tobit regression decomposition of binding effects](tobit_regression_binding.md).
 
 8. [Global epistasis decomposition of expression effects](global_epistasis_expression.md).
