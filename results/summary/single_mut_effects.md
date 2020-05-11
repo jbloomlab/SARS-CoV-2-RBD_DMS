@@ -465,25 +465,30 @@ observed-scale coefficients contrasts with our observation from directly
 sampled measurements, that there do appear to be *some* true
 affinity-enhancing single mutants in the wildtype background.
 
-Taken together, then, my proposal is as follows: *For any single
-mutation that was directly sampled on at least one barcode in a
-replicate, use the directly measured single mutant effect from those
-direct samples for that replicate. *For any single mutation that was not
-directly sampled on at least one barcode, use the Cauchy observed-scale
-global epistasis coefficient for that replicate. *Then, for each
-mutation’s ‘final’ effect, we take the average effect of its value in
-the two replicate libraries. Based on the numbers output above: *For
-\~78% of single mutants, this average will be computed from two
-directly-measured single mutant effects. This class of replicate
-measurements are described by the correlation above with R-squared of
-\~0.974 *For about 16% of single mutants, this average will be computed
-from one directly-measured single mutant effect, and one model
-coefficient from a global epistasis model. This class of replicate
-measurements are described by the correlation above with R-squared of
-\~0.876 *For about 6% of single mutants, this average will be computed
-from two global epistasis model coefficients. This class of replicate
-measurements are described by the correlation above with R-squared of
-\~0.766
+Taken together, then, my proposal is as follows:
+
+  - For any single mutation that was directly sampled on at least one
+    barcode in a replicate, use the directly measured single mutant
+    effect from those direct samples for that replicate.
+  - For any single mutation that was not directly sampled on at least
+    one barcode, use the Cauchy observed-scale global epistasis
+    coefficient for that replicate.
+  - Then, for each mutation’s ‘final’ effect, we take the average effect
+    of its value in the two replicate libraries. Based on the numbers
+    output above:
+      - For \~78% of single mutants, this average will be computed from
+        two directly-measured single mutant effects. This class of
+        replicate measurements are described by the correlation above
+        with R-squared of \~0.974
+      - For about 16% of single mutants, this average will be computed
+        from one directly-measured single mutant effect, and one model
+        coefficient from a global epistasis model. This class of
+        replicate measurements are described by the correlation above
+        with R-squared of \~0.876
+      - For about 6% of single mutants, this average will be computed
+        from two global epistasis model coefficients. This class of
+        replicate measurements are described by the correlation above
+        with R-squared of \~0.766
 
 The main thing to note again at this point, is that the global epistasis
 model coefficients are disallowed from values \>0. Taken together, I

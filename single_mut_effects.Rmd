@@ -357,12 +357,13 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta coefficient, Cauchy observed",yl
 Overall, my intuition from looking at the mutations with positive latent-scale versus directly measured beneficial effects, along with the shapes of correlations between latent-scale and direct measurements, leads me to believe that stability is a large contributor to the latent-scale effects of mutations. Because of this, and the fact that stabilizing mutations don't enhance affinity in the stabilized WT background, the observed scale nonlinearity censors the beneficial latent-effect mutations to have no effect (beta = 0) on the WT background observed-scale. However, this complete censoring of positive observed-scale coefficients contrasts with our observation from directly sampled measurements, that there do appear to be *some* true affinity-enhancing single mutants in the wildtype background.
 
 Taken together, then, my proposal is as follows:
- *For any single mutation that was directly sampled on at least one barcode in a replicate, use the directly measured single mutant effect from those direct samples for that replicate.
- *For any single mutation that was not directly sampled on at least one barcode, use the Cauchy observed-scale global epistasis coefficient for that replicate.
- *Then, for each mutation's 'final' effect, we take the average effect of its value in the two replicate libraries. Based on the numbers output above:
-    *For ~78% of single mutants, this average will be computed from two directly-measured single mutant effects. This class of replicate measurements are described by the correlation above with R-squared of ~0.974
-    *For about 16% of single mutants, this average will be computed from one directly-measured single mutant effect, and one model coefficient from a global epistasis model. This class of replicate measurements are described by the correlation above with R-squared of ~0.876
-    *For about 6% of single mutants, this average will be computed from two global epistasis model coefficients. This class of replicate measurements are described by the correlation above with R-squared of ~0.766
+
+  * For any single mutation that was directly sampled on at least one barcode in a replicate, use the directly measured single mutant effect from those direct samples for that replicate.
+  * For any single mutation that was not directly sampled on at least one barcode, use the Cauchy observed-scale global epistasis coefficient for that replicate.
+  * Then, for each mutation's 'final' effect, we take the average effect of its value in the two replicate libraries. Based on the numbers output above:
+      * For ~78% of single mutants, this average will be computed from two directly-measured single mutant effects. This class of replicate measurements are described by the correlation above with R-squared of ~0.974
+      * For about 16% of single mutants, this average will be computed from one directly-measured single mutant effect, and one model coefficient from a global epistasis model. This class of replicate measurements are described by the correlation above with R-squared of ~0.876
+      * For about 6% of single mutants, this average will be computed from two global epistasis model coefficients. This class of replicate measurements are described by the correlation above with R-squared of ~0.766
 
 The main thing to note again at this point, is that the global epistasis model coefficients are disallowed from values >0. Taken together, I think this behavior is acceptable -- positing a beneficial mutational effect on binding from these modeled coefficients alone, which are less precisely determined, would be less convincing. So, I think taking a more conservative approach per the global epistasis model, disallowing non-direct measurements from being assigned affinity-enhancing effects, is appropriate.
 
