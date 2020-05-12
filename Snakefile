@@ -169,7 +169,7 @@ rule compute_expression_meanFs:
         config['expression_sortseq_file'],
         config['expression_sortseq_all_targets_file'],
         md='results/summary/compute_expression_meanF.md',
-        md_files=directory('results/summary/compute_expression_meanF')
+        md_files=directory('results/summary/compute_expression_meanF_files')
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
