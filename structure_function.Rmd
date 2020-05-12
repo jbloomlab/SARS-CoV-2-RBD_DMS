@@ -31,7 +31,7 @@ invisible(lapply(packages, library, character.only=T))
 config <- read_yaml("config.yaml")
 
 #read in file giving concordance between RBD numbering and SARS-CoV-2 Spike numbering
-RBD_sites <- read.csv(file="data/RBD_sites.csv",stringsAsFactors=F)
+RBD_sites <- data.table(read.csv(file="data/RBD_sites.csv",stringsAsFactors=F))
 
 #make output directory
 if(!file.exists(config$structure_function)){
@@ -49,11 +49,16 @@ sessionInfo()
 Read in tables of variant effects on binding and expression, for single mutations to the SARS-CoV-2 RBD and for a panel of homolog RBDs from the sarbecovirus clade.
 
 ```{r read_data}
-#homologs <- data.table(read.csv(file=config$homolog_effects_file))
-#mutants <- data.table(read.csv(file=config$single_mut_effects_file))
+#homologs <- data.table(read.csv(file=config$homolog_effects_file,stringsAsFactors = F))
+#mutants <- data.table(read.csv(file=config$single_mut_effects_file,stringsAsFactors = F))
 
-homologs <- data.table(read.csv(file="results/single_mut_effects_temp/homolog_effects.csv"))
-mutants <- data.table(read.csv(file="results/single_mut_effects_temp/single_mut_effects.csv"))
+#re-running part of single_mut_effects, so using temp directory output files for now
+homologs <- data.table(read.csv(file="results/single_mut_effects_temp/homolog_effects.csv",stringsAsFactors = F))
+mutants <- data.table(read.csv(file="results/single_mut_effects_temp/single_mut_effects.csv",stringsAsFactors = F))
+
+#rename mutants site indices to prevent shared names with RBD_sites, simplifying some downstream calculations that cross-index these tables
+setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2_site")
+
 ```
 
 ## Overall relationship between structure and function
@@ -61,12 +66,22 @@ mutants <- data.table(read.csv(file="results/single_mut_effects_temp/single_mut_
 Let's investigate how the RBD structure influences mutational effects on expression and binding. First, we compute the *mean* effect of mutations on binding and expression for each site in the structure, as well as the best (max) and worst (min) mutational effects on these two measurements (excluding nonsense and synonymous mutants).
 
 ```{r mean_max_mut_effect_per_site}
+RBD_sites[,mean_bind := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
+RBD_sites[,max_bind := max(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
+RBD_sites[,min_bind := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
 
+RBD_sites[,mean_expr := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",expr_avg],na.rm=T),by=site_SARS2]
+RBD_sites[,max_expr := max(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",expr_avg],na.rm=T),by=site_SARS2]
+RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",expr_avg],na.rm=T),by=site_SARS2]
 ```
 
-First, let's see how mutational effects on binding expression correlate at the level of individual mutations and at the level of site-level mean effects of mutation. We can see below that for many mutations and sites, mutational effects on expression and binding are correlated. However, several positions are tolerant to mutation with respect to expression despite being sensitive to mutation with respect to binding. Below, we output the sites of these mutations, which we can visualize on the ACE2-bound RBD structure using `dms-view`, linked [here](). We can see that these sites exhibiting binding-specific mutational sensitivity are typically at the ACE2-contact interface. (However, some mutations that are not at contact residues have mutation-specific discrepencies, xxxx)
+First, let's see how mutational effects on binding expression correlate at the level of individual mutations and at the level of site-level mean effects of mutation. We can see below that for many mutations and sites, mutational effects on expression and binding are intertwined. However, several positions are tolerant to mutation with respect to expression despite being sensitive to mutation with respect to binding. Below, we output the sites of these mutations, which we can visualize on the ACE2-bound RBD structure using `dms-view`, linked [here](). We can see that these sites exhibiting binding-specific mutational sensitivity are typically at the ACE2-contact interface. (However, some mutations that are not at contact residues have mutation-specific discrepencies, xxxx)
 
 ```{r correlation_mut_expression_binding, fig.width=8,fig.height=4.25,fig.align="center", dpi=300,dev="png"}
+par(mfrow=c(1,2))
+plot(RBD_sites$mean_expr,RBD_sites$mean_bind,pch=19,col="#00000050",xlab="mean mutational effect on expression",ylab="mean mutational effect on binding",main="binding versus expression effects,\naverage per site")
+
+plot(mutants$bind_avg,RBD_sites$expr_avg,pch=19,col="#00000050",xlab="mutational effect on expression",ylab="mutational effect on binding",main="binding versus expression effects,\nper mutant")
 
 ```
 The relative solvent accessiibility (RSA) of an amino acid residue is known to be a dominant factor influencing its tolerance to mutation. Let's see how RSA of a position is related to its mutational sensitivity for binding and expression. We use RSA in two different structural contexts -- the free RBD structure, and the RBD structure when complexed with ACE2. We can see that expression effects are more closely associated with residue RSA in the free complex, while mutational effects on binding are best described by the ACE2-bound RSA.

@@ -101,9 +101,100 @@ points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=
 
 <img src="single_mut_effects_files/figure-gfm/bc_tables-1.png" style="display: block; margin: auto;" />
 
-We also read in all parameters from global epistasis models (ugly code
-hidden), and collapse down to individual tables reporting the lib1,
-lib2, and joint model inferred effects.
+We also read in all parameters from global epistasis models, and
+collapse down to individual tables reporting the lib1, lib2, and joint
+model inferred effects.
+
+``` r
+#open and merge together Cauchy likelihood, binding models
+betas_bind_observed_Cauchy <- merge(read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_bind_observed_Cauchy <- merge(betas_bind_observed_Cauchy,
+                                    read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_bind_observed_Cauchy)[which(names(betas_bind_observed_Cauchy)=="effect")] <- "effect_joint"
+
+betas_bind_latent_Cauchy <- merge(read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_bind_latent_Cauchy <- merge(betas_bind_latent_Cauchy,
+                                    read.csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_bind_latent_Cauchy)[which(names(betas_bind_latent_Cauchy)=="effect")] <- "effect_joint"
+
+betas_bind_nonepistatic_Cauchy <- merge(read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_bind_nonepistatic_Cauchy <- merge(betas_bind_nonepistatic_Cauchy,
+                                    read.csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_bind_nonepistatic_Cauchy)[which(names(betas_bind_nonepistatic_Cauchy)=="effect")] <- "effect_joint"
+
+#open and merge together Gaussian likelihood, binding models
+betas_bind_observed_Gaussian <- merge(read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_bind_observed_Gaussian <- merge(betas_bind_observed_Gaussian,
+                                    read.csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_bind_observed_Gaussian)[which(names(betas_bind_observed_Gaussian)=="effect")] <- "effect_joint"
+
+betas_bind_latent_Gaussian <- merge(read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_bind_latent_Gaussian <- merge(betas_bind_latent_Gaussian,
+                                    read.csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_bind_latent_Gaussian)[which(names(betas_bind_latent_Gaussian)=="effect")] <- "effect_joint"
+
+betas_bind_nonepistatic_Gaussian <- merge(read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_1.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_2.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_bind_nonepistatic_Gaussian <- merge(betas_bind_nonepistatic_Gaussian,
+                                    read.csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_bind_nonepistatic_Gaussian)[which(names(betas_bind_nonepistatic_Gaussian)=="effect")] <- "effect_joint"
+
+
+#open and merge together Cauchy likelihood, expression models
+betas_expr_observed_Cauchy <- merge(read.csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_expr_observed_Cauchy <- merge(betas_expr_observed_Cauchy,
+                                    read.csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_expr_observed_Cauchy)[which(names(betas_expr_observed_Cauchy)=="effect")] <- "effect_joint"
+
+betas_expr_latent_Cauchy <- merge(read.csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_expr_latent_Cauchy <- merge(betas_expr_latent_Cauchy,
+                                    read.csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_expr_latent_Cauchy)[which(names(betas_expr_latent_Cauchy)=="effect")] <- "effect_joint"
+
+betas_expr_nonepistatic_Cauchy <- merge(read.csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_1.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_2.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_expr_nonepistatic_Cauchy <- merge(betas_expr_nonepistatic_Cauchy,
+                                    read.csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_expr_nonepistatic_Cauchy)[which(names(betas_expr_nonepistatic_Cauchy)=="effect")] <- "effect_joint"
+
+#open and merge together Gaussian likelihood, expression models
+betas_expr_observed_Gaussian <- merge(read.csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_expr_observed_Gaussian <- merge(betas_expr_observed_Gaussian,
+                                    read.csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_expr_observed_Gaussian)[which(names(betas_expr_observed_Gaussian)=="effect")] <- "effect_joint"
+
+betas_expr_latent_Gaussian <- merge(read.csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_1.csv',stringsAsFactors=F),
+                                    read.csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_2.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_expr_latent_Gaussian <- merge(betas_expr_latent_Gaussian,
+                                    read.csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_expr_latent_Gaussian)[which(names(betas_expr_latent_Gaussian)=="effect")] <- "effect_joint"
+
+betas_expr_nonepistatic_Gaussian <- merge(read.csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_1.csv',stringsAsFactors=F),
+                                        read.csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_2.csv',stringsAsFactors=F),
+                                        by=c("site","mutation","wildtype","mutant"),all=T,sort=T,suffixes=c("_lib1","_lib2"));
+betas_expr_nonepistatic_Gaussian <- merge(betas_expr_nonepistatic_Gaussian,
+                                    read.csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_joint.csv',stringsAsFactors=F),
+                                    by=c("site","mutation","wildtype","mutant"),all=T);names(betas_expr_nonepistatic_Gaussian)[which(names(betas_expr_nonepistatic_Gaussian)=="effect")] <- "effect_joint"
+```
 
 ## Assessing global epistasis models for binding data
 
@@ -740,13 +831,16 @@ betas[,expr_lib2 := expr_lib2_coef]
 betas[,expr_avg := mean(c(expr_lib1,expr_lib2),na.rm=T),by=mutation]
 ```
 
-Last, save our estimated single-mutant effects as a csv file. We’ll keep
-the full wide format, with lib1 and lib2 direct and coef estimates for
-binding and expression scores, along with the concatenated lib1 and lib2
-effects, and the average from the two libraries.
+Last, save our estimated single-mutant effects as a csv file. We output
+the estimated effects on binding and expression in each library and the
+average of the libraries.
 
 ``` r
-write.csv(betas, file=config$single_mut_effects_file)
+betas %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  dplyr::select(site_RBD, site_SARS2, wildtype, mutant, mutation, mutation_RBD,
+                bind_lib1, bind_lib2, bind_avg, expr_lib1, expr_lib2, expr_avg) %>%
+  write.csv(file=config$single_mut_effects_file, row.names=F)
 ```
 
 ## Output summary of homolog phenotypes
@@ -780,11 +874,11 @@ for(i in 1:nrow(homologs)){
   homologs$bind_avg[i] <- mean(homologs$bind_lib1[i], homologs$bind_lib2[i])
   homologs$bind_SE[i] <- sqrt(homologs$bind_lib1_SE[i]^2 + homologs$bind_lib2_SE[i]^2)/2
   expr_lib1 <- bc_homologs_expr[library=="lib1" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
-  homologs$expr_lib1[i] <- mean(expr_lib1,na.rm=T)
-  homologs$expr_lib1_SE[i] <- sd(expr_lib1,na.rm=T)/sqrt(sum(!is.na(expr_lib1)))
+  homologs$expr_lib1[i] <- median(expr_lib1,na.rm=T)
+  homologs$expr_lib1_SE[i] <- 1.2533*sd(expr_lib1,na.rm=T)/sqrt(sum(!is.na(expr_lib1))) #assumes normal distribution which is not quite correct, so revisit this if using SE for any hard-core statistics
   expr_lib2 <- bc_homologs_expr[library=="lib2" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
-  homologs$expr_lib2[i] <- mean(expr_lib2,na.rm=T)
-  homologs$expr_lib2_SE[i] <- sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
+  homologs$expr_lib2[i] <- median(expr_lib2,na.rm=T)
+  homologs$expr_lib2_SE[i] <- 1.2533*sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
   homologs$expr_avg[i] <- mean(homologs$expr_lib1[i], homologs$expr_lib2[i])
   homologs$expr_SE[i] <- sqrt(homologs$expr_lib1_SE[i]^2 + homologs$expr_lib2_SE[i]^2)/2
 }
@@ -820,5 +914,7 @@ Output the summarized homolog phenotype scores into a table for
 downstream analysis and sharing.
 
 ``` r
-write.csv(homologs, file=config$homolog_effects_file)
+homologs %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  write.csv(file=config$homolog_effects_file, row.names=F)
 ```
