@@ -783,11 +783,11 @@ for(i in 1:nrow(homologs)){
   homologs$bind_avg[i] <- mean(homologs$bind_lib1[i], homologs$bind_lib2[i])
   homologs$bind_SE[i] <- sqrt(homologs$bind_lib1_SE[i]^2 + homologs$bind_lib2_SE[i]^2)/2
   expr_lib1 <- bc_homologs_expr[library=="lib1" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
-  homologs$expr_lib1[i] <- mean(expr_lib1,na.rm=T)
-  homologs$expr_lib1_SE[i] <- sd(expr_lib1,na.rm=T)/sqrt(sum(!is.na(expr_lib1)))
+  homologs$expr_lib1[i] <- median(expr_lib1,na.rm=T)
+  homologs$expr_lib1_SE[i] <- 1.2533*sd(expr_lib1,na.rm=T)/sqrt(sum(!is.na(expr_lib1))) #assumes normal distribution which is not quite correct, so revisit this if using SE for any hard-core statistics
   expr_lib2 <- bc_homologs_expr[library=="lib2" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
-  homologs$expr_lib2[i] <- mean(expr_lib2,na.rm=T)
-  homologs$expr_lib2_SE[i] <- sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
+  homologs$expr_lib2[i] <- median(expr_lib2,na.rm=T)
+  homologs$expr_lib2_SE[i] <- 1.2533*sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
   homologs$expr_avg[i] <- mean(homologs$expr_lib1[i], homologs$expr_lib2[i])
   homologs$expr_SE[i] <- sqrt(homologs$expr_lib1_SE[i]^2 + homologs$expr_lib2_SE[i]^2)/2
 }
