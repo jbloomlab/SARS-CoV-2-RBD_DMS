@@ -91,7 +91,7 @@ Read in Sort-seq expression measurements. I will first fit global epistasis mode
 
 ```python
 df = pd.read_csv(config['expression_sortseq_file'])
-df.rename(columns={'ML_meanF':'func_score','var_ML_meanF':'func_score_var'},inplace=True)
+df.rename(columns={'delta_ML_meanF':'func_score','var_ML_meanF':'func_score_var'},inplace=True)
 func_scores = df[pd.notnull(df['func_score'])]
 func_scores.fillna('',inplace=True)
 func_scores.head()
@@ -124,6 +124,7 @@ func_scores.head()
       <th>barcode</th>
       <th>variant_call_support</th>
       <th>total_count</th>
+      <th>ML_meanF</th>
       <th>func_score</th>
       <th>func_score_var</th>
       <th>variant_class</th>
@@ -141,6 +142,7 @@ func_scores.head()
       <td>2</td>
       <td>64.705656</td>
       <td>7.446290</td>
+      <td>-3.013613</td>
       <td>0.040136</td>
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
@@ -155,6 +157,7 @@ func_scores.head()
       <td>5</td>
       <td>117.957762</td>
       <td>7.922417</td>
+      <td>-2.537486</td>
       <td>0.025298</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
@@ -169,6 +172,7 @@ func_scores.head()
       <td>6</td>
       <td>244.344927</td>
       <td>8.934568</td>
+      <td>-1.525336</td>
       <td>0.014454</td>
       <td>1 nonsynonymous</td>
       <td>N13F</td>
@@ -183,6 +187,7 @@ func_scores.head()
       <td>1</td>
       <td>95.352707</td>
       <td>6.210683</td>
+      <td>-4.249221</td>
       <td>0.029793</td>
       <td>&gt;1 nonsynonymous</td>
       <td>C6K T15W K94Y V103W</td>
@@ -197,6 +202,7 @@ func_scores.head()
       <td>4</td>
       <td>212.429040</td>
       <td>7.728388</td>
+      <td>-2.731516</td>
       <td>0.016096</td>
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
@@ -244,14 +250,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 129.1 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.3 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 3.6 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 4.9 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 87.2 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.5 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 296.0 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 4.5 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 123.4 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.5 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 380.1 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 4.0 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 114.2 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.4 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 435.9 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 3.8 sec.
 
 
 Now we want to see which model fits the data better.
@@ -317,65 +323,65 @@ logliks_df.round(1)
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
-      <td>4004</td>
-      <td>-69945.7</td>
-      <td>147899.4</td>
+      <td>4003</td>
+      <td>-61495.7</td>
+      <td>130997.5</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
-      <td>3998</td>
-      <td>-113324.0</td>
-      <td>234644.0</td>
+      <td>3997</td>
+      <td>-106497.2</td>
+      <td>220988.4</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
-      <td>4004</td>
-      <td>-114501.6</td>
-      <td>237011.2</td>
+      <td>4003</td>
+      <td>-44719.1</td>
+      <td>97444.3</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
-      <td>3998</td>
-      <td>-123928.8</td>
-      <td>255853.5</td>
+      <td>3997</td>
+      <td>-117045.5</td>
+      <td>242085.0</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
-      <td>4004</td>
-      <td>-67443.3</td>
-      <td>142894.5</td>
+      <td>4002</td>
+      <td>-58140.0</td>
+      <td>124284.1</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
-      <td>3998</td>
-      <td>-106811.8</td>
-      <td>221619.6</td>
+      <td>3996</td>
+      <td>-98801.1</td>
+      <td>205594.2</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
-      <td>4004</td>
-      <td>-50014.1</td>
-      <td>108036.2</td>
+      <td>4002</td>
+      <td>-40875.7</td>
+      <td>89755.4</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
-      <td>3998</td>
-      <td>-116510.2</td>
-      <td>241016.4</td>
+      <td>3996</td>
+      <td>-108529.0</td>
+      <td>225050.1</td>
     </tr>
   </tbody>
 </table>
@@ -457,50 +463,50 @@ variants_df.head().round(2)
     <tr>
       <th>0</th>
       <td>N13S L60P K94N S147T C150Y</td>
-      <td>7.45</td>
+      <td>-3.01</td>
       <td>0.04</td>
-      <td>-0.56</td>
-      <td>7.57</td>
+      <td>-0.49</td>
+      <td>-2.89</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>1</th>
       <td>A22C R127G E141D L188V</td>
-      <td>7.92</td>
+      <td>-2.54</td>
       <td>0.03</td>
-      <td>-0.23</td>
-      <td>8.17</td>
+      <td>-0.20</td>
+      <td>-2.31</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>2</th>
       <td>N13F</td>
-      <td>8.93</td>
+      <td>-1.53</td>
       <td>0.01</td>
-      <td>-0.18</td>
-      <td>8.47</td>
+      <td>-0.15</td>
+      <td>-1.92</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>3</th>
       <td>C6K T15W K94Y V103W</td>
-      <td>6.21</td>
+      <td>-4.25</td>
       <td>0.03</td>
-      <td>-3.51</td>
-      <td>7.30</td>
+      <td>-3.26</td>
+      <td>-3.14</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>4</th>
       <td>V71K P149L N157T</td>
-      <td>7.73</td>
+      <td>-2.73</td>
       <td>0.02</td>
-      <td>-0.35</td>
-      <td>7.63</td>
+      <td>-0.31</td>
+      <td>-2.84</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -544,7 +550,7 @@ for x, y in itertools.combinations(['latent_phenotype',
 ![png](global_epistasis_expression_files/global_epistasis_expression_24_2.png)
 
 
-Weird shapes in the range of very low expression phenotypes. There is bulk of points in the lower-right of the plots showing measured phenotype ("func_score") versus latent or predicted/observed phenotype, indicative of "false negatives" (that is, the model thinks they should be ~high expression, but experimentally, they were non-expressing). This is consistent with what I saw in the previous R script -- a handful of WT variants that had low expression, even with high sequencing counts (so, not noise). Some of these had high variant call support in PacBio sequencing, so they are likely veritable "WT" sequences -- I am assuming that they accrued mutations outside of the PacBio sequencing region (e.g. the Gibson junctions -- though I should check this, I believe these junctions are entirely within the PacBio window?) and are therefore truly nonexpressing, though not by virtue of their scFv genotype. It is therefore actually a *good* sign that the model is finding these points, and saying they actually do have high latent phenotypes despite their poor experimental expression.
+Shape seems pretty consistent between the two likelihood models. There are a fair number of points in the lower-right of the plots showing measured phenotype ("func_score") versus latent or predicted/observed phenotype, indicative of "false negatives" (that is, the model thinks they should be ~high expression, but experimentally, they were non-expressing). This is consistent with what I saw in the previous R script -- a handful of WT variants that had low expression, even with high sequencing counts (so, not noise). Some of these had high variant call support in PacBio sequencing, so they are likely veritable "WT" sequences -- I am assuming that they accrued mutations outside of the PacBio sequencing region (e.g. the 5' Gibson junction or elsewhere) and are therefore truly nonexpressing, though not by virtue of their scFv genotype. It is therefore actually a *good* sign that the model is finding these points, and saying they actually do have high latent phenotypes despite their poor experimental expression.
 
 To get a better view into the "shape" of global epistasis, let's re-make the plots above but only showing single mutant barcodes.
 
@@ -589,50 +595,50 @@ single_variants_df.head()
     <tr>
       <th>2</th>
       <td>N13F</td>
-      <td>8.934568</td>
+      <td>-1.525336</td>
       <td>0.014454</td>
-      <td>-0.182921</td>
-      <td>8.469169</td>
+      <td>-0.154924</td>
+      <td>-1.919413</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>6</th>
       <td>S184H</td>
-      <td>5.795520</td>
+      <td>-4.664384</td>
       <td>0.009626</td>
-      <td>-0.031475</td>
-      <td>10.037880</td>
+      <td>-0.030524</td>
+      <td>-0.400302</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
-      <th>8</th>
-      <td>G196Y</td>
-      <td>9.903206</td>
-      <td>0.211713</td>
-      <td>-0.027638</td>
-      <td>10.087066</td>
-      <td>lib1</td>
-      <td>Gaussian</td>
-    </tr>
-    <tr>
-      <th>15</th>
+      <th>14</th>
       <td>P7S</td>
-      <td>10.391967</td>
+      <td>-0.067936</td>
       <td>0.028029</td>
-      <td>-0.015637</td>
-      <td>10.243799</td>
+      <td>-0.016311</td>
+      <td>-0.184446</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
-      <th>28</th>
+      <th>27</th>
       <td>P149Q</td>
-      <td>10.501642</td>
+      <td>0.041738</td>
       <td>0.015011</td>
-      <td>-0.022922</td>
-      <td>10.148126</td>
+      <td>-0.022495</td>
+      <td>-0.279410</td>
+      <td>lib1</td>
+      <td>Gaussian</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>D90Y</td>
+      <td>-0.884499</td>
+      <td>0.048385</td>
+      <td>-0.095132</td>
+      <td>-1.273483</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -692,14 +698,17 @@ print(f"Writing predictions to {config['global_epistasis_expr_file']}")
     Writing predictions to results/global_epistasis_expression/global_epistasis_expression_predictions.csv
 
 
-## Repeat fits for ML_meanF without variance estimates on measured phenotypes
+## Repeat fits for pooled library measurements
 
-The variance estimates we are using are derived from the empirical variance observed in wildtype barcodes across different cell sampling depths. These are of unvetted value. How are they impacting the global epistasis fits?
+Repeat the fits for all barcodes pooled together. There is slight variation in the average mean fluorescence ascribed to wildtype genotypes in each library. 
 
 
 ```python
-func_scores_novar = func_scores.drop(columns='func_score_var')
-func_scores_novar.head()
+df_joint = pd.read_csv(config['expression_sortseq_file'])
+df_joint.rename(columns={'delta_ML_meanF':'func_score','var_ML_meanF':'func_score_var'},inplace=True)
+func_scores_joint = df_joint[pd.notnull(df_joint['func_score'])]
+func_scores_joint.fillna('',inplace=True)
+func_scores_joint.head()
 ```
 
 
@@ -729,7 +738,9 @@ func_scores_novar.head()
       <th>barcode</th>
       <th>variant_call_support</th>
       <th>total_count</th>
+      <th>ML_meanF</th>
       <th>func_score</th>
+      <th>func_score_var</th>
       <th>variant_class</th>
       <th>aa_substitutions</th>
       <th>n_aa_substitutions</th>
@@ -745,6 +756,8 @@ func_scores_novar.head()
       <td>2</td>
       <td>64.705656</td>
       <td>7.446290</td>
+      <td>-3.013613</td>
+      <td>0.040136</td>
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
       <td>5</td>
@@ -758,6 +771,8 @@ func_scores_novar.head()
       <td>5</td>
       <td>117.957762</td>
       <td>7.922417</td>
+      <td>-2.537486</td>
+      <td>0.025298</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
       <td>4</td>
@@ -771,6 +786,8 @@ func_scores_novar.head()
       <td>6</td>
       <td>244.344927</td>
       <td>8.934568</td>
+      <td>-1.525336</td>
+      <td>0.014454</td>
       <td>1 nonsynonymous</td>
       <td>N13F</td>
       <td>1</td>
@@ -784,6 +801,8 @@ func_scores_novar.head()
       <td>1</td>
       <td>95.352707</td>
       <td>6.210683</td>
+      <td>-4.249221</td>
+      <td>0.029793</td>
       <td>&gt;1 nonsynonymous</td>
       <td>C6K T15W K94Y V103W</td>
       <td>4</td>
@@ -797,6 +816,8 @@ func_scores_novar.head()
       <td>4</td>
       <td>212.429040</td>
       <td>7.728388</td>
+      <td>-2.731516</td>
+      <td>0.016096</td>
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
       <td>3</td>
@@ -811,9 +832,9 @@ func_scores_novar.head()
 ```python
 # NBVAL_IGNORE_OUTPUT
 
-models_novar = {}  # store models, keyed by `(epistasistype, likelihoodtype, lib)`
+models_joint = {}  # store models, keyed by `(epistasistype, likelihoodtype)`
 
-for (lib), scores in func_scores_novar.groupby(['library']):
+for (target), scores in func_scores_joint.groupby(['target']):
    
     bmap = dms_variants.binarymap.BinaryMap(scores)
     
@@ -823,39 +844,35 @@ for (lib), scores in func_scores_novar.groupby(['library']):
             ('global epistasis', 'Cauchy', dms_variants.globalepistasis.MonotonicSplineEpistasisCauchyLikelihood),
             ('no epistasis', 'Cauchy', dms_variants.globalepistasis.NoEpistasisCauchyLikelihood),
             ]:
-        print(f"Fitting {epistasistype} with {likelihoodtype} likelihood model to {lib}...", end=' ')
+        print(f"Fitting {epistasistype} with {likelihoodtype} likelihood model...", end=' ')
     
         start = time.time()
         model = Model(bmap)
         model.fit()  # do NOT change ftol in normal use, this is just for test
         print(f"fitting took {time.time() - start:.1f} sec.")
-        models_novar[(epistasistype, likelihoodtype, lib)] = model
+        models_joint[(epistasistype, likelihoodtype)] = model
+
+
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 120.9 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.3 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 327.2 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 5.1 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 144.2 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.3 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 301.6 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 4.6 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 221.3 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 0.9 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 769.8 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 5.5 sec.
 
 
 
 ```python
 # NBVAL_IGNORE_OUTPUT
 
-variants_df_novar = pd.concat(
+variants_df_joint = pd.concat(
         [model.phenotypes_df
-         .assign(library=lib,
-                 likelihoodtype=likelihoodtype,
-                 )
-         for (epistasistype, likelihoodtype, lib), model in models_novar.items()
+         .assign(likelihoodtype=likelihoodtype)
+         for (epistasistype, likelihoodtype), model in models_joint.items()
          if (epistasistype == 'global epistasis')],
         ignore_index=True, sort=False)
 
-variants_df_novar.head().round(2)
+variants_df_joint.head().round(2)
 ```
 
 
@@ -884,7 +901,6 @@ variants_df_novar.head().round(2)
       <th>func_score_var</th>
       <th>latent_phenotype</th>
       <th>observed_phenotype</th>
-      <th>library</th>
       <th>likelihoodtype</th>
     </tr>
   </thead>
@@ -892,51 +908,46 @@ variants_df_novar.head().round(2)
     <tr>
       <th>0</th>
       <td>N13S L60P K94N S147T C150Y</td>
-      <td>7.45</td>
-      <td>None</td>
-      <td>-0.61</td>
-      <td>7.58</td>
-      <td>lib1</td>
+      <td>-3.01</td>
+      <td>0.04</td>
+      <td>-0.83</td>
+      <td>-2.85</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>1</th>
       <td>A22C R127G E141D L188V</td>
-      <td>7.92</td>
-      <td>None</td>
-      <td>-0.25</td>
-      <td>8.15</td>
-      <td>lib1</td>
+      <td>-2.54</td>
+      <td>0.03</td>
+      <td>-0.33</td>
+      <td>-2.17</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>2</th>
       <td>N13F</td>
-      <td>8.93</td>
-      <td>None</td>
-      <td>-2.78</td>
-      <td>7.37</td>
-      <td>lib1</td>
+      <td>-1.53</td>
+      <td>0.01</td>
+      <td>-0.28</td>
+      <td>-1.94</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>3</th>
       <td>C6K T15W K94Y V103W</td>
-      <td>6.21</td>
-      <td>None</td>
-      <td>-4.01</td>
-      <td>7.26</td>
-      <td>lib1</td>
+      <td>-4.25</td>
+      <td>0.03</td>
+      <td>-5.59</td>
+      <td>-3.31</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>4</th>
       <td>V71K P149L N157T</td>
-      <td>7.73</td>
-      <td>None</td>
-      <td>-0.39</td>
-      <td>7.63</td>
-      <td>lib1</td>
+      <td>-2.73</td>
+      <td>0.02</td>
+      <td>-0.61</td>
+      <td>-2.83</td>
       <td>Gaussian</td>
     </tr>
   </tbody>
@@ -952,17 +963,18 @@ for x, y in itertools.combinations(['latent_phenotype',
                                     'func_score'],
                                    2):
     p = (
-        ggplot(variants_df_novar, aes(x, y)) +
-        geom_point(alpha=0.05, size=0.5) +
-        facet_grid('library ~ likelihoodtype', scales='free_y') +
-        theme(figure_size=(2 * variants_df_novar['likelihoodtype'].nunique(),
-                           2 * variants_df_novar['library'].nunique()),
-              )
-        )
+        ggplot(variants_df_joint, aes(x, y)) +
+        geom_point(alpha=0.05, size=0.5))
+#        facet_grid('likelihoodtype', scales='free_y') +
+#        theme(figure_size=(2 * variants_df_novar['likelihoodtype'].nunique()),
+#              )
+#        )
 #         plotfile = os.path.join(config['figs_dir'], f'{y}-v-{x}_by_{epistasistype}.pdf')
 #         print(f"Saving to {plotfile}")
 #         p.save(plotfile)
     _ = p.draw()
+    
+
 ```
 
 
@@ -977,7 +989,7 @@ for x, y in itertools.combinations(['latent_phenotype',
 ![png](global_epistasis_expression_files/global_epistasis_expression_33_2.png)
 
 
-Weird that they flip in terms of which likelihood interprets that decreases in meanF below ~6 correlate with decreased latent phenotype versus not. I haven't thought much about why that tail sometimes flat-lines versus continues to decrease, so I'm not really sure what this indicates anyway.
+
 
 ## Output epistasis model parameters
 
@@ -997,22 +1009,13 @@ models.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype=
 models.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_2.csv',index=False)
 models.get(('no epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_2.csv',index=False)
 models.get(('no epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_2.csv',index=False)
-
-#lib1 novar models
-models_novar.get(('global epistasis', 'Gaussian', 'lib1')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_1_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Gaussian', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_1_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib1')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_1_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_1_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Gaussian', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_1_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Cauchy', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_1_novar.csv',index=False)
-#lib2 novar models
-models_novar.get(('global epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_2_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_2_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_2_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_2_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_2_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_2_novar.csv',index=False)
-
+#joint models
+models_joint.get(('global epistasis', 'Gaussian')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_expression/Gaussian-latent-effects_expression_joint.csv',index=False)
+models_joint.get(('global epistasis', 'Gaussian')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Gaussian-predicted-effects_expression_joint.csv',index=False)
+models_joint.get(('global epistasis', 'Cauchy')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-latent-effects_expression_joint.csv',index=False)
+models_joint.get(('global epistasis', 'Cauchy')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/Cauchy-predicted-effects_expression_joint.csv',index=False)
+models_joint.get(('no epistasis', 'Gaussian')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Gaussian-predicted-effects_expression_joint.csv',index=False)
+models_joint.get(('no epistasis', 'Cauchy')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_expression/nonepistatic-Cauchy-predicted-effects_expression_joint.csv',index=False)
 
 
 

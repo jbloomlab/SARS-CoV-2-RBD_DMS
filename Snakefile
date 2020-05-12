@@ -31,11 +31,7 @@ rule all:
     """Final output of workflow."""
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
-        #config['tobit_regression_binding_file'], temporarily replaced with intermediate files
-        'results/tobit_regression_binding/tobit_1_vglm.Rda',
-        'results/tobit_regression_binding/tobit_2_vglm.Rda',
-        config['global_epistasis_expr_file']
-
+        config['single_mut_effects_file']
 
 rule make_summary:
     """Create Markdown summary of analysis."""
@@ -47,8 +43,9 @@ rule make_summary:
         analyze_counts=nb_markdown('analyze_counts.ipynb'),
         compute_Kd='results/summary/compute_binding_Kd.md',
         compute_meanF='results/summary/compute_expression_meanF.md',
-        tobit_regression_binding='results/summary/tobit_regression_binding.md',
-        global_epistasis_expression=nb_markdown('global_epistasis_expression.ipynb')
+        global_epistasis_binding=nb_markdown('global_epistasis_binding.ipynb'),
+        global_epistasis_expression=nb_markdown('global_epistasis_expression.ipynb'),
+        single_mut_effects='results/summary/single_mut_effects.md'
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -82,9 +79,11 @@ rule make_summary:
             
             6. [Computation of expression mean fluorescence]({path(input.compute_meanF)}).
             
-            7. [Censored regression decomposition of binding effects]({path(input.tobit_regression_binding)}).
+            7. [Global epistasis decomposition of binding effects]({path(input.global_epistasis_binding)}).
             
             8. [Global epistasis decomposition of expression effects]({path(input.global_epistasis_expression)}).
+            
+            9. [Calculation of final single mutant effects on binding and expression]({path(input.single_mut_effects)}).
 
             """
             ).strip())
@@ -98,21 +97,21 @@ rule make_dag:
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
 
-rule censored_regression_binding:
+rule single_mut_effects:
     input:
-        config['Titeseq_Kds_file']
+        config['global_epistasis_binding_file'],
+        config['global_epistasis_expr_file']
     output:
-        #config['tobit_regression_binding_file'], temporarily an intermediate file
-        'results/tobit_regression_binding/tobit_1_vglm.Rda',
-        'results/tobit_regression_binding/tobit_2_vglm.Rda',
-        md='results/summary/tobit_regression_binding.md',
-        md_files = directory('results/summary/tobit_regression_binding_files')
+        config['single_mut_effects_file'],
+        config['homolog_effects_file'],
+        md='results/summary/single_mut_effects.md',
+        md_files = directory('results/summary/single_mut_effects_files')
     envmodules:
         'R/3.6.1-foss-2016b'
     params:
-        nb='tobit_regression_binding.Rmd',
-        md='tobit_regression_binding.md',
-        md_files='tobit_regression_binding_files'
+        nb='single_mut_effects.Rmd',
+        md='single_mut_effects.md',
+        md_files='single_mut_effects_files'
     shell:
         """
         R -e \"rmarkdown::render(input=\'{params.nb}\')\";
@@ -120,16 +119,16 @@ rule censored_regression_binding:
         mv {params.md_files} {output.md_files}
         """
 
-#rule global_epistasis_binding:
-#    input:
-#        config['Titeseq_Kds_file']
-#    output:
-#        config['global_epistasis_binding_file'],
-#        nb_markdown=nb_markdown('global_epistasis_binding.ipynb')
-#    params:
-#        nb='global_epistasis_binding.ipynb'
-#    shell:
-#        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
+rule global_epistasis_binding:
+    input:
+        config['Titeseq_Kds_file']
+    output:
+        config['global_epistasis_binding_file'],
+        nb_markdown=nb_markdown('global_epistasis_binding.ipynb')
+    params:
+        nb='global_epistasis_binding.ipynb'
+    shell:
+        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
 rule global_epistasis_expression:
     input:
@@ -170,7 +169,7 @@ rule compute_expression_meanFs:
         config['expression_sortseq_file'],
         config['expression_sortseq_all_targets_file'],
         md='results/summary/compute_expression_meanF.md',
-        md_files=directory('results/summary/compute_expression_meanF')
+        md_files=directory('results/summary/compute_expression_meanF_files')
     envmodules:
         'R/3.6.1-foss-2016b'
     params:

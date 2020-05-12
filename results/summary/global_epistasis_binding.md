@@ -126,6 +126,7 @@ func_scores.head()
       <th>variant_call_support</th>
       <th>avgcount</th>
       <th>func_score</th>
+      <th>delta_log10Ka</th>
       <th>log10SE</th>
       <th>Kd</th>
       <th>Kd_SE</th>
@@ -148,6 +149,7 @@ func_scores.head()
       <td>5</td>
       <td>74.501274</td>
       <td>8.718159</td>
+      <td>-2.046168</td>
       <td>0.123408</td>
       <td>1.913555e-09</td>
       <td>5.441202e-10</td>
@@ -168,6 +170,7 @@ func_scores.head()
       <td>6</td>
       <td>146.321899</td>
       <td>10.348897</td>
+      <td>-0.415430</td>
       <td>0.047944</td>
       <td>4.478193e-11</td>
       <td>4.947053e-12</td>
@@ -188,6 +191,7 @@ func_scores.head()
       <td>4</td>
       <td>47.483006</td>
       <td>6.000000</td>
+      <td>-4.764327</td>
       <td>2.000000</td>
       <td>1.000000e-06</td>
       <td>7.525404e-06</td>
@@ -208,6 +212,7 @@ func_scores.head()
       <td>6</td>
       <td>47.441196</td>
       <td>10.151655</td>
+      <td>-0.612672</td>
       <td>0.086726</td>
       <td>7.052526e-11</td>
       <td>1.409304e-11</td>
@@ -228,6 +233,7 @@ func_scores.head()
       <td>2</td>
       <td>18.780856</td>
       <td>9.611417</td>
+      <td>-1.152911</td>
       <td>0.191538</td>
       <td>2.446715e-10</td>
       <td>1.079815e-10</td>
@@ -281,14 +287,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 89.6 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 2.8 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 224.4 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 15.8 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 25.4 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.5 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 200.2 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 20.0 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 422.7 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 13.7 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 403.2 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 78.7 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 57.5 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 17.1 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 1124.7 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 116.7 sec.
 
 
 Now we want to see which model fits the data better.
@@ -354,65 +360,65 @@ logliks_df.round(1)
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
-      <td>3802</td>
-      <td>-53589.2</td>
-      <td>114782.5</td>
+      <td>3801</td>
+      <td>-58652.4</td>
+      <td>124906.8</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
-      <td>3796</td>
-      <td>-81098.2</td>
-      <td>169788.3</td>
+      <td>3795</td>
+      <td>-80453.4</td>
+      <td>168496.9</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
-      <td>3802</td>
-      <td>-39412.5</td>
-      <td>86429.0</td>
+      <td>3801</td>
+      <td>-39824.6</td>
+      <td>87251.3</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
-      <td>3796</td>
-      <td>-60464.0</td>
-      <td>128519.9</td>
+      <td>3795</td>
+      <td>-60005.8</td>
+      <td>127601.5</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
       <td>3798</td>
-      <td>-54560.3</td>
-      <td>116716.5</td>
+      <td>-56047.4</td>
+      <td>119690.8</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
       <td>3792</td>
-      <td>-75532.7</td>
-      <td>158649.4</td>
+      <td>-73428.5</td>
+      <td>154441.0</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
       <td>3798</td>
-      <td>-33872.7</td>
-      <td>75341.3</td>
+      <td>-32391.0</td>
+      <td>72378.1</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
       <td>3792</td>
-      <td>-55270.3</td>
-      <td>118124.6</td>
+      <td>-54010.6</td>
+      <td>115605.2</td>
     </tr>
   </tbody>
 </table>
@@ -496,7 +502,7 @@ variants_df.head().round(2)
       <td>A22C R127G E141D L188V</td>
       <td>8.72</td>
       <td>0.02</td>
-      <td>-1.61</td>
+      <td>-1.02</td>
       <td>9.07</td>
       <td>lib1</td>
       <td>Gaussian</td>
@@ -506,8 +512,8 @@ variants_df.head().round(2)
       <td>N13F</td>
       <td>10.35</td>
       <td>0.00</td>
-      <td>-0.65</td>
-      <td>10.46</td>
+      <td>-0.46</td>
+      <td>10.58</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -516,8 +522,8 @@ variants_df.head().round(2)
       <td>V71K P149L N157T</td>
       <td>6.00</td>
       <td>4.00</td>
-      <td>-4.17</td>
-      <td>6.65</td>
+      <td>-2.92</td>
+      <td>6.69</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -526,8 +532,8 @@ variants_df.head().round(2)
       <td>A18V T148S H189Y</td>
       <td>10.15</td>
       <td>0.01</td>
-      <td>-0.93</td>
-      <td>10.14</td>
+      <td>-0.57</td>
+      <td>10.24</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -536,8 +542,8 @@ variants_df.head().round(2)
       <td>T63D A89N</td>
       <td>9.61</td>
       <td>0.04</td>
-      <td>-1.39</td>
-      <td>9.44</td>
+      <td>-0.87</td>
+      <td>9.42</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -630,8 +636,8 @@ single_variants_df.head()
       <td>N13F</td>
       <td>10.348897</td>
       <td>0.002299</td>
-      <td>-0.652357</td>
-      <td>10.455812</td>
+      <td>-0.456929</td>
+      <td>10.584842</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -640,8 +646,8 @@ single_variants_df.head()
       <td>P7S</td>
       <td>10.671953</td>
       <td>0.008159</td>
-      <td>-0.086325</td>
-      <td>10.730867</td>
+      <td>-0.076223</td>
+      <td>10.684103</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -650,8 +656,8 @@ single_variants_df.head()
       <td>P149Q</td>
       <td>10.718483</td>
       <td>0.002085</td>
-      <td>-0.246296</td>
-      <td>10.714160</td>
+      <td>-0.144518</td>
+      <td>10.684103</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -660,8 +666,8 @@ single_variants_df.head()
       <td>D90Y</td>
       <td>10.565768</td>
       <td>0.004547</td>
-      <td>-0.652182</td>
-      <td>10.455982</td>
+      <td>-0.451604</td>
+      <td>10.601489</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -670,8 +676,8 @@ single_variants_df.head()
       <td>L5C</td>
       <td>10.689649</td>
       <td>0.003073</td>
-      <td>-0.270519</td>
-      <td>10.707111</td>
+      <td>-0.165232</td>
+      <td>10.684103</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -761,6 +767,7 @@ dt.head().round(2)
       <th>variant_call_support</th>
       <th>avgcount</th>
       <th>log10Ka</th>
+      <th>delta_log10Ka</th>
       <th>log10SE</th>
       <th>Kd</th>
       <th>Kd_SE</th>
@@ -796,16 +803,17 @@ dt.head().round(2)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>NaN</td>
       <td>&gt;1 nonsynonymous</td>
       <td>Y91L K199Y</td>
       <td>2</td>
-      <td>-0.36</td>
-      <td>10.67</td>
+      <td>-0.26</td>
+      <td>10.68</td>
       <td>-0.33</td>
-      <td>10.65</td>
-      <td>-0.49</td>
-      <td>10.63</td>
-      <td>-0.34</td>
+      <td>10.66</td>
+      <td>-0.45</td>
+      <td>10.78</td>
+      <td>-0.33</td>
       <td>10.69</td>
     </tr>
     <tr>
@@ -823,16 +831,17 @@ dt.head().round(2)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>NaN</td>
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
       <td>5</td>
+      <td>-3.53</td>
+      <td>6.51</td>
       <td>-4.81</td>
-      <td>6.63</td>
+      <td>6.19</td>
+      <td>-5.44</td>
+      <td>6.20</td>
       <td>-4.77</td>
-      <td>6.15</td>
-      <td>-5.15</td>
-      <td>6.58</td>
-      <td>-4.92</td>
       <td>6.07</td>
     </tr>
     <tr>
@@ -844,6 +853,7 @@ dt.head().round(2)
       <td>5</td>
       <td>74.50</td>
       <td>8.72</td>
+      <td>-2.05</td>
       <td>0.12</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -853,13 +863,13 @@ dt.head().round(2)
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
       <td>4</td>
-      <td>-1.61</td>
+      <td>-1.02</td>
       <td>9.07</td>
-      <td>-1.38</td>
+      <td>-1.39</td>
       <td>9.43</td>
-      <td>-1.66</td>
-      <td>9.26</td>
-      <td>-1.22</td>
+      <td>-1.80</td>
+      <td>9.03</td>
+      <td>-1.21</td>
       <td>9.68</td>
     </tr>
     <tr>
@@ -871,6 +881,7 @@ dt.head().round(2)
       <td>6</td>
       <td>146.32</td>
       <td>10.35</td>
+      <td>-0.42</td>
       <td>0.05</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -880,12 +891,12 @@ dt.head().round(2)
       <td>1 nonsynonymous</td>
       <td>N13F</td>
       <td>1</td>
-      <td>-0.65</td>
-      <td>10.46</td>
-      <td>-0.67</td>
-      <td>10.37</td>
-      <td>-0.70</td>
-      <td>10.46</td>
+      <td>-0.46</td>
+      <td>10.58</td>
+      <td>-0.68</td>
+      <td>10.38</td>
+      <td>-0.71</td>
+      <td>10.50</td>
       <td>-0.70</td>
       <td>10.36</td>
     </tr>
@@ -904,17 +915,18 @@ dt.head().round(2)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>NaN</td>
       <td>&gt;1 nonsynonymous</td>
       <td>C6K T15W K94Y V103W</td>
       <td>4</td>
-      <td>-7.10</td>
-      <td>6.63</td>
-      <td>-6.44</td>
-      <td>6.13</td>
-      <td>-5.85</td>
-      <td>6.57</td>
-      <td>-7.20</td>
-      <td>6.05</td>
+      <td>-10.58</td>
+      <td>6.46</td>
+      <td>-6.06</td>
+      <td>6.16</td>
+      <td>-6.15</td>
+      <td>6.07</td>
+      <td>-7.14</td>
+      <td>6.04</td>
     </tr>
   </tbody>
 </table>
@@ -922,14 +934,18 @@ dt.head().round(2)
 
 
 
-## Repeat fits without variance estimates
+## Repeat fits for pooled library measurements
 
-The variance estimates we are using are derived from the standard error on the *K*<sub>D,app</sub> estimate generated in the titration curve `nls` fit. These are of unvetted value. How are they impacting the global epistasis fits?
+Repeat the fits for all barcodes pooled together. There is slight variation in the average *K*<sub>D,app</sub> ascribed to wildtype genotypes in each library. To account for this, express the functional score in each library as the delta_log10Ka relative to the average of wildtype measurements in that library, thereby standardizing the small difference in mean WT between the two replicates and avoiding consequential artefacts in a joint fit.
 
 
 ```python
-func_scores_novar = func_scores.drop(columns='func_score_var')
-func_scores_novar.head()
+df_joint = pd.read_csv(config['Titeseq_Kds_file'])
+df_joint.rename(columns={'delta_log10Ka':'func_score'},inplace=True)
+df_joint['func_score_var'] = df_joint['log10SE']**2
+func_scores_joint = df_joint[pd.notnull(df_joint['func_score'])]
+func_scores_joint.fillna('',inplace=True)
+func_scores_joint.head()
 ```
 
 
@@ -959,6 +975,7 @@ func_scores_novar.head()
       <th>barcode</th>
       <th>variant_call_support</th>
       <th>avgcount</th>
+      <th>log10Ka</th>
       <th>func_score</th>
       <th>log10SE</th>
       <th>Kd</th>
@@ -969,6 +986,7 @@ func_scores_novar.head()
       <th>variant_class</th>
       <th>aa_substitutions</th>
       <th>n_aa_substitutions</th>
+      <th>func_score_var</th>
     </tr>
   </thead>
   <tbody>
@@ -981,6 +999,7 @@ func_scores_novar.head()
       <td>5</td>
       <td>74.501274</td>
       <td>8.718159</td>
+      <td>-2.046168</td>
       <td>0.123408</td>
       <td>1.913555e-09</td>
       <td>5.441202e-10</td>
@@ -990,6 +1009,7 @@ func_scores_novar.head()
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
       <td>4</td>
+      <td>0.015230</td>
     </tr>
     <tr>
       <th>3</th>
@@ -1000,6 +1020,7 @@ func_scores_novar.head()
       <td>6</td>
       <td>146.321899</td>
       <td>10.348897</td>
+      <td>-0.415430</td>
       <td>0.047944</td>
       <td>4.478193e-11</td>
       <td>4.947053e-12</td>
@@ -1009,6 +1030,7 @@ func_scores_novar.head()
       <td>1 nonsynonymous</td>
       <td>N13F</td>
       <td>1</td>
+      <td>0.002299</td>
     </tr>
     <tr>
       <th>5</th>
@@ -1019,6 +1041,7 @@ func_scores_novar.head()
       <td>4</td>
       <td>47.483006</td>
       <td>6.000000</td>
+      <td>-4.764327</td>
       <td>2.000000</td>
       <td>1.000000e-06</td>
       <td>7.525404e-06</td>
@@ -1028,6 +1051,7 @@ func_scores_novar.head()
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
       <td>3</td>
+      <td>4.000000</td>
     </tr>
     <tr>
       <th>6</th>
@@ -1038,6 +1062,7 @@ func_scores_novar.head()
       <td>6</td>
       <td>47.441196</td>
       <td>10.151655</td>
+      <td>-0.612672</td>
       <td>0.086726</td>
       <td>7.052526e-11</td>
       <td>1.409304e-11</td>
@@ -1047,6 +1072,7 @@ func_scores_novar.head()
       <td>&gt;1 nonsynonymous</td>
       <td>A18V T148S H189Y</td>
       <td>3</td>
+      <td>0.007521</td>
     </tr>
     <tr>
       <th>8</th>
@@ -1057,6 +1083,7 @@ func_scores_novar.head()
       <td>2</td>
       <td>18.780856</td>
       <td>9.611417</td>
+      <td>-1.152911</td>
       <td>0.191538</td>
       <td>2.446715e-10</td>
       <td>1.079815e-10</td>
@@ -1066,6 +1093,7 @@ func_scores_novar.head()
       <td>&gt;1 nonsynonymous</td>
       <td>T63D A89N</td>
       <td>2</td>
+      <td>0.036687</td>
     </tr>
   </tbody>
 </table>
@@ -1077,9 +1105,9 @@ func_scores_novar.head()
 ```python
 # NBVAL_IGNORE_OUTPUT
 
-models_novar = {}  # store models, keyed by `(epistasistype, likelihoodtype, lib)`
+models_joint = {}  # store models, keyed by `(epistasistype, likelihoodtype)`
 
-for (lib), scores in func_scores_novar.groupby(['library']):
+for (target), scores in func_scores_joint.groupby(['target']):
    
     bmap = dms_variants.binarymap.BinaryMap(scores)
     
@@ -1089,39 +1117,34 @@ for (lib), scores in func_scores_novar.groupby(['library']):
             ('global epistasis', 'Cauchy', dms_variants.globalepistasis.MonotonicSplineEpistasisCauchyLikelihood),
             ('no epistasis', 'Cauchy', dms_variants.globalepistasis.NoEpistasisCauchyLikelihood),
             ]:
-        print(f"Fitting {epistasistype} with {likelihoodtype} likelihood model to {lib}...", end=' ')
+        print(f"Fitting {epistasistype} with {likelihoodtype} likelihood model...", end=' ')
     
         start = time.time()
         model = Model(bmap)
         model.fit()  # do NOT change ftol in normal use, this is just for test
         print(f"fitting took {time.time() - start:.1f} sec.")
-        models_novar[(epistasistype, likelihoodtype, lib)] = model
+        models_joint[(epistasistype, likelihoodtype)] = model
+
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 30.7 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.2 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 131.5 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 12.1 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 32.9 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.2 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 7.7 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 9.7 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 411.7 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 32.6 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 713.9 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 158.2 sec.
 
 
 
 ```python
 # NBVAL_IGNORE_OUTPUT
 
-variants_df_novar = pd.concat(
+variants_df_joint = pd.concat(
         [model.phenotypes_df
-         .assign(library=lib,
-                 likelihoodtype=likelihoodtype,
-                 )
-         for (epistasistype, likelihoodtype, lib), model in models_novar.items()
+         .assign(likelihoodtype=likelihoodtype)
+         for (epistasistype, likelihoodtype), model in models_joint.items()
          if (epistasistype == 'global epistasis')],
         ignore_index=True, sort=False)
 
-variants_df_novar.head().round(2)
+variants_df_joint.head().round(2)
 ```
 
 
@@ -1150,7 +1173,6 @@ variants_df_novar.head().round(2)
       <th>func_score_var</th>
       <th>latent_phenotype</th>
       <th>observed_phenotype</th>
-      <th>library</th>
       <th>likelihoodtype</th>
     </tr>
   </thead>
@@ -1158,51 +1180,46 @@ variants_df_novar.head().round(2)
     <tr>
       <th>0</th>
       <td>A22C R127G E141D L188V</td>
-      <td>8.72</td>
-      <td>None</td>
-      <td>-2.19</td>
-      <td>8.26</td>
-      <td>lib1</td>
+      <td>-2.05</td>
+      <td>0.02</td>
+      <td>-1.49</td>
+      <td>-1.79</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>1</th>
       <td>N13F</td>
-      <td>10.35</td>
-      <td>None</td>
-      <td>-0.81</td>
-      <td>10.33</td>
-      <td>lib1</td>
+      <td>-0.42</td>
+      <td>0.00</td>
+      <td>-0.64</td>
+      <td>-0.23</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>2</th>
       <td>V71K P149L N157T</td>
-      <td>6.00</td>
-      <td>None</td>
-      <td>-4.87</td>
-      <td>6.13</td>
-      <td>lib1</td>
+      <td>-4.76</td>
+      <td>4.00</td>
+      <td>-3.71</td>
+      <td>-3.90</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>3</th>
       <td>A18V T148S H189Y</td>
-      <td>10.15</td>
-      <td>None</td>
-      <td>-1.06</td>
-      <td>10.08</td>
-      <td>lib1</td>
+      <td>-0.61</td>
+      <td>0.01</td>
+      <td>-0.87</td>
+      <td>-0.71</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>4</th>
       <td>T63D A89N</td>
-      <td>9.61</td>
-      <td>None</td>
-      <td>-1.67</td>
-      <td>9.47</td>
-      <td>lib1</td>
+      <td>-1.15</td>
+      <td>0.04</td>
+      <td>-1.20</td>
+      <td>-1.31</td>
       <td>Gaussian</td>
     </tr>
   </tbody>
@@ -1218,13 +1235,12 @@ for x, y in itertools.combinations(['latent_phenotype',
                                     'func_score'],
                                    2):
     p = (
-        ggplot(variants_df_novar, aes(x, y)) +
-        geom_point(alpha=0.05, size=0.5) +
-        facet_grid('library ~ likelihoodtype', scales='free_y') +
-        theme(figure_size=(2 * variants_df_novar['likelihoodtype'].nunique(),
-                           2 * variants_df_novar['library'].nunique()),
-              )
-        )
+        ggplot(variants_df_joint, aes(x, y)) +
+        geom_point(alpha=0.05, size=0.5))
+#        facet_grid('likelihoodtype', scales='free_y') +
+#        theme(figure_size=(2 * variants_df_novar['likelihoodtype'].nunique()),
+#              )
+#        )
 #         plotfile = os.path.join(config['figs_dir'], f'{y}-v-{x}_by_{epistasistype}.pdf')
 #         print(f"Saving to {plotfile}")
 #         p.save(plotfile)
@@ -1243,9 +1259,7 @@ for x, y in itertools.combinations(['latent_phenotype',
 ![png](global_epistasis_binding_files/global_epistasis_binding_33_2.png)
 
 
-It seems like some weirdness in the Gaussian likelihood models goes away when removing the variance estimates, while weirdness is introduced into the Cauchy likelihood models here. Will need to think about these two different behaviors, and decide if further improvements in these variance estimates are necessary.
-
-We will look more at each of these models (Cauchy and Gaussian likelihoods, with and without variance estimates) in the next notebook, in which we evaluate coefficients, process our final phenotype map, and compare our measurements to some validation datasets.
+We will look more at each of these models (Cauchy and Gaussian likelihoods, observed and latent scale measurements) in the next notebook, in which we evaluate coefficients, process our final phenotype map, and compare our measurements to some validation datasets.
 
 ## Output epistasis model parameters
 
@@ -1266,21 +1280,13 @@ models.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype=
 models.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_2.csv',index=False)
 models.get(('no epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_2.csv',index=False)
 models.get(('no epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_2.csv',index=False)
-
-#lib1 novar models
-models_novar.get(('global epistasis', 'Gaussian', 'lib1')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_1_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Gaussian', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_1_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib1')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_1_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_1_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Gaussian', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_1_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Cauchy', 'lib1')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_1_novar.csv',index=False)
-#lib2 novar models
-models_novar.get(('global epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_2_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_2_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_2_novar.csv',index=False)
-models_novar.get(('global epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_2_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Gaussian', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_2_novar.csv',index=False)
-models_novar.get(('no epistasis', 'Cauchy', 'lib2')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_2_novar.csv',index=False)
+#joint models
+models_joint.get(('global epistasis', 'Gaussian')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_binding/Gaussian-latent-effects_binding_joint.csv',index=False)
+models_joint.get(('global epistasis', 'Gaussian')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Gaussian-predicted-effects_binding_joint.csv',index=False)
+models_joint.get(('global epistasis', 'Cauchy')).single_mut_effects(phenotype='latent',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-latent-effects_binding_joint.csv',index=False)
+models_joint.get(('global epistasis', 'Cauchy')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_joint.csv',index=False)
+models_joint.get(('no epistasis', 'Gaussian')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Gaussian-predicted-effects_binding_joint.csv',index=False)
+models_joint.get(('no epistasis', 'Cauchy')).single_mut_effects(phenotype='observed',standardize_range=False).to_csv('results/global_epistasis_binding/nonepistatic-Cauchy-predicted-effects_binding_joint.csv',index=False)
 
 
 

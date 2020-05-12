@@ -326,9 +326,8 @@ For each library measurement, assign it an estimated variance in the
 mean fluor estimate based on the empirical variance for the
 `total_count` bin to which a measurement belongs, based on the empirical
 relationship between log-variance and log-count. Censor all measurements
-for fewer than 5 cells, as that’s when the estimated variance from the
-empirical fit begins to really take off. (This removes very few
-measurements.)
+for fewer than 20 cells, and return the number and fraction of barcodes
+for which we are retaining expression measurements.
 
 ``` r
 #function to estimate variance from cell count given the fits above
@@ -342,19 +341,19 @@ counts_lib2[,var_ML_meanF := est.var(total_count,fit_variance_v_count_lib2),by=b
 counts_filtered_lib1 <- copy(counts_lib1)
 counts_filtered_lib2 <- copy(counts_lib2)
 
-counts_filtered_lib1[total_count < 5, c("ML_meanF","var_ML_meanF") := as.numeric(NA),by=barcode]
-counts_filtered_lib2[total_count < 5, c("ML_meanF","var_ML_meanF") := as.numeric(NA),by=barcode]
+counts_filtered_lib1[total_count < 20, c("ML_meanF","var_ML_meanF") := as.numeric(NA),by=barcode]
+counts_filtered_lib2[total_count < 20, c("ML_meanF","var_ML_meanF") := as.numeric(NA),by=barcode]
 
 print(paste("Generated meanF estimates for ",round(sum(!is.na(counts_filtered_lib1$ML_meanF))/nrow(counts_filtered_lib1),digits=4)*100,"% (",sum(!is.na(counts_filtered_lib1$ML_meanF)),") of lib1 barcodes",sep=""))
 ```
 
-    ## [1] "Generated meanF estimates for 97.47% (97123) of lib1 barcodes"
+    ## [1] "Generated meanF estimates for 92.93% (92603) of lib1 barcodes"
 
 ``` r
 print(paste("Generated meanF estimates for ",round(sum(!is.na(counts_filtered_lib2$ML_meanF))/nrow(counts_filtered_lib2),digits=4)*100,"% (",sum(!is.na(counts_filtered_lib2$ML_meanF)),") of lib2 barcodes",sep=""))
 ```
 
-    ## [1] "Generated meanF estimates for 96.34% (94117) of lib2 barcodes"
+    ## [1] "Generated meanF estimates for 90.51% (88423) of lib2 barcodes"
 
 Here is our final distribution of expression among retained barcodes.
 
@@ -392,32 +391,20 @@ p1 <- ggplot(counts_filtered_lib1[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(
 p2 <- ggplot(counts_filtered_lib2[target=="SARS-CoV-2" & !is.na(ML_meanF),],aes(x=variant_class,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   ggtitle("lib2")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
-  scale_y_continuous(limits=c(6,12))
+  scale_y_continuous(limits=c(5,11))
 
 p3 <- ggplot(counts_filtered_lib1[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
   ggtitle("lib1")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
-  scale_y_continuous(limits=c(6,12))
+  scale_y_continuous(limits=c(5,11))
 
 p4 <- ggplot(counts_filtered_lib2[!is.na(ML_meanF) & !(variant_class %in% c("synonymous","1 nonsynonymous",">1 nonsynonymous","stop")),],aes(x=target,y=ML_meanF))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=0.5)+
   ggtitle("lib2")+xlab("variant class")+ylab("expression (ML mean fluor)")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
-  scale_y_continuous(limits=c(6,12))
+  scale_y_continuous(limits=c(5,11))
 
 grid.arrange(p1,p2,p3,p4,ncol=2)
 ```
-
-    ## Warning: Removed 9087 rows containing non-finite values (stat_ydensity).
-
-    ## Warning: Removed 9087 rows containing non-finite values (stat_summary).
-
-    ## Warning: Removed 40 rows containing non-finite values (stat_ydensity).
-
-    ## Warning: Removed 40 rows containing non-finite values (stat_summary).
-
-    ## Warning: Removed 51 rows containing non-finite values (stat_ydensity).
-
-    ## Warning: Removed 51 rows containing non-finite values (stat_summary).
 
 <img src="compute_expression_meanF_files/figure-gfm/violins_expression_distribution-1.png" style="display: block; margin: auto;" />
 
@@ -430,20 +417,39 @@ invisible(dev.print(pdf, paste(config$expression_sortseq_dir,"/violin-plot_ML-me
 
 Finally, let’s output our measurements for downstream analyses. Since
 only the SARS-CoV-2 data is going into the global epistasis models, we
-will output separate files, for all barcodes, and for barcodes for
-SARS-CoV-2 targets only
+will output separate files, for all barcodes, and for barcodes
+containing SARS-CoV-2 targets only. We also report a relative expression
+metric, delta\_ML\_meanF, by subtracting the mean expression of WT and
+synonymous variants from each ML\_meanF metric. This should calibrate
+measurements between the two libraries for fitting joint global
+epistasis models, in which the average wildtype expression is different
+by a very small amount. We censor out the low meanF wildtype
+measurements from the computation of the mean WT expression and remove
+these delta\_ML\_meanF measurements for these low-fluorescence wildtype
+barcodes, because these are likely artifactual points and we don’t want
+them to drag down the perceived WT fluorescence, thereby aberrantly
+making many individual mutations seem to improve expression. The cutoffs
+for each library were picked so that the median and mean fluorescence of
+WT variants were beginning to converge (within 0.05), suggesting outlier
+effects were diminished.
 
 ``` r
 counts_filtered_lib1[,library:="lib1"]
 counts_filtered_lib2[,library:="lib2"]
 
-write.csv(rbind(counts_filtered_lib1[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, var_ML_meanF, 
+counts_filtered_lib1$delta_ML_meanF <- counts_filtered_lib1$ML_meanF - mean(counts_filtered_lib1[variant_class %in% c("wildtype","synonymous") & ML_meanF>10.2,ML_meanF],na.rm=T)
+counts_filtered_lib1[variant_class %in% c("wildtype","synonymous") & ML_meanF<10.2, delta_ML_meanF := NA]
+
+counts_filtered_lib2$delta_ML_meanF <- counts_filtered_lib2$ML_meanF - mean(counts_filtered_lib2[variant_class %in% c("wildtype","synonymous") & ML_meanF>10.1,ML_meanF],na.rm=T)
+counts_filtered_lib2[variant_class %in% c("wildtype","synonymous") & ML_meanF<10.1, delta_ML_meanF := NA]
+
+write.csv(rbind(counts_filtered_lib1[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
                                         variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_filtered_lib2[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, var_ML_meanF, 
+                counts_filtered_lib2[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
                                         variant_class, aa_substitutions, n_aa_substitutions)]),file=config$expression_sortseq_all_targets_file)
 
-write.csv(rbind(counts_filtered_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, var_ML_meanF, 
+write.csv(rbind(counts_filtered_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
                                         variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_filtered_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, var_ML_meanF, 
+                counts_filtered_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
                                         variant_class, aa_substitutions, n_aa_substitutions)]),file=config$expression_sortseq_file)
 ```
