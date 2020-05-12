@@ -25,6 +25,6 @@ workflow:
 
 7. [Global epistasis decomposition of binding effects](global_epistasis_binding.md).
 
-7. (alt)[Tobit regression decomposition of binding effects](tobit_regression_binding.md).
-
 8. [Global epistasis decomposition of expression effects](global_epistasis_expression.md).
+
+9. [Calculation of final single mutant effects on binding and expression](single_mut_effects.md).

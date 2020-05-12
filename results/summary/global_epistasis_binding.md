@@ -287,14 +287,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 89.2 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 3.1 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 85.4 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 17.5 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 12.3 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.8 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 242.3 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 25.6 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 422.7 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 13.7 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 403.2 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 78.7 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 57.5 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 17.1 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 1124.7 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 116.7 sec.
 
 
 Now we want to see which model fits the data better.
@@ -934,295 +934,6 @@ dt.head().round(2)
 
 
 
-## Fit global epistasis models with differing number of basis iSplines
-Let's try fitting global epistasis models with varying numbers of basis iSpline functions. The default number is 5 basis functions. What happens if we vary between 1 and 4, compared to the plots above with the 5? Since Cauchy likelihood appears to perform better (which we will confirm in the subsequent analysis), we will infer models with the Cauchy likelihood evaluation. 
-
-
-```python
-# NBVAL_IGNORE_OUTPUT
-
-models_meshpoints = {}  # store models, keyed by `(epistasistype, meshpoints, lib)`
-
-for (lib), scores in func_scores.groupby(['library']):
-   
-    bmap = dms_variants.binarymap.BinaryMap(scores)
-    
-    for epistasistype, meshpoints, Model in [
-            ('global epistasis', 4, dms_variants.globalepistasis.MonotonicSplineEpistasisCauchyLikelihood),
-            ('global epistasis', 3, dms_variants.globalepistasis.MonotonicSplineEpistasisCauchyLikelihood),
-            ('global epistasis', 2, dms_variants.globalepistasis.MonotonicSplineEpistasisCauchyLikelihood),
-            ]:
-        print(f"Fitting {epistasistype} with Cauchy likelihood model and {meshpoints} meshpoints to {lib}...", end=' ')
-    
-        start = time.time()
-        model = Model(bmap,meshpoints=meshpoints)
-        model.fit()  # do NOT change ftol in normal use, this is just for test
-        print(f"fitting took {time.time() - start:.1f} sec.")
-        models_meshpoints[(epistasistype, meshpoints, lib)] = model
-```
-
-    Fitting global epistasis with Cauchy likelihood model and 4 meshpoints to lib1... fitting took 74.6 sec.
-    Fitting global epistasis with Cauchy likelihood model and 3 meshpoints to lib1... fitting took 113.6 sec.
-    Fitting global epistasis with Cauchy likelihood model and 2 meshpoints to lib1... fitting took 117.7 sec.
-    Fitting global epistasis with Cauchy likelihood model and 4 meshpoints to lib2... fitting took 208.0 sec.
-    Fitting global epistasis with Cauchy likelihood model and 3 meshpoints to lib2... fitting took 92.9 sec.
-    Fitting global epistasis with Cauchy likelihood model and 2 meshpoints to lib2... fitting took 133.8 sec.
-
-
-Check out the log-likelihood and AIC of models fit with differing numbers of meshpoints.
-
-
-```python
-# NBVAL_IGNORE_OUTPUT
-
-logliks_df = (
-    pd.DataFrame.from_records(
-            [(epistasistype, meshpoints, lib, model.nparams, model.loglik) for
-             (epistasistype, meshpoints, lib), model in models_meshpoints.items()],
-            columns=['model', 'likelihood type', 'library',
-                     'n_parameters', 'log_likelihood']
-            )
-    .assign(AIC=lambda x: 2 * x['n_parameters'] - 2 * x['log_likelihood'])
-    .set_index(['library'])
-    )
-
-logliks_df.round(1)
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>model</th>
-      <th>likelihood type</th>
-      <th>n_parameters</th>
-      <th>log_likelihood</th>
-      <th>AIC</th>
-    </tr>
-    <tr>
-      <th>library</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>lib1</th>
-      <td>global epistasis</td>
-      <td>4</td>
-      <td>3801</td>
-      <td>-39824.6</td>
-      <td>87251.3</td>
-    </tr>
-    <tr>
-      <th>lib1</th>
-      <td>global epistasis</td>
-      <td>3</td>
-      <td>3800</td>
-      <td>-45726.4</td>
-      <td>99052.9</td>
-    </tr>
-    <tr>
-      <th>lib1</th>
-      <td>global epistasis</td>
-      <td>2</td>
-      <td>3799</td>
-      <td>-38587.1</td>
-      <td>84772.3</td>
-    </tr>
-    <tr>
-      <th>lib2</th>
-      <td>global epistasis</td>
-      <td>4</td>
-      <td>3798</td>
-      <td>-32391.0</td>
-      <td>72378.1</td>
-    </tr>
-    <tr>
-      <th>lib2</th>
-      <td>global epistasis</td>
-      <td>3</td>
-      <td>3797</td>
-      <td>-40849.2</td>
-      <td>89292.5</td>
-    </tr>
-    <tr>
-      <th>lib2</th>
-      <td>global epistasis</td>
-      <td>2</td>
-      <td>3796</td>
-      <td>-32098.4</td>
-      <td>71788.8</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-Below, we get a sense of the shape of global epistasis when varying the number of underlying iSpline basis functions across the different meshpoint parameter values.
-
-
-```python
-# NBVAL_IGNORE_OUTPUT
-
-variants_df_meshpoints = pd.concat(
-        [model.phenotypes_df
-         .assign(library=lib,
-                 meshpoints=meshpoints,
-                 )
-         for (epistasistype, meshpoints, lib), model in models_meshpoints.items()
-         if (epistasistype == 'global epistasis')],
-        ignore_index=True, sort=False)
-
-#predictionsfile = os.path.join(config['global_epistasis_binding_dir'], 'globalepistasis_binding_predictions.csv')
-#variants_df.to_csv(predictionsfile, index=False)
-#print(f"Writing predictions to {predictionsfile}")
-
-variants_df_meshpoints.head().round(2)
-```
-
-
-
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>aa_substitutions</th>
-      <th>func_score</th>
-      <th>func_score_var</th>
-      <th>latent_phenotype</th>
-      <th>observed_phenotype</th>
-      <th>library</th>
-      <th>meshpoints</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>A22C R127G E141D L188V</td>
-      <td>8.72</td>
-      <td>0.02</td>
-      <td>-1.39</td>
-      <td>9.43</td>
-      <td>lib1</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>N13F</td>
-      <td>10.35</td>
-      <td>0.00</td>
-      <td>-0.68</td>
-      <td>10.38</td>
-      <td>lib1</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>V71K P149L N157T</td>
-      <td>6.00</td>
-      <td>4.00</td>
-      <td>-6.84</td>
-      <td>6.15</td>
-      <td>lib1</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>A18V T148S H189Y</td>
-      <td>10.15</td>
-      <td>0.01</td>
-      <td>-0.87</td>
-      <td>10.17</td>
-      <td>lib1</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>T63D A89N</td>
-      <td>9.61</td>
-      <td>0.04</td>
-      <td>-1.29</td>
-      <td>9.59</td>
-      <td>lib1</td>
-      <td>4</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-
-
-
-```python
-for x, y in itertools.combinations(['latent_phenotype',
-                                    'observed_phenotype',
-                                    'func_score'],
-                                   2):
-    p = (
-        ggplot(variants_df_meshpoints, aes(x, y)) +
-        geom_point(alpha=0.05, size=0.5) +
-        facet_grid('library ~ meshpoints', scales='free_y') +
-        theme(figure_size=(2 * variants_df_meshpoints['meshpoints'].nunique(),
-                           2 * variants_df_meshpoints['library'].nunique()),
-              )
-        )
-#         plotfile = os.path.join(config['figs_dir'], f'{y}-v-{x}_by_{epistasistype}.pdf')
-#         print(f"Saving to {plotfile}")
-#         p.save(plotfile)
-    _ = p.draw()
-```
-
-
-![png](global_epistasis_binding_files/global_epistasis_binding_35_0.png)
-
-
-
-![png](global_epistasis_binding_files/global_epistasis_binding_35_1.png)
-
-
-
-![png](global_epistasis_binding_files/global_epistasis_binding_35_2.png)
-
-
-Not too much difference when changing the number of meshpoints. The lib1 fit with 2 meshpoints removed the upper censoring, but looks worse in other contexts, and AIC still favors the four-meshpoint model.
-
 ## Repeat fits for pooled library measurements
 
 Repeat the fits for all barcodes pooled together. There is slight variation in the average *K*<sub>D,app</sub> ascribed to wildtype genotypes in each library. To account for this, express the functional score in each library as the delta_log10Ka relative to the average of wildtype measurements in that library, thereby standardizing the small difference in mean WT between the two replicates and avoiding consequential artefacts in a joint fit.
@@ -1416,10 +1127,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 89.1 sec.
-    Fitting no epistasis with Gaussian likelihood model... fitting took 7.4 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 152.9 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 35.1 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 411.7 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 32.6 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 713.9 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 158.2 sec.
 
 
 
@@ -1537,15 +1248,15 @@ for x, y in itertools.combinations(['latent_phenotype',
 ```
 
 
-![png](global_epistasis_binding_files/global_epistasis_binding_41_0.png)
+![png](global_epistasis_binding_files/global_epistasis_binding_33_0.png)
 
 
 
-![png](global_epistasis_binding_files/global_epistasis_binding_41_1.png)
+![png](global_epistasis_binding_files/global_epistasis_binding_33_1.png)
 
 
 
-![png](global_epistasis_binding_files/global_epistasis_binding_41_2.png)
+![png](global_epistasis_binding_files/global_epistasis_binding_33_2.png)
 
 
 We will look more at each of these models (Cauchy and Gaussian likelihoods, observed and latent scale measurements) in the next notebook, in which we evaluate coefficients, process our final phenotype map, and compare our measurements to some validation datasets.

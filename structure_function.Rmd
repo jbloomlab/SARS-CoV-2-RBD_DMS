@@ -1,0 +1,108 @@
+---
+title: "Structure function analysis of mutational effects"
+author: "Tyler Starr"
+date: "5/11/2020"
+output:
+  github_document:
+    html_preview: true
+editor_options: 
+  chunk_output_type: inline
+
+---
+
+This notebook analyzes our single mutant effects on binding and expression in light of structural features of the RBD.
+
+```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+
+#list of packages to install/load
+packages = c("yaml","data.table","tidyverse")
+#install any packages not already installed
+installed_packages <- packages %in% rownames(installed.packages())
+if(any(installed_packages == F)){
+  install.packages(packages[!installed_packages])
+}
+#load packages
+invisible(lapply(packages, library, character.only=T))
+
+#read in config file
+config <- read_yaml("config.yaml")
+
+#read in file giving concordance between RBD numbering and SARS-CoV-2 Spike numbering
+RBD_sites <- read.csv(file="data/RBD_sites.csv",stringsAsFactors=F)
+
+#make output directory
+if(!file.exists(config$structure_function)){
+ dir.create(file.path(config$structure_function))
+}
+```
+
+Session info for reproducing environment:
+```{r print_sessionInfo}
+sessionInfo()
+```
+
+## Setup
+
+Read in tables of variant effects on binding and expression, for single mutations to the SARS-CoV-2 RBD and for a panel of homolog RBDs from the sarbecovirus clade.
+
+```{r read_data}
+#homologs <- data.table(read.csv(file=config$homolog_effects_file))
+#mutants <- data.table(read.csv(file=config$single_mut_effects_file))
+
+homologs <- data.table(read.csv(file="results/single_mut_effects_temp/homolog_effects.csv"))
+mutants <- data.table(read.csv(file="results/single_mut_effects_temp/single_mut_effects.csv"))
+```
+
+## Overall relationship between structure and function
+
+Let's investigate how the RBD structure influences mutational effects on expression and binding. First, we compute the *mean* effect of mutations on binding and expression for each site in the structure, as well as the best (max) and worst (min) mutational effects on these two measurements (excluding nonsense and synonymous mutants).
+
+```{r mean_max_mut_effect_per_site}
+
+```
+
+First, let's see how mutational effects on binding expression correlate at the level of individual mutations and at the level of site-level mean effects of mutation. We can see below that for many mutations and sites, mutational effects on expression and binding are correlated. However, several positions are tolerant to mutation with respect to expression despite being sensitive to mutation with respect to binding. Below, we output the sites of these mutations, which we can visualize on the ACE2-bound RBD structure using `dms-view`, linked [here](). We can see that these sites exhibiting binding-specific mutational sensitivity are typically at the ACE2-contact interface. (However, some mutations that are not at contact residues have mutation-specific discrepencies, xxxx)
+
+```{r correlation_mut_expression_binding, fig.width=8,fig.height=4.25,fig.align="center", dpi=300,dev="png"}
+
+```
+The relative solvent accessiibility (RSA) of an amino acid residue is known to be a dominant factor influencing its tolerance to mutation. Let's see how RSA of a position is related to its mutational sensitivity for binding and expression. We use RSA in two different structural contexts -- the free RBD structure, and the RBD structure when complexed with ACE2. We can see that expression effects are more closely associated with residue RSA in the free complex, while mutational effects on binding are best described by the ACE2-bound RSA.
+
+```{r }
+
+```
+
+To further visualize site-wise mutational sensitivity on the 3D structure, let's output `.pdb` files for the ACE2-bound RBD structure in which we replace the B factor column with metrics of interest for each site: 1) the mean effect of mutation on binding, 2) the mean effect of mutation on expression, 3) the max effect of any mutation on binding, and 4) the max effect of any mutation on expression.
+
+## DFEs and heatmaps
+
+Let's look at the distribution of single-mutant effects on binding and expressioin, and compare the fraction of mutations that are within the window defined by known functional RBD homologs for these two phenotypes.
+
+```{r }
+
+```
+
+Next, let's make heatmaps of per-amino acid mutational effects on binding and expression. We first make these heatmaps for all mutations at all sites:
+
+```{r }
+
+```
+
+We next make these heatmaps, zooming in on residues in special structural and functional classes: (disulfides, N-linked glycans, RBM, contact residues, "key" contacts [sites of adaptation within SARS-CoV-1], sites with diversity in SARS-CoV-2 clade, differences between SARS-CoV-1 and SARS-CoV-2)
+
+
+```{r }
+
+```
+
+Finally, let's look at beneficial mutations on binding and expression. We want to look at where they occur, and identify any interesting hypothesized biochemical mechanisms, etc. Pick some to validate!
+
+
+
+
+
+
+

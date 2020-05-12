@@ -91,7 +91,7 @@ Read in Sort-seq expression measurements. I will first fit global epistasis mode
 
 ```python
 df = pd.read_csv(config['expression_sortseq_file'])
-df.rename(columns={'ML_meanF':'func_score','var_ML_meanF':'func_score_var'},inplace=True)
+df.rename(columns={'delta_ML_meanF':'func_score','var_ML_meanF':'func_score_var'},inplace=True)
 func_scores = df[pd.notnull(df['func_score'])]
 func_scores.fillna('',inplace=True)
 func_scores.head()
@@ -124,8 +124,8 @@ func_scores.head()
       <th>barcode</th>
       <th>variant_call_support</th>
       <th>total_count</th>
+      <th>ML_meanF</th>
       <th>func_score</th>
-      <th>delta_ML_meanF</th>
       <th>func_score_var</th>
       <th>variant_class</th>
       <th>aa_substitutions</th>
@@ -142,7 +142,7 @@ func_scores.head()
       <td>2</td>
       <td>64.705656</td>
       <td>7.446290</td>
-      <td>-2.998906</td>
+      <td>-3.013613</td>
       <td>0.040136</td>
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
@@ -157,7 +157,7 @@ func_scores.head()
       <td>5</td>
       <td>117.957762</td>
       <td>7.922417</td>
-      <td>-2.522779</td>
+      <td>-2.537486</td>
       <td>0.025298</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
@@ -172,7 +172,7 @@ func_scores.head()
       <td>6</td>
       <td>244.344927</td>
       <td>8.934568</td>
-      <td>-1.510629</td>
+      <td>-1.525336</td>
       <td>0.014454</td>
       <td>1 nonsynonymous</td>
       <td>N13F</td>
@@ -187,7 +187,7 @@ func_scores.head()
       <td>1</td>
       <td>95.352707</td>
       <td>6.210683</td>
-      <td>-4.234514</td>
+      <td>-4.249221</td>
       <td>0.029793</td>
       <td>&gt;1 nonsynonymous</td>
       <td>C6K T15W K94Y V103W</td>
@@ -202,7 +202,7 @@ func_scores.head()
       <td>4</td>
       <td>212.429040</td>
       <td>7.728388</td>
-      <td>-2.716809</td>
+      <td>-2.731516</td>
       <td>0.016096</td>
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
@@ -250,14 +250,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 145.5 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.6 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 395.9 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 5.7 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 132.8 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.6 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 411.6 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 5.8 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 123.4 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.5 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 380.1 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 4.0 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 114.2 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.4 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 435.9 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 3.8 sec.
 
 
 Now we want to see which model fits the data better.
@@ -323,65 +323,65 @@ logliks_df.round(1)
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
-      <td>4004</td>
-      <td>-67118.5</td>
-      <td>142245.1</td>
+      <td>4003</td>
+      <td>-61495.7</td>
+      <td>130997.5</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
-      <td>3998</td>
-      <td>-110013.8</td>
-      <td>228023.6</td>
+      <td>3997</td>
+      <td>-106497.2</td>
+      <td>220988.4</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
-      <td>4004</td>
-      <td>-48331.9</td>
-      <td>104671.7</td>
+      <td>4003</td>
+      <td>-44719.1</td>
+      <td>97444.3</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
-      <td>3998</td>
-      <td>-120176.9</td>
-      <td>248349.7</td>
+      <td>3997</td>
+      <td>-117045.5</td>
+      <td>242085.0</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
-      <td>4004</td>
-      <td>-63860.5</td>
-      <td>135728.9</td>
+      <td>4002</td>
+      <td>-58140.0</td>
+      <td>124284.1</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
-      <td>3998</td>
-      <td>-102721.2</td>
-      <td>213438.3</td>
+      <td>3996</td>
+      <td>-98801.1</td>
+      <td>205594.2</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
-      <td>4004</td>
-      <td>-44591.4</td>
-      <td>97190.7</td>
+      <td>4002</td>
+      <td>-40875.7</td>
+      <td>89755.4</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
-      <td>3998</td>
-      <td>-112045.9</td>
-      <td>232087.7</td>
+      <td>3996</td>
+      <td>-108529.0</td>
+      <td>225050.1</td>
     </tr>
   </tbody>
 </table>
@@ -463,50 +463,50 @@ variants_df.head().round(2)
     <tr>
       <th>0</th>
       <td>N13S L60P K94N S147T C150Y</td>
-      <td>7.45</td>
+      <td>-3.01</td>
       <td>0.04</td>
-      <td>-0.74</td>
-      <td>7.56</td>
+      <td>-0.49</td>
+      <td>-2.89</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>1</th>
       <td>A22C R127G E141D L188V</td>
-      <td>7.92</td>
+      <td>-2.54</td>
       <td>0.03</td>
-      <td>-0.30</td>
-      <td>8.17</td>
+      <td>-0.20</td>
+      <td>-2.31</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>2</th>
       <td>N13F</td>
-      <td>8.93</td>
+      <td>-1.53</td>
       <td>0.01</td>
-      <td>-0.24</td>
-      <td>8.49</td>
+      <td>-0.15</td>
+      <td>-1.92</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>3</th>
       <td>C6K T15W K94Y V103W</td>
-      <td>6.21</td>
+      <td>-4.25</td>
       <td>0.03</td>
-      <td>-4.02</td>
-      <td>7.25</td>
+      <td>-3.26</td>
+      <td>-3.14</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>4</th>
       <td>V71K P149L N157T</td>
-      <td>7.73</td>
+      <td>-2.73</td>
       <td>0.02</td>
-      <td>-0.48</td>
-      <td>7.63</td>
+      <td>-0.31</td>
+      <td>-2.84</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -595,50 +595,50 @@ single_variants_df.head()
     <tr>
       <th>2</th>
       <td>N13F</td>
-      <td>8.934568</td>
+      <td>-1.525336</td>
       <td>0.014454</td>
-      <td>-0.242479</td>
-      <td>8.492896</td>
+      <td>-0.154924</td>
+      <td>-1.919413</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>6</th>
       <td>S184H</td>
-      <td>5.795520</td>
+      <td>-4.664384</td>
       <td>0.009626</td>
-      <td>-0.044603</td>
-      <td>10.021010</td>
+      <td>-0.030524</td>
+      <td>-0.400302</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>14</th>
       <td>P7S</td>
-      <td>10.391967</td>
+      <td>-0.067936</td>
       <td>0.028029</td>
-      <td>-0.022282</td>
-      <td>10.236778</td>
+      <td>-0.016311</td>
+      <td>-0.184446</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>27</th>
       <td>P149Q</td>
-      <td>10.501642</td>
+      <td>0.041738</td>
       <td>0.015011</td>
-      <td>-0.031406</td>
-      <td>10.147545</td>
+      <td>-0.022495</td>
+      <td>-0.279410</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>30</th>
       <td>D90Y</td>
-      <td>9.575404</td>
+      <td>-0.884499</td>
       <td>0.048385</td>
-      <td>-0.143114</td>
-      <td>9.172518</td>
+      <td>-0.095132</td>
+      <td>-1.273483</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -700,7 +700,7 @@ print(f"Writing predictions to {config['global_epistasis_expr_file']}")
 
 ## Repeat fits for pooled library measurements
 
-Repeat the fits for all barcodes pooled together. There is slight variation in the average mean fluorescence ascribed to wildtype genotypes in each library. To account for this, express the functional score in each library as the delta_ML_meanF relative to the average of wildtype measurements in that library, thereby standardizing the small difference in mean WT between the two replicates and avoiding consequential artefacts in a joint fit.
+Repeat the fits for all barcodes pooled together. There is slight variation in the average mean fluorescence ascribed to wildtype genotypes in each library. 
 
 
 ```python
@@ -756,7 +756,7 @@ func_scores_joint.head()
       <td>2</td>
       <td>64.705656</td>
       <td>7.446290</td>
-      <td>-2.998906</td>
+      <td>-3.013613</td>
       <td>0.040136</td>
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
@@ -771,7 +771,7 @@ func_scores_joint.head()
       <td>5</td>
       <td>117.957762</td>
       <td>7.922417</td>
-      <td>-2.522779</td>
+      <td>-2.537486</td>
       <td>0.025298</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
@@ -786,7 +786,7 @@ func_scores_joint.head()
       <td>6</td>
       <td>244.344927</td>
       <td>8.934568</td>
-      <td>-1.510629</td>
+      <td>-1.525336</td>
       <td>0.014454</td>
       <td>1 nonsynonymous</td>
       <td>N13F</td>
@@ -801,7 +801,7 @@ func_scores_joint.head()
       <td>1</td>
       <td>95.352707</td>
       <td>6.210683</td>
-      <td>-4.234514</td>
+      <td>-4.249221</td>
       <td>0.029793</td>
       <td>&gt;1 nonsynonymous</td>
       <td>C6K T15W K94Y V103W</td>
@@ -816,7 +816,7 @@ func_scores_joint.head()
       <td>4</td>
       <td>212.429040</td>
       <td>7.728388</td>
-      <td>-2.716809</td>
+      <td>-2.731516</td>
       <td>0.016096</td>
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
@@ -855,10 +855,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 296.1 sec.
-    Fitting no epistasis with Gaussian likelihood model... fitting took 1.2 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 849.9 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 9.5 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 221.3 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 0.9 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 769.8 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 5.5 sec.
 
 
 
@@ -908,46 +908,46 @@ variants_df_joint.head().round(2)
     <tr>
       <th>0</th>
       <td>N13S L60P K94N S147T C150Y</td>
-      <td>-3.00</td>
+      <td>-3.01</td>
       <td>0.04</td>
-      <td>-0.59</td>
-      <td>-2.82</td>
+      <td>-0.83</td>
+      <td>-2.85</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>1</th>
       <td>A22C R127G E141D L188V</td>
-      <td>-2.52</td>
+      <td>-2.54</td>
       <td>0.03</td>
-      <td>-0.23</td>
-      <td>-2.15</td>
+      <td>-0.33</td>
+      <td>-2.17</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>2</th>
       <td>N13F</td>
-      <td>-1.51</td>
+      <td>-1.53</td>
       <td>0.01</td>
-      <td>-0.20</td>
+      <td>-0.28</td>
       <td>-1.94</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>3</th>
       <td>C6K T15W K94Y V103W</td>
-      <td>-4.23</td>
+      <td>-4.25</td>
       <td>0.03</td>
-      <td>-5.02</td>
-      <td>-3.23</td>
+      <td>-5.59</td>
+      <td>-3.31</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>4</th>
       <td>V71K P149L N157T</td>
-      <td>-2.72</td>
+      <td>-2.73</td>
       <td>0.02</td>
-      <td>-0.44</td>
-      <td>-2.81</td>
+      <td>-0.61</td>
+      <td>-2.83</td>
       <td>Gaussian</td>
     </tr>
   </tbody>
