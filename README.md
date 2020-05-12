@@ -76,6 +76,24 @@ Ones that are tracked:
 
   - [./results/summary](./results/summary): contains the Markdown output of the Jupyter notebooks as well as the top-level summary in [./results/summary/summary.md](./results/summary/summary.md).
 
+The large results files are tracked via [git-lfs](https://git-lfs.github.com/).
+This requires `git-lfs` to be installed, which it is in the `conda` environment specified by [environment.yml](environment.yml).
+The following commands were then run:
+
+    git lfs install
+
+You may need to run this if you are tracking these files and haven't installed `git-lfs` in your user account.
+Then the large results files were added for tracking with:
+
+    git lfs track results/variants/codon_variant_table.csv
+    git lfs track results/counts/variant_counts.csv
+    git lfs track results/expression_meanFs/expression_meanFs.csv
+    git lfs track results/expression_meanFs/expression_meanFs_homologs.csv
+    git lfs track results/binding_Kds/binding_Kds.csv
+    git lfs track results/binding_Kds/binding_Kds_homologs.csv
+    git lfs track results/single_mut_effects/single_mut_effects.csv
+    git lfs track results/single_mut_effects/homolog_effects.csv
+
 ## Updating the conda environment
 The [environment.yml](environment.yml) file contains a fully pinned conda environment.
 An environment without all of the versions pinned is in [environment_unpinned.yml](environment_unpinned.yml).

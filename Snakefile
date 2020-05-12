@@ -31,7 +31,14 @@ rule all:
     """Final output of workflow."""
     input:
         os.path.join(config['summary_dir'], 'summary.md'),
-        config['single_mut_effects_file']
+        config['codon_variant_table_file'],
+        config['variant_counts_file'],
+        config['expression_sortseq_file'],
+        config['expression_sortseq_homologs_file'],
+        config['Titeseq_Kds_file'],
+        config['Titeseq_Kds_homologs_file'],
+        config['single_mut_effects_file'],
+        config['homolog_effects_file'],
 
 rule make_summary:
     """Create Markdown summary of analysis."""
@@ -184,7 +191,6 @@ rule compute_expression_meanFs:
         mv {params.md} {output.md};
         mv {params.md_files} {output.md_files}
         """
-
 
 rule analyze_counts:
     """Analyze variant counts and compute functional scores."""
