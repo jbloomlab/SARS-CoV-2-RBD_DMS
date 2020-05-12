@@ -119,7 +119,6 @@ func_scores.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Unnamed: 0</th>
       <th>library</th>
       <th>target</th>
       <th>barcode</th>
@@ -142,108 +141,103 @@ func_scores.head()
   <tbody>
     <tr>
       <th>2</th>
-      <td>3</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAAACTTCAAT</td>
       <td>5</td>
-      <td>74.501274</td>
-      <td>8.718159</td>
-      <td>-2.046168</td>
-      <td>0.123408</td>
-      <td>1.913555e-09</td>
-      <td>5.441202e-10</td>
-      <td>1.643325</td>
-      <td>1.130245</td>
-      <td>0.005605</td>
+      <td>74.50</td>
+      <td>8.72</td>
+      <td>-2.05</td>
+      <td>0.12</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.64</td>
+      <td>1.13</td>
+      <td>0.01</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
       <td>4</td>
-      <td>0.015230</td>
+      <td>0.0144</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>4</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACAAGCAGA</td>
       <td>6</td>
-      <td>146.321899</td>
-      <td>10.348897</td>
-      <td>-0.415430</td>
-      <td>0.047944</td>
-      <td>4.478193e-11</td>
-      <td>4.947053e-12</td>
-      <td>2.871835</td>
-      <td>1.005201</td>
-      <td>0.000945</td>
+      <td>146.32</td>
+      <td>10.35</td>
+      <td>-0.42</td>
+      <td>0.05</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.87</td>
+      <td>1.01</td>
+      <td>0.00</td>
       <td>1 nonsynonymous</td>
       <td>N13F</td>
       <td>1</td>
-      <td>0.002299</td>
+      <td>0.0025</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>6</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACAGGTTGC</td>
       <td>4</td>
-      <td>47.483006</td>
-      <td>6.000000</td>
-      <td>-4.764327</td>
-      <td>2.000000</td>
-      <td>1.000000e-06</td>
-      <td>7.525404e-06</td>
-      <td>1.500000</td>
-      <td>1.148506</td>
-      <td>0.009990</td>
+      <td>47.48</td>
+      <td>6.00</td>
+      <td>-4.76</td>
+      <td>2.00</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.50</td>
+      <td>1.15</td>
+      <td>0.01</td>
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
       <td>3</td>
-      <td>4.000000</td>
+      <td>4.0000</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>7</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACATTAAAT</td>
       <td>6</td>
-      <td>47.441196</td>
-      <td>10.151655</td>
-      <td>-0.612672</td>
-      <td>0.086726</td>
-      <td>7.052526e-11</td>
-      <td>1.409304e-11</td>
-      <td>2.636834</td>
-      <td>1.085328</td>
-      <td>0.002777</td>
+      <td>47.44</td>
+      <td>10.15</td>
+      <td>-0.61</td>
+      <td>0.09</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.64</td>
+      <td>1.09</td>
+      <td>0.00</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A18V T148S H189Y</td>
       <td>3</td>
-      <td>0.007521</td>
+      <td>0.0081</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>9</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACCTTACAA</td>
       <td>2</td>
-      <td>18.780856</td>
-      <td>9.611417</td>
-      <td>-1.152911</td>
-      <td>0.191538</td>
-      <td>2.446715e-10</td>
-      <td>1.079815e-10</td>
-      <td>2.001013</td>
-      <td>1.105333</td>
-      <td>0.011865</td>
+      <td>18.78</td>
+      <td>9.61</td>
+      <td>-1.15</td>
+      <td>0.19</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.00</td>
+      <td>1.11</td>
+      <td>0.01</td>
       <td>&gt;1 nonsynonymous</td>
       <td>T63D A89N</td>
       <td>2</td>
-      <td>0.036687</td>
+      <td>0.0361</td>
     </tr>
   </tbody>
 </table>
@@ -287,14 +281,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 422.7 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 13.7 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 403.2 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 78.7 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 57.5 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 17.1 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 1124.7 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 116.7 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 84.7 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 3.2 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 213.4 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 16.7 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 81.9 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.3 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 238.5 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 21.3 sec.
 
 
 Now we want to see which model fits the data better.
@@ -361,64 +355,64 @@ logliks_df.round(1)
       <td>global epistasis</td>
       <td>Gaussian</td>
       <td>3801</td>
-      <td>-58652.4</td>
-      <td>124906.8</td>
+      <td>-53065.8</td>
+      <td>113733.5</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
       <td>3795</td>
-      <td>-80453.4</td>
-      <td>168496.9</td>
+      <td>-80441.6</td>
+      <td>168473.3</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
       <td>3801</td>
-      <td>-39824.6</td>
-      <td>87251.3</td>
+      <td>-39036.0</td>
+      <td>85674.0</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
       <td>3795</td>
-      <td>-60005.8</td>
-      <td>127601.5</td>
+      <td>-60021.4</td>
+      <td>127632.9</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
       <td>3798</td>
-      <td>-56047.4</td>
-      <td>119690.8</td>
+      <td>-49768.0</td>
+      <td>107132.0</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Gaussian</td>
       <td>3792</td>
-      <td>-73428.5</td>
-      <td>154441.0</td>
+      <td>-73422.4</td>
+      <td>154428.8</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Cauchy</td>
       <td>3798</td>
-      <td>-32391.0</td>
-      <td>72378.1</td>
+      <td>-32464.9</td>
+      <td>72525.8</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
       <td>3792</td>
-      <td>-54010.6</td>
-      <td>115605.2</td>
+      <td>-54067.1</td>
+      <td>115718.3</td>
     </tr>
   </tbody>
 </table>
@@ -501,9 +495,9 @@ variants_df.head().round(2)
       <th>0</th>
       <td>A22C R127G E141D L188V</td>
       <td>8.72</td>
-      <td>0.02</td>
-      <td>-1.02</td>
-      <td>9.07</td>
+      <td>0.01</td>
+      <td>-1.54</td>
+      <td>9.06</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -512,8 +506,8 @@ variants_df.head().round(2)
       <td>N13F</td>
       <td>10.35</td>
       <td>0.00</td>
-      <td>-0.46</td>
-      <td>10.58</td>
+      <td>-0.62</td>
+      <td>10.46</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -522,8 +516,8 @@ variants_df.head().round(2)
       <td>V71K P149L N157T</td>
       <td>6.00</td>
       <td>4.00</td>
-      <td>-2.92</td>
-      <td>6.69</td>
+      <td>-3.99</td>
+      <td>6.64</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -532,8 +526,8 @@ variants_df.head().round(2)
       <td>A18V T148S H189Y</td>
       <td>10.15</td>
       <td>0.01</td>
-      <td>-0.57</td>
-      <td>10.24</td>
+      <td>-0.89</td>
+      <td>10.14</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -542,8 +536,8 @@ variants_df.head().round(2)
       <td>T63D A89N</td>
       <td>9.61</td>
       <td>0.04</td>
-      <td>-0.87</td>
-      <td>9.42</td>
+      <td>-1.33</td>
+      <td>9.43</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -634,50 +628,50 @@ single_variants_df.head()
     <tr>
       <th>1</th>
       <td>N13F</td>
-      <td>10.348897</td>
-      <td>0.002299</td>
-      <td>-0.456929</td>
-      <td>10.584842</td>
+      <td>10.35</td>
+      <td>0.0025</td>
+      <td>-0.620878</td>
+      <td>10.456437</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>10</th>
       <td>P7S</td>
-      <td>10.671953</td>
-      <td>0.008159</td>
-      <td>-0.076223</td>
-      <td>10.684103</td>
+      <td>10.67</td>
+      <td>0.0081</td>
+      <td>-0.082381</td>
+      <td>10.731078</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>21</th>
       <td>P149Q</td>
-      <td>10.718483</td>
-      <td>0.002085</td>
-      <td>-0.144518</td>
-      <td>10.684103</td>
+      <td>10.72</td>
+      <td>0.0025</td>
+      <td>-0.234197</td>
+      <td>10.714161</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>24</th>
       <td>D90Y</td>
-      <td>10.565768</td>
-      <td>0.004547</td>
-      <td>-0.451604</td>
-      <td>10.601489</td>
+      <td>10.57</td>
+      <td>0.0049</td>
+      <td>-0.622221</td>
+      <td>10.455074</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
     <tr>
       <th>26</th>
       <td>L5C</td>
-      <td>10.689649</td>
-      <td>0.003073</td>
-      <td>-0.165232</td>
-      <td>10.684103</td>
+      <td>10.69</td>
+      <td>0.0036</td>
+      <td>-0.257591</td>
+      <td>10.706989</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -760,7 +754,6 @@ dt.head().round(2)
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Unnamed: 0</th>
       <th>library</th>
       <th>target</th>
       <th>barcode</th>
@@ -790,7 +783,6 @@ dt.head().round(2)
   <tbody>
     <tr>
       <th>0</th>
-      <td>1</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAAAATTGTAA</td>
@@ -807,18 +799,17 @@ dt.head().round(2)
       <td>&gt;1 nonsynonymous</td>
       <td>Y91L K199Y</td>
       <td>2</td>
-      <td>-0.26</td>
-      <td>10.68</td>
+      <td>-0.34</td>
+      <td>10.67</td>
       <td>-0.33</td>
       <td>10.66</td>
-      <td>-0.45</td>
-      <td>10.78</td>
+      <td>-0.41</td>
+      <td>10.66</td>
       <td>-0.33</td>
       <td>10.69</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>2</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAAACTTAAAT</td>
@@ -835,18 +826,17 @@ dt.head().round(2)
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
       <td>5</td>
-      <td>-3.53</td>
-      <td>6.51</td>
-      <td>-4.81</td>
-      <td>6.19</td>
-      <td>-5.44</td>
-      <td>6.20</td>
-      <td>-4.77</td>
-      <td>6.07</td>
+      <td>-4.56</td>
+      <td>6.61</td>
+      <td>-4.76</td>
+      <td>6.14</td>
+      <td>-4.56</td>
+      <td>6.54</td>
+      <td>-4.82</td>
+      <td>6.06</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>3</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAAACTTCAAT</td>
@@ -863,18 +853,17 @@ dt.head().round(2)
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
       <td>4</td>
-      <td>-1.02</td>
-      <td>9.07</td>
-      <td>-1.39</td>
+      <td>-1.54</td>
+      <td>9.06</td>
+      <td>-1.38</td>
       <td>9.43</td>
-      <td>-1.80</td>
-      <td>9.03</td>
-      <td>-1.21</td>
-      <td>9.68</td>
+      <td>-1.57</td>
+      <td>9.07</td>
+      <td>-1.23</td>
+      <td>9.67</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>4</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACAAGCAGA</td>
@@ -891,18 +880,17 @@ dt.head().round(2)
       <td>1 nonsynonymous</td>
       <td>N13F</td>
       <td>1</td>
-      <td>-0.46</td>
-      <td>10.58</td>
-      <td>-0.68</td>
+      <td>-0.62</td>
+      <td>10.46</td>
+      <td>-0.67</td>
       <td>10.38</td>
-      <td>-0.71</td>
-      <td>10.50</td>
+      <td>-0.63</td>
+      <td>10.46</td>
       <td>-0.70</td>
       <td>10.36</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>5</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACAATATAA</td>
@@ -919,14 +907,14 @@ dt.head().round(2)
       <td>&gt;1 nonsynonymous</td>
       <td>C6K T15W K94Y V103W</td>
       <td>4</td>
-      <td>-10.58</td>
-      <td>6.46</td>
-      <td>-6.06</td>
-      <td>6.16</td>
-      <td>-6.15</td>
-      <td>6.07</td>
-      <td>-7.14</td>
-      <td>6.04</td>
+      <td>-7.48</td>
+      <td>6.61</td>
+      <td>-6.45</td>
+      <td>6.12</td>
+      <td>-5.29</td>
+      <td>6.53</td>
+      <td>-7.16</td>
+      <td>6.03</td>
     </tr>
   </tbody>
 </table>
@@ -969,7 +957,6 @@ func_scores_joint.head()
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>Unnamed: 0</th>
       <th>library</th>
       <th>target</th>
       <th>barcode</th>
@@ -992,108 +979,103 @@ func_scores_joint.head()
   <tbody>
     <tr>
       <th>2</th>
-      <td>3</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAAACTTCAAT</td>
       <td>5</td>
-      <td>74.501274</td>
-      <td>8.718159</td>
-      <td>-2.046168</td>
-      <td>0.123408</td>
-      <td>1.913555e-09</td>
-      <td>5.441202e-10</td>
-      <td>1.643325</td>
-      <td>1.130245</td>
-      <td>0.005605</td>
+      <td>74.50</td>
+      <td>8.72</td>
+      <td>-2.05</td>
+      <td>0.12</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.64</td>
+      <td>1.13</td>
+      <td>0.01</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A22C R127G E141D L188V</td>
       <td>4</td>
-      <td>0.015230</td>
+      <td>0.0144</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>4</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACAAGCAGA</td>
       <td>6</td>
-      <td>146.321899</td>
-      <td>10.348897</td>
-      <td>-0.415430</td>
-      <td>0.047944</td>
-      <td>4.478193e-11</td>
-      <td>4.947053e-12</td>
-      <td>2.871835</td>
-      <td>1.005201</td>
-      <td>0.000945</td>
+      <td>146.32</td>
+      <td>10.35</td>
+      <td>-0.42</td>
+      <td>0.05</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.87</td>
+      <td>1.01</td>
+      <td>0.00</td>
       <td>1 nonsynonymous</td>
       <td>N13F</td>
       <td>1</td>
-      <td>0.002299</td>
+      <td>0.0025</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>6</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACAGGTTGC</td>
       <td>4</td>
-      <td>47.483006</td>
-      <td>6.000000</td>
-      <td>-4.764327</td>
-      <td>2.000000</td>
-      <td>1.000000e-06</td>
-      <td>7.525404e-06</td>
-      <td>1.500000</td>
-      <td>1.148506</td>
-      <td>0.009990</td>
+      <td>47.48</td>
+      <td>6.00</td>
+      <td>-4.76</td>
+      <td>2.00</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.50</td>
+      <td>1.15</td>
+      <td>0.01</td>
       <td>&gt;1 nonsynonymous</td>
       <td>V71K P149L N157T</td>
       <td>3</td>
-      <td>4.000000</td>
+      <td>4.0000</td>
     </tr>
     <tr>
       <th>6</th>
-      <td>7</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACATTAAAT</td>
       <td>6</td>
-      <td>47.441196</td>
-      <td>10.151655</td>
-      <td>-0.612672</td>
-      <td>0.086726</td>
-      <td>7.052526e-11</td>
-      <td>1.409304e-11</td>
-      <td>2.636834</td>
-      <td>1.085328</td>
-      <td>0.002777</td>
+      <td>47.44</td>
+      <td>10.15</td>
+      <td>-0.61</td>
+      <td>0.09</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.64</td>
+      <td>1.09</td>
+      <td>0.00</td>
       <td>&gt;1 nonsynonymous</td>
       <td>A18V T148S H189Y</td>
       <td>3</td>
-      <td>0.007521</td>
+      <td>0.0081</td>
     </tr>
     <tr>
       <th>8</th>
-      <td>9</td>
       <td>lib1</td>
       <td>SARS-CoV-2</td>
       <td>AAAAAAAACCTTACAA</td>
       <td>2</td>
-      <td>18.780856</td>
-      <td>9.611417</td>
-      <td>-1.152911</td>
-      <td>0.191538</td>
-      <td>2.446715e-10</td>
-      <td>1.079815e-10</td>
-      <td>2.001013</td>
-      <td>1.105333</td>
-      <td>0.011865</td>
+      <td>18.78</td>
+      <td>9.61</td>
+      <td>-1.15</td>
+      <td>0.19</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.00</td>
+      <td>1.11</td>
+      <td>0.01</td>
       <td>&gt;1 nonsynonymous</td>
       <td>T63D A89N</td>
       <td>2</td>
-      <td>0.036687</td>
+      <td>0.0361</td>
     </tr>
   </tbody>
 </table>
@@ -1127,10 +1109,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 411.7 sec.
-    Fitting no epistasis with Gaussian likelihood model... fitting took 32.6 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 713.9 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 158.2 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 156.0 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 6.1 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 128.1 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 30.1 sec.
 
 
 
@@ -1181,9 +1163,9 @@ variants_df_joint.head().round(2)
       <th>0</th>
       <td>A22C R127G E141D L188V</td>
       <td>-2.05</td>
-      <td>0.02</td>
-      <td>-1.49</td>
-      <td>-1.79</td>
+      <td>0.01</td>
+      <td>-1.60</td>
+      <td>-1.75</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -1192,7 +1174,7 @@ variants_df_joint.head().round(2)
       <td>-0.42</td>
       <td>0.00</td>
       <td>-0.64</td>
-      <td>-0.23</td>
+      <td>-0.33</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -1200,8 +1182,8 @@ variants_df_joint.head().round(2)
       <td>V71K P149L N157T</td>
       <td>-4.76</td>
       <td>4.00</td>
-      <td>-3.71</td>
-      <td>-3.90</td>
+      <td>-6.19</td>
+      <td>-4.19</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -1209,8 +1191,8 @@ variants_df_joint.head().round(2)
       <td>A18V T148S H189Y</td>
       <td>-0.61</td>
       <td>0.01</td>
-      <td>-0.87</td>
-      <td>-0.71</td>
+      <td>-0.92</td>
+      <td>-0.67</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -1218,8 +1200,8 @@ variants_df_joint.head().round(2)
       <td>T63D A89N</td>
       <td>-1.15</td>
       <td>0.04</td>
-      <td>-1.20</td>
       <td>-1.31</td>
+      <td>-1.27</td>
       <td>Gaussian</td>
     </tr>
   </tbody>

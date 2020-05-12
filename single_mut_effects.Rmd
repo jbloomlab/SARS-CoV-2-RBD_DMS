@@ -54,9 +54,9 @@ plot(bc_bind[library=="lib1",latent_phenotype_Cauchy_1],bc_bind[library=="lib1",
 points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],bc_bind[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=3)
 ```
 
-We also read in all parameters from global epistasis and tobit regression models (ugly code hidden), and collapse down to individual tables reporting the lib1, lib2, and joint model inferred effects.
+We also read in all parameters from global epistasis models, and collapse down to individual tables reporting the lib1, lib2, and joint model inferred effects.
 
-```{r beta_tables, include=F}
+```{r beta_tables}
 #open and merge together Cauchy likelihood, binding models
 betas_bind_observed_Cauchy <- merge(read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_1.csv',stringsAsFactors=F),
                                     read.csv('results/global_epistasis_binding/Cauchy-predicted-effects_binding_2.csv',stringsAsFactors=F),
@@ -185,7 +185,7 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 be
 ```
 We can see, reassuringly, that our single mutation effect estimates are better when we incorporate the nonlinearity -- this shows that the global epistasis transform improves this single mutation deconvolution from the multi-mutants in the library. The Cauchy likelihood models show better correlation between replicates. This may be in part because the "shape" of global epistasis differed between libraries in the two Gaussian likelihood fits.
 
-One interesting observation is that, in the latent space (which at least from my Ab work, I suspected was also picking up on the *stability* effects of mutations), there do seem to be a substantial number of mutations with positive values -- but when transformed to the observed log<sub>10</sub>(*K*<sub>A,app</sub>) scale, these are squashed to zero from the global epistasis fits. As expected, the simpler Tobit model formulation does not do this upper-squashing, as it only imposes a censoring at the known lower limit per its parameterization. Let's take a look at what positions these positive-latent-effect mutations are observed in. The code below outputs the sites with the largest observed latent-effect mutational effects in the two library replicates.
+One interesting observation is that, in the latent space (which at least from my Ab work, I suspected was also picking up on the *stability* effects of mutations), there do seem to be a substantial number of mutations with positive values -- but when transformed to the observed log<sub>10</sub>(*K*<sub>A,app</sub>) scale, these are squashed to zero from the global epistasis fits. Let's take a look at what positions these positive-latent-effect mutations are observed in. The code below outputs the sites with the largest observed latent-effect mutational effects in the two library replicates.
 
 These positions are visualized on the ACE2-bound RBD structure [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=337%2C358%2C363%2C365%2C367%2C452%2C460%2C493%2C498%2C501%2C518%2C519%2C527). These mutations fall into two sorts of clusters -- some are ACE2-proximal and may be genuine affinity-mediated positive effects, and others are ACE2-distal and are more likely stability/expression-mediated. My hypothesis is that these positive latent-scale mutations are frequently stabilizing mutations that have a positive latent effect because of positive effects on binding in destabilized background, but do not cause further affinity gains in stabilized background like WT. Let's hold onto this for a bit and come back to it when we look at our directly measured single-mutant barcode mutational effects. 
 
@@ -502,22 +502,26 @@ betas[,expr_lib2 := expr_lib2_coef]
 betas[,expr_avg := mean(c(expr_lib1,expr_lib2),na.rm=T),by=mutation]
 ```
 
-Last, save our estimated single-mutant effects as a csv file. We'll keep the full wide format, with lib1 and lib2 direct and coef estimates for binding and expression scores, along with the concatenated lib1 and lib2 effects, and the average from the two libraries.
+Last, save our estimated single-mutant effects as a csv file. We output the estimated effects on binding and expression in each library and the average of the libraries.
 
 ```{r save_output}
-write.csv(betas, file=config$single_mut_effects_file)
+betas %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  dplyr::select(site_RBD, site_SARS2, wildtype, mutant, mutation, mutation_RBD,
+                bind_lib1, bind_lib2, bind_avg, expr_lib1, expr_lib2, expr_avg) %>%
+  write.csv(file=config$single_mut_effects_file, row.names=F)
 ```
 
 ## Output summary of homolog phenotypes
 
-Let's summarize the binding and expression phenotypes of the homologous RBD sequences that were spiked into our libraries. We compute the mean and standard error of binding and expression phenotypes relative to WT SARS-CoV-2 separately in each library, and then calculate the average binding and expression from the two library measurements.
+Let's summarize the binding and expression phenotypes of the homologous RBD sequences that were spiked into our libraries. We compute the average and standard error of binding and expression phenotypes relative to WT SARS-CoV-2 separately in each library, and then calculate the average binding and expression from the two library measurements. For binding, our average is the mean delta-log<sub>10</sub>(*K*<sub>A,app</sub>) relative to SARS-CoV-2 wildtype. For expression, our average is the *median* delta-mean-fluorescence relative to SARS-CoV-2 wildtype. Because some homologs have a tail of lowly expressing barcodes (which are presumably selected out in the RBD+ sort prior to the binding measureements), we use the median as our average because it is more robust to outliers. The standard error of a median is higher than the standard error of the mean by a factor of 1.2533 if the measurement is normally distributed (which we are only moderately in violation of for some homologs), so we multiply our per-library standard errors by this factor.
 
 ```{r read_homologs_input}
-bc_homologs_bind <- data.table(read.csv(file=config$Titeseq_Kds_all_targets_file));bc_homologs_bind <- bc_homologs_bind[target != "SARS-CoV-2" | (target == "SARS-CoV-2" & variant_class=="wildtype"),]
+bc_homologs_bind <- data.table(read.csv(file=config$Titeseq_Kds_homologs_file))
 
 bc_homologs_bind[target=="SARS-CoV",target:="SARS-CoV-1"]
 
-bc_homologs_expr <- data.table(read.csv(file=config$expression_sortseq_all_targets_file));bc_homologs_expr <- bc_homologs_expr[target != "SARS-CoV-2" | (target == "SARS-CoV-2" & variant_class=="wildtype"),]
+bc_homologs_expr <- data.table(read.csv(file=config$expression_sortseq_homologs_file))
 
 bc_homologs_expr[target=="SARS-CoV",target:="SARS-CoV-1"]
 
@@ -564,8 +568,10 @@ Let's compare these phenotypes as determined in our bulk assays to those determi
 Output the summarized homolog phenotype scores into a table for downstream analysis and sharing.
 
 ```{r homologs_output}
-write.csv(homologs, file=config$homolog_effects_file)
 
+homologs %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  write.csv(file=config$homolog_effects_file, row.names=F)
 ```
 
 
