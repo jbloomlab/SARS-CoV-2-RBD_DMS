@@ -101,9 +101,9 @@ points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=
 
 <img src="single_mut_effects_files/figure-gfm/bc_tables-1.png" style="display: block; margin: auto;" />
 
-We also read in all parameters from global epistasis and tobit
-regression models (ugly code hidden), and collapse down to individual
-tables reporting the lib1, lib2, and joint model inferred effects.
+We also read in all parameters from global epistasis models (ugly code
+hidden), and collapse down to individual tables reporting the lib1,
+lib2, and joint model inferred effects.
 
 ## Assessing global epistasis models for binding data
 
@@ -158,12 +158,10 @@ from my Ab work, I suspected was also picking up on the *stability*
 effects of mutations), there do seem to be a substantial number of
 mutations with positive values – but when transformed to the observed
 log<sub>10</sub>(*K*<sub>A,app</sub>) scale, these are squashed to zero
-from the global epistasis fits. As expected, the simpler Tobit model
-formulation does not do this upper-squashing, as it only imposes a
-censoring at the known lower limit per its parameterization. Let’s take
-a look at what positions these positive-latent-effect mutations are
-observed in. The code below outputs the sites with the largest observed
-latent-effect mutational effects in the two library replicates.
+from the global epistasis fits. Let’s take a look at what positions
+these positive-latent-effect mutations are observed in. The code below
+outputs the sites with the largest observed latent-effect mutational
+effects in the two library replicates.
 
 These positions are visualized on the ACE2-bound RBD structure
 [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=337%2C358%2C363%2C365%2C367%2C452%2C460%2C493%2C498%2C501%2C518%2C519%2C527).
@@ -195,13 +193,13 @@ betas_bind_latent_Cauchy[!is.na(betas_bind_latent_Cauchy$effect_lib1) & !is.na(b
     ## 1540    Q168Y    498
     ## 1605    N171F    501
     ## 1620    N171Y    501
+    ## 1793     A18P    348
     ## 1966    L188G    518
     ## 1983    H189D    519
     ## 2156    P197I    527
     ## 2158    P197L    527
     ## 2159    P197M    527
     ## 2167    P197W    527
-    ## 2168    P197Y    527
     ## 2433     I28F    358
     ## 2553     A33F    363
     ## 2568     A33Y    363
@@ -213,7 +211,7 @@ betas_bind_latent_Cauchy[!is.na(betas_bind_latent_Cauchy$effect_lib1) & !is.na(b
 unique(betas_bind_latent_Cauchy[!is.na(betas_bind_latent_Cauchy$effect_lib1) & !is.na(betas_bind_latent_Cauchy$effect_lib2) & betas_bind_latent_Cauchy$effect_lib1>0.25 & betas_bind_latent_Cauchy$effect_lib2>0.25,"site_S"])
 ```
 
-    ##  [1] 452 460 493 498 501 518 519 527 358 363 365 367 337
+    ##  [1] 452 460 493 498 501 348 518 519 527 358 363 365 367 337
 
 Next, let’s look at mutational effects on binding as inferred directly
 in the Tite-seq assay from barcodes carrying only single mutations.
@@ -242,8 +240,8 @@ betas <- data.table(betas)
 bc_bind[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
 #gives total number of barcodes with a determined binding phenotype in each library on which a genotype was sampled (takes a while to compute)
-#betas[,n_bc_bind_lib1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-#betas[,n_bc_bind_lib2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_bind_lib1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_bind_lib2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   delta_log10Ka_1 <- bc_bind[aa_substitutions==betas[i,"mutation_RBD"] & library=="lib1",delta_log10Ka]
@@ -290,23 +288,22 @@ backgrounds and therefore acquire positive latent-scale coefficients.
 betas[bind_lib1_direct>0.1 & bind_lib2_direct>0.1,c("mutation","site_SARS2")]
 ```
 
-    ##     mutation site_SARS2
-    ##  1:    V367A        367
-    ##  2:    V367W        367
-    ##  3:    Y453F        453
-    ##  4:    E484R        484
-    ##  5:    Q498F        498
-    ##  6:    Q498H        498
-    ##  7:    N501F        501
-    ##  8:    N501V        501
-    ##  9:    Y505W        505
-    ## 10:    K528F        528
+    ##    mutation site_SARS2
+    ## 1:    V367A        367
+    ## 2:    V367W        367
+    ## 3:    Y453F        453
+    ## 4:    E484R        484
+    ## 5:    Q498F        498
+    ## 6:    Q498H        498
+    ## 7:    N501F        501
+    ## 8:    N501V        501
+    ## 9:    Y505W        505
 
 ``` r
 unique(betas[bind_lib1_direct>0.1 & bind_lib2_direct>0.1,site_SARS2])
 ```
 
-    ## [1] 367 453 484 498 501 505 528
+    ## [1] 367 453 484 498 501 505
 
 How do the mutation effect coefficients estimated in global
 epistasis/regression models correlate with these direct measurements of
@@ -615,8 +612,8 @@ from barcodes carrying just single mutations.
 bc_expr[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
 #gives total number of barcodes with a determined expring phenotype in each library on which a genotype was sampled (takes a while to compute)
-#betas[,n_bc_expr_lib1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-#betas[,n_bc_expr_lib2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_lib1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_lib2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   delta_meanF_1 <- bc_expr[aa_substitutions==betas[i,"mutation_RBD"] & library=="lib1",delta_ML_meanF]
@@ -761,11 +758,11 @@ SARS-CoV-2 separately in each library, and then calculate the average
 binding and expression from the two library measurements.
 
 ``` r
-bc_homologs_bind <- data.table(read.csv(file=config$Titeseq_Kds_all_targets_file));bc_homologs_bind <- bc_homologs_bind[target != "SARS-CoV-2" | (target == "SARS-CoV-2" & variant_class=="wildtype"),]
+bc_homologs_bind <- data.table(read.csv(file=config$Titeseq_Kds_homologs_file))
 
 bc_homologs_bind[target=="SARS-CoV",target:="SARS-CoV-1"]
 
-bc_homologs_expr <- data.table(read.csv(file=config$expression_sortseq_all_targets_file));bc_homologs_expr <- bc_homologs_expr[target != "SARS-CoV-2" | (target == "SARS-CoV-2" & variant_class=="wildtype"),]
+bc_homologs_expr <- data.table(read.csv(file=config$expression_sortseq_homologs_file))
 
 bc_homologs_expr[target=="SARS-CoV",target:="SARS-CoV-1"]
 

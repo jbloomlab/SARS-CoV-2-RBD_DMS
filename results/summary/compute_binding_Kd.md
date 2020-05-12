@@ -1014,15 +1014,19 @@ SARS-CoV-2 targets only
 counts_lib1[,library:="lib1"]
 counts_lib2[,library:="lib2"]
 
-write.csv(rbind(counts_lib1[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
-                               baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_lib2[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
-                               baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]),
-          file=config$Titeseq_Kds_all_targets_file)
+rbind(counts_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+                                             baseline, nMSR)],
+      counts_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+                                             baseline, nMSR)]
+      ) %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  write.csv(file=config$Titeseq_Kds_homologs_file, row.names=F)
 
-write.csv(rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
-                                                   baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
-                                                   baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]),
-          file=config$Titeseq_Kds_file)
+rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+                                         baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
+      counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+                                         baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]
+      ) %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  write.csv(file=config$Titeseq_Kds_file, row.names=F)
 ```

@@ -100,7 +100,9 @@ rule make_dag:
 rule single_mut_effects:
     input:
         config['global_epistasis_binding_file'],
-        config['global_epistasis_expr_file']
+        config['global_epistasis_expr_file'],
+        config['Titeseq_Kds_homologs_file'],
+        config['expression_sortseq_homologs_file'],
     output:
         config['single_mut_effects_file'],
         config['homolog_effects_file'],
@@ -146,7 +148,7 @@ rule compute_Titeseq_Kds:
         config['variant_counts_file']
     output:
         config['Titeseq_Kds_file'],
-        config['Titeseq_Kds_all_targets_file'],
+        config['Titeseq_Kds_homologs_file'],
         md='results/summary/compute_binding_Kd.md',
         md_files=directory('results/summary/compute_binding_Kd_files')
     envmodules:
@@ -167,7 +169,7 @@ rule compute_expression_meanFs:
         config['variant_counts_file']
     output:
         config['expression_sortseq_file'],
-        config['expression_sortseq_all_targets_file'],
+        config['expression_sortseq_homologs_file'],
         md='results/summary/compute_expression_meanF.md',
         md_files=directory('results/summary/compute_expression_meanF_files')
     envmodules:

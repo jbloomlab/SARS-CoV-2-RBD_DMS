@@ -150,7 +150,8 @@ fluorescence boundaries of those sort bins from the sorting log. The
 package `fitdistcens` enables this ML estimation for these type of
 *censored* observations, where we know we observed a cell within some
 fluorescence interval but do not know the exact fluorescence value
-attributed to that observation.
+attributed to that observation. The counts are multiplied by 20 so that
+there is not a large rounding effect when they are rounded to integers.
 
 ``` r
 #define function to calculate ML meanF
@@ -417,21 +418,21 @@ invisible(dev.print(pdf, paste(config$expression_sortseq_dir,"/violin-plot_ML-me
 
 Finally, let’s output our measurements for downstream analyses. Since
 only the SARS-CoV-2 data is going into the global epistasis models, we
-will output separate files, for all barcodes, and for barcodes
-containing SARS-CoV-2 targets only. We also report a relative expression
-metric, delta\_ML\_meanF, by subtracting the mean expression of WT and
-synonymous variants from each ML\_meanF metric. This should calibrate
-measurements between the two libraries for fitting joint global
-epistasis models, in which the average wildtype expression is different
-by a very small amount. We censor out the low meanF wildtype
-measurements from the computation of the mean WT expression and remove
-these delta\_ML\_meanF measurements for these low-fluorescence wildtype
-barcodes, because these are likely artifactual points and we don’t want
-them to drag down the perceived WT fluorescence, thereby aberrantly
-making many individual mutations seem to improve expression. The cutoffs
-for each library were picked so that the median and mean fluorescence of
-WT variants were beginning to converge (within 0.05), suggesting outlier
-effects were diminished.
+will output separate files, for all barcodes corresponding to wildtype
+of any homolog, and for barcodes containing SARS-CoV-2 targets only. We
+also report a relative expression metric, delta\_ML\_meanF, by
+subtracting the mean expression of WT and synonymous variants from each
+ML\_meanF metric. This should calibrate measurements between the two
+libraries for fitting joint global epistasis models, in which the
+average wildtype expression is different by a very small amount. We
+censor out the low meanF wildtype measurements from the computation of
+the mean WT expression and remove these delta\_ML\_meanF measurements
+for these low-fluorescence wildtype barcodes, because these are likely
+artifactual points and we don’t want them to drag down the perceived WT
+fluorescence, thereby aberrantly making many individual mutations seem
+to improve expression. The cutoffs for each library were picked so that
+the median and mean fluorescence of WT variants were beginning to
+converge (within 0.05), suggesting outlier effects were diminished.
 
 ``` r
 counts_filtered_lib1[,library:="lib1"]
@@ -443,13 +444,17 @@ counts_filtered_lib1[variant_class %in% c("wildtype","synonymous") & ML_meanF<10
 counts_filtered_lib2$delta_ML_meanF <- counts_filtered_lib2$ML_meanF - mean(counts_filtered_lib2[variant_class %in% c("wildtype","synonymous") & ML_meanF>10.1,ML_meanF],na.rm=T)
 counts_filtered_lib2[variant_class %in% c("wildtype","synonymous") & ML_meanF<10.1, delta_ML_meanF := NA]
 
-write.csv(rbind(counts_filtered_lib1[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
-                                        variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_filtered_lib2[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
-                                        variant_class, aa_substitutions, n_aa_substitutions)]),file=config$expression_sortseq_all_targets_file)
+rbind(counts_filtered_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF)],
+      counts_filtered_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF)]
+      ) %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  write.csv(file=config$expression_sortseq_homologs_file, row.names=F)
 
-write.csv(rbind(counts_filtered_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
-                                        variant_class, aa_substitutions, n_aa_substitutions)],
-                counts_filtered_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
-                                        variant_class, aa_substitutions, n_aa_substitutions)]),file=config$expression_sortseq_file)
+rbind(counts_filtered_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
+                           variant_class, aa_substitutions, n_aa_substitutions)],
+      counts_filtered_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
+                           variant_class, aa_substitutions, n_aa_substitutions)]
+      ) %>%
+  mutate_if(is.numeric, round, digits=2) %>%
+  write.csv(file=config$expression_sortseq_file, row.names=F)
 ```
