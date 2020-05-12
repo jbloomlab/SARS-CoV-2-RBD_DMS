@@ -16,7 +16,7 @@ The analysis consists of three components, all of which are contained in this re
 
  3. The required input data.
 
-First, set up the computing environment, which is done via `conda`.
+First, set up the computing environment, which is partially done via `conda`.
 Ensure you have `conda` installed; if not install it via Miniconda as described [here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/#regular-installation).
 The environment is specified in [environment.yml](environment.yml).
 If you have not previously built the conda environment, then build the environment specified in [environment.yml](environment.yml) to `./env` with:
@@ -29,8 +29,12 @@ Then activate it with:
 
 If you've previously built the environment into `./env`, just do the activation step.
 
+Setting up the `conda` environment above installs everything to run all parts of the analysis **except** the `R` markdown notebooks.
+For those, the pipeline currently uses the Fred Hutch computing cluster module `R/3.6.1-foss-2016b` as specified in `Snakefile`.
+That module is not packaged with this repo, so if you aren't on the Fred Hutch cluster you'll have to create a similar `R` environment yourself (all the `R` packages are listed at the beginning of their output in the [summary results](results/summary/summary.md).
+
 Now you can run the entire analysis.
-The analysis consists primarily of a series of Jupyter notebooks and R scripts in to the top-level directory along with some additional code in [Snakefile](Snakefile).
+The analysis consists primarily of a series of Jupyter notebooks and R markdown in to the top-level directory along with some additional code in [Snakefile](Snakefile).
 You can run the analysis by using [Snakemake](https://snakemake.readthedocs.io) to run [Snakefile](Snakefile), specifying the conda environment in `./env`, as in:
 
     snakemake --use-conda --conda-prefix ./env
@@ -57,7 +61,7 @@ The [run_Hutch_cluster.bash](run_Hutch_cluster.bash) script uses this configurat
 If you are using a different cluster than the Fred Hutch one, you may need to modify the cluster configuration file.
 
 ## Notebooks that perform the analysis
-The Jupyter notebooks that perform most of the analysis are in this top-level directory with the extension `*.ipynb`.
+The Jupyter notebooks and R markdown dscripts that perform most of the analysis are in this top-level directory with the extension `*.ipynb` or `*.Rmd`.
 These notebooks read the key configuration values from [config.yaml](config.yaml).
 
 There is also a [./scripts/](scripts) subdirectory with related scripts.

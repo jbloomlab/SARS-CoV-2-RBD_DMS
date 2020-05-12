@@ -58,7 +58,7 @@ print(f"Using dms_variants version {dms_variants.__version__}")
 ```
 
     Using alignparse version 0.1.3
-    Using dms_variants version 0.5.3
+    Using dms_variants version 0.6.0
 
 
 Ignore warnings that clutter output:
