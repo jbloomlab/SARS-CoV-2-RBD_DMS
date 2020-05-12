@@ -219,8 +219,8 @@ betas <- data.table(betas)
 bc_bind[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
 #gives total number of barcodes with a determined binding phenotype in each library on which a genotype was sampled (takes a while to compute)
-#betas[,n_bc_bind_lib1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-#betas[,n_bc_bind_lib2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_bind_lib1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_bind_lib2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   delta_log10Ka_1 <- bc_bind[aa_substitutions==betas[i,"mutation_RBD"] & library=="lib1",delta_log10Ka]
@@ -436,8 +436,8 @@ Next, let's look at directly sampled single-mutant effects on expression from ba
 bc_expr[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
 #gives total number of barcodes with a determined expring phenotype in each library on which a genotype was sampled (takes a while to compute)
-#betas[,n_bc_expr_lib1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-#betas[,n_bc_expr_lib2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_lib1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_lib2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   delta_meanF_1 <- bc_expr[aa_substitutions==betas[i,"mutation_RBD"] & library=="lib1",delta_ML_meanF]
