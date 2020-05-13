@@ -688,7 +688,7 @@ rbind(counts_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_c
       counts_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
                                              baseline, nMSR)]
       ) %>%
-  mutate_if(is.numeric, round, digits=2) %>%
+  mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$Titeseq_Kds_homologs_file, row.names=F)
 
 rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,

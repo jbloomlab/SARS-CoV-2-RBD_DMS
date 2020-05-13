@@ -570,7 +570,7 @@ Output the summarized homolog phenotype scores into a table for downstream analy
 ```{r homologs_output}
 
 homologs %>%
-  mutate_if(is.numeric, round, digits=2) %>%
+  mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$homolog_effects_file, row.names=F)
 ```
 
