@@ -1012,24 +1012,24 @@ invisible(dev.print(pdf, paste(config$Titeseq_Kds_dir,"/violin-plot_log10Ka-by-t
 
 Finally, let’s output our measurements for downstream analyses. Since
 only the SARS-CoV-2 data is going into the global epistasis models, we
-will output separate files, for all barcodes, and for barcodes for
-SARS-CoV-2 targets only
+will output separate files, for wildtype RBD homologs of each target,
+and for barcodes for SARS-CoV-2 targets only
 
 ``` r
 counts_lib1[,library:="lib1"]
 counts_lib2[,library:="lib2"]
 
-rbind(counts_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+rbind(counts_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                              baseline, nMSR)],
-      counts_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+      counts_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                              baseline, nMSR)]
       ) %>%
   mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$Titeseq_Kds_homologs_file, row.names=F)
 
-rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                          baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
-      counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+      counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                          baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]
       ) %>%
   mutate_if(is.numeric, round, digits=2) %>%
