@@ -846,10 +846,21 @@ betas %>%
 ## Output summary of homolog phenotypes
 
 Let’s summarize the binding and expression phenotypes of the homologous
-RBD sequences that were spiked into our libraries. We compute the mean
-and standard error of binding and expression phenotypes relative to WT
-SARS-CoV-2 separately in each library, and then calculate the average
-binding and expression from the two library measurements.
+RBD sequences that were spiked into our libraries. We compute the
+average and standard error of binding and expression phenotypes relative
+to WT SARS-CoV-2 separately in each library, and then calculate the
+average binding and expression from the two library measurements. For
+binding, our average is the mean
+delta-log<sub>10</sub>(*K*<sub>A,app</sub>) relative to SARS-CoV-2
+wildtype. For expression, our average is the *median*
+delta-mean-fluorescence relative to SARS-CoV-2 wildtype. Because some
+homologs have a tail of lowly expressing barcodes (which are presumably
+selected out in the RBD+ sort prior to the binding measureements), we
+use the median as our average because it is more robust to outliers. The
+standard error of a median is higher than the standard error of the mean
+by a factor of 1.2533 if the measurement is normally distributed (which
+we are only moderately in violation of for some homologs), so we
+multiply our per-library standard errors by this factor.
 
 ``` r
 bc_homologs_bind <- data.table(read.csv(file=config$Titeseq_Kds_homologs_file))
@@ -915,6 +926,6 @@ downstream analysis and sharing.
 
 ``` r
 homologs %>%
-  mutate_if(is.numeric, round, digits=2) %>%
+  mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$homolog_effects_file, row.names=F)
 ```

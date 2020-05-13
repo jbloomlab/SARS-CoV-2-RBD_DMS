@@ -447,7 +447,7 @@ counts_filtered_lib2[variant_class %in% c("wildtype","synonymous") & ML_meanF<10
 rbind(counts_filtered_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF)],
       counts_filtered_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF)]
       ) %>%
-  mutate_if(is.numeric, round, digits=2) %>%
+  mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$expression_sortseq_homologs_file, row.names=F)
 
 rbind(counts_filtered_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, 
