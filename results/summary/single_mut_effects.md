@@ -50,7 +50,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -882,7 +882,7 @@ for(i in 1:nrow(homologs)){
   bind_lib2 <- bc_homologs_bind[library=="lib2" & target==as.character(homologs$homolog[i]),delta_log10Ka]
   homologs$bind_lib2[i] <- mean(bind_lib2,na.rm=T)
   homologs$bind_lib2_SE[i] <- sd(bind_lib2,na.rm=T)/sqrt(sum(!is.na(bind_lib2)))
-  homologs$bind_avg[i] <- mean(homologs$bind_lib1[i], homologs$bind_lib2[i])
+  homologs$bind_avg[i] <- mean(c(homologs$bind_lib1[i], homologs$bind_lib2[i]))
   homologs$bind_SE[i] <- sqrt(homologs$bind_lib1_SE[i]^2 + homologs$bind_lib2_SE[i]^2)/2
   expr_lib1 <- bc_homologs_expr[library=="lib1" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
   homologs$expr_lib1[i] <- median(expr_lib1,na.rm=T)
@@ -890,7 +890,7 @@ for(i in 1:nrow(homologs)){
   expr_lib2 <- bc_homologs_expr[library=="lib2" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
   homologs$expr_lib2[i] <- median(expr_lib2,na.rm=T)
   homologs$expr_lib2_SE[i] <- 1.2533*sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
-  homologs$expr_avg[i] <- mean(homologs$expr_lib1[i], homologs$expr_lib2[i])
+  homologs$expr_avg[i] <- mean(c(homologs$expr_lib1[i], homologs$expr_lib2[i]))
   homologs$expr_SE[i] <- sqrt(homologs$expr_lib1_SE[i]^2 + homologs$expr_lib2_SE[i]^2)/2
 }
 ```
