@@ -1,0 +1,105 @@
+---
+title: "Circulating SARS-CoV-2 RBD variants"
+author: "Tyler Starr"
+date: "5/12/2020"
+output:
+  github_document:
+  html_preview: true
+editor_options: 
+  chunk_output_type: inline
+
+---
+  
+This notebook analyzes RBD variants that have been sampled in isolates within the current SARS-CoV-2 pandemic.
+
+```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+
+#list of packages to install/load
+packages = c("yaml","data.table","tidyverse")
+#install any packages not already installed
+installed_packages <- packages %in% rownames(installed.packages())
+if(any(installed_packages == F)){
+  install.packages(packages[!installed_packages])
+}
+#load packages
+invisible(lapply(packages, library, character.only=T))
+
+#read in config file
+config <- read_yaml("config.yaml")
+
+#read in file giving concordance between RBD numbering and SARS-CoV-2 Spike numbering
+RBD_sites <- data.table(read.csv(file="data/RBD_sites.csv",stringsAsFactors=F))
+
+#make output directory
+if(!file.exists(config$circulating_variants_dir)){
+  dir.create(file.path(config$circulating_variants_dir))
+}
+```
+Session info for reproducing environment:
+  ```{r print_sessionInfo}
+sessionInfo()
+```
+
+## Setup
+
+Read in tables of variant effects on binding and expression for single mutations to the SARS-CoV-2 RBD.
+
+```{r read_data}
+
+mutants <- data.table(read.csv(file=config$single_mut_effects_file,stringsAsFactors = F))
+
+#rename mutants site indices to prevent shared names with RBD_sites, simplifying some downstream calculations that cross-index these tables
+setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2_site")
+
+```
+
+The 5/12/2020 GISAID report on Receptor binding surveillance for current sequences lists the following RBD variants (number of times seen). I believe this report focuses on just RBM variants, not all variants observed in the rest of the RBD:
+  * N439K (2x UK)
+* G446A (2x Australia)
+* L455I + F456V (1x Brazil)
+* F456L (1x England)
+* A475V (2x USA)
+* G476S (18x USA, 1x Belgium)
+* T478I (1x England)
+* V483A (30x USA)
+* V483F (4x Spain)
+* V483I (1x UK)
+* F490L (1x Australia)
+* S494P (3x USA, 1x UK, 1x Spain, 1x India)
+* Y495N (1x Luxembourg)
+* V503F (1x USA)
+
+First, let's output the effects of these mutations in our summary mutation table.
+
+```{r circulating_variants}
+variants <- data.frame(mutation=c("N439K","G446A","L455I","F456V","F456L","A475V","G476S","T478I","V483A","V483F","V483I","F490L","S494P","Y495N","V503F"),
+nobs=c(2, 2, 1, 1, 1, 2, 19, 1, 30, 4, 1, 1, 6, 1, 1),
+ncountry=c(1,1,1,1,1,1,2,1,1,1,1,1,4,1,1))
+
+for(i in 1:nrow(variants)){
+variants$bind_lib1[i] <- mutants[mutation==variants$mutation[i], bind_lib1]
+variants$bind_lib2[i] <- mutants[mutation==variants$mutation[i], bind_lib2]
+variants$bind_avg[i] <- mutants[mutation==variants$mutation[i], bind_avg]
+variants$expr_lib1[i] <- mutants[mutation==variants$mutation[i], expr_lib1]
+variants$expr_lib2[i] <- mutants[mutation==variants$mutation[i], expr_lib2]
+variants$expr_avg[i] <- mutants[mutation==variants$mutation[i], expr_avg]
+}
+
+```
+
+Let's visualize the positions of these circulating RBM variants in `dms-view`, linked [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=439%2C446%2C455%2C456%2C475%2C476%2C478%2C483%2C490%2C494%2C495%2C503). We can see that these variants occur at sites that vary pretty extensively across the sarbecovirus clade (except Y495, the mutation of which we ascribe a large deleterious effect).
+
+Let's expand our sequence set to all Spike sequences available on GISAID. On the EpiCoV page, under downloads, one of the pre-made options is an alignment of all Spike sequences isolated thus far. Let's load in this alignment.
+
+```{r gisaid_spike_alignment}
+
+```
+
+
+
+
+
+How do the specific effects of these mutations compare to the raw distribution of functional effects on binding and expression, and how do the inherent tolerance of the sites of these mutations compare to the rest of RBD/RBM sites?
