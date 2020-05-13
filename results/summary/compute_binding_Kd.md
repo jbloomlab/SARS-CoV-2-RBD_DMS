@@ -911,7 +911,12 @@ often more familiar with *K*<sub>D</sub>, we can refer to the
 log<sub>10</sub>(*K*<sub>A,app</sub>) as
 -log<sub>10</sub>(*K*<sub>D,app</sub>), which are identical. We will
 also compute the change in log<sub>10</sub>(*K*<sub>A,app</sub>)
-relative to the median wildtype value in each library.
+relative to the median wildtype value in each library, which should
+better account for global shifts in the *K*<sub>D,app</sub> scale
+between the two libraries (e.g. if protein dilutions were slightly
+different between the two experiments). This average wildtype
+log<sub>10</sub>(*K*<sub>D,app</sub>) is -10.764 in lib1, and -10.836 in
+lib2.
 
 ``` r
 counts_lib1[,log10Kd := log10(Kd),by=barcode]
