@@ -84,7 +84,7 @@ rule make_summary:
             4. [QC analysis of sequencing counts]({path(input.analyze_counts)}).
             
             5. [Computation of ACE2-binding *K*<sub>D</sub>]({path(input.compute_Kd)}).
-               Creates files giving the expression of each barcoded variant
+               Creates files giving the ACE2-binding of each barcoded variant
                [of SARS-CoV-2 RBD]({path(input.Titeseq_Kds_file)}) and of
                [the homologs]({path(input.Titeseq_Kds_homologs_file)}).
             

@@ -24,7 +24,7 @@ workflow:
 4. [QC analysis of sequencing counts](analyze_counts.md).
 
 5. [Computation of ACE2-binding *K*<sub>D</sub>](compute_binding_Kd.md).
-   Creates files giving the expression of each barcoded variant
+   Creates files giving the ACE2-binding of each barcoded variant
    [of SARS-CoV-2 RBD](../binding_Kds/binding_Kds.csv) and of
    [the homologs](../binding_Kds/binding_Kds_homologs.csv).
 

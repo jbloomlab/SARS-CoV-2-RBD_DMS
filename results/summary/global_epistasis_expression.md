@@ -244,14 +244,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 246.1 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.7 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 826.9 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 6.3 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 156.4 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.6 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 740.0 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 6.2 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 154.2 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.5 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 416.5 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 4.9 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 132.9 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.4 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 249.6 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 3.3 sec.
 
 
 Now we want to see which model fits the data better.
@@ -318,8 +318,8 @@ logliks_df.round(1)
       <td>global epistasis</td>
       <td>Gaussian</td>
       <td>4003</td>
-      <td>-61491.8</td>
-      <td>130989.6</td>
+      <td>-61437.0</td>
+      <td>130880.1</td>
     </tr>
     <tr>
       <th>lib1</th>
@@ -334,24 +334,24 @@ logliks_df.round(1)
       <td>global epistasis</td>
       <td>Cauchy</td>
       <td>4003</td>
-      <td>-44579.9</td>
-      <td>97165.7</td>
+      <td>-44897.1</td>
+      <td>97800.1</td>
     </tr>
     <tr>
       <th>lib1</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
       <td>3997</td>
-      <td>-117044.1</td>
-      <td>242082.2</td>
+      <td>-117039.0</td>
+      <td>242072.1</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>global epistasis</td>
       <td>Gaussian</td>
       <td>4002</td>
-      <td>-58275.2</td>
-      <td>124554.4</td>
+      <td>-58077.8</td>
+      <td>124159.6</td>
     </tr>
     <tr>
       <th>lib2</th>
@@ -366,16 +366,16 @@ logliks_df.round(1)
       <td>global epistasis</td>
       <td>Cauchy</td>
       <td>4002</td>
-      <td>-40981.1</td>
-      <td>89966.3</td>
+      <td>-41108.7</td>
+      <td>90221.4</td>
     </tr>
     <tr>
       <th>lib2</th>
       <td>no epistasis</td>
       <td>Cauchy</td>
       <td>3996</td>
-      <td>-108534.1</td>
-      <td>225060.1</td>
+      <td>-108540.5</td>
+      <td>225072.9</td>
     </tr>
   </tbody>
 </table>
@@ -459,7 +459,7 @@ variants_df.head().round(2)
       <td>N13S L60P K94N S147T C150Y</td>
       <td>-3.01</td>
       <td>0.04</td>
-      <td>-0.74</td>
+      <td>-0.46</td>
       <td>-2.89</td>
       <td>lib1</td>
       <td>Gaussian</td>
@@ -469,7 +469,7 @@ variants_df.head().round(2)
       <td>A22C R127G E141D L188V</td>
       <td>-2.54</td>
       <td>0.03</td>
-      <td>-0.30</td>
+      <td>-0.19</td>
       <td>-2.31</td>
       <td>lib1</td>
       <td>Gaussian</td>
@@ -479,8 +479,8 @@ variants_df.head().round(2)
       <td>N13F</td>
       <td>-1.53</td>
       <td>0.01</td>
-      <td>-0.24</td>
-      <td>-1.93</td>
+      <td>-0.15</td>
+      <td>-1.91</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -489,8 +489,8 @@ variants_df.head().round(2)
       <td>C6K T15W K94Y V103W</td>
       <td>-4.25</td>
       <td>0.03</td>
-      <td>-3.95</td>
-      <td>-3.20</td>
+      <td>-3.39</td>
+      <td>-3.15</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -499,8 +499,8 @@ variants_df.head().round(2)
       <td>V71K P149L N157T</td>
       <td>-2.73</td>
       <td>0.02</td>
-      <td>-0.48</td>
-      <td>-2.83</td>
+      <td>-0.30</td>
+      <td>-2.84</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -591,8 +591,8 @@ single_variants_df.head()
       <td>N13F</td>
       <td>-1.53</td>
       <td>0.01</td>
-      <td>-0.235370</td>
-      <td>-1.926348</td>
+      <td>-0.145062</td>
+      <td>-1.914094</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -601,8 +601,8 @@ single_variants_df.head()
       <td>S184H</td>
       <td>-4.66</td>
       <td>0.01</td>
-      <td>-0.045626</td>
-      <td>-0.395486</td>
+      <td>-0.028577</td>
+      <td>-0.398932</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -611,8 +611,8 @@ single_variants_df.head()
       <td>P7S</td>
       <td>-0.07</td>
       <td>0.03</td>
-      <td>-0.024652</td>
-      <td>-0.184475</td>
+      <td>-0.015319</td>
+      <td>-0.184636</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -621,8 +621,8 @@ single_variants_df.head()
       <td>P149Q</td>
       <td>0.04</td>
       <td>0.02</td>
-      <td>-0.034169</td>
-      <td>-0.281228</td>
+      <td>-0.021325</td>
+      <td>-0.282752</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -631,8 +631,8 @@ single_variants_df.head()
       <td>D90Y</td>
       <td>-0.88</td>
       <td>0.05</td>
-      <td>-0.144080</td>
-      <td>-1.276062</td>
+      <td>-0.089529</td>
+      <td>-1.275370</td>
       <td>lib1</td>
       <td>Gaussian</td>
     </tr>
@@ -843,10 +843,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 454.2 sec.
-    Fitting no epistasis with Gaussian likelihood model... fitting took 1.4 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 690.9 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 11.1 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 282.2 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 0.9 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 700.8 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 7.9 sec.
 
 
 
@@ -898,8 +898,8 @@ variants_df_joint.head().round(2)
       <td>N13S L60P K94N S147T C150Y</td>
       <td>-3.01</td>
       <td>0.04</td>
-      <td>-0.48</td>
-      <td>-2.83</td>
+      <td>-0.76</td>
+      <td>-2.84</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -907,7 +907,7 @@ variants_df_joint.head().round(2)
       <td>A22C R127G E141D L188V</td>
       <td>-2.54</td>
       <td>0.03</td>
-      <td>-0.19</td>
+      <td>-0.30</td>
       <td>-2.17</td>
       <td>Gaussian</td>
     </tr>
@@ -916,8 +916,8 @@ variants_df_joint.head().round(2)
       <td>N13F</td>
       <td>-1.53</td>
       <td>0.01</td>
-      <td>-0.16</td>
-      <td>-1.93</td>
+      <td>-0.26</td>
+      <td>-1.95</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -925,8 +925,8 @@ variants_df_joint.head().round(2)
       <td>C6K T15W K94Y V103W</td>
       <td>-4.25</td>
       <td>0.03</td>
-      <td>-5.39</td>
-      <td>-3.28</td>
+      <td>-5.53</td>
+      <td>-3.30</td>
       <td>Gaussian</td>
     </tr>
     <tr>
@@ -934,7 +934,7 @@ variants_df_joint.head().round(2)
       <td>V71K P149L N157T</td>
       <td>-2.73</td>
       <td>0.02</td>
-      <td>-0.36</td>
+      <td>-0.56</td>
       <td>-2.82</td>
       <td>Gaussian</td>
     </tr>

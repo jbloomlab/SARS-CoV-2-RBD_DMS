@@ -50,7 +50,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -846,10 +846,21 @@ betas %>%
 ## Output summary of homolog phenotypes
 
 Let’s summarize the binding and expression phenotypes of the homologous
-RBD sequences that were spiked into our libraries. We compute the mean
-and standard error of binding and expression phenotypes relative to WT
-SARS-CoV-2 separately in each library, and then calculate the average
-binding and expression from the two library measurements.
+RBD sequences that were spiked into our libraries. We compute the
+average and standard error of binding and expression phenotypes relative
+to WT SARS-CoV-2 separately in each library, and then calculate the
+average binding and expression from the two library measurements. For
+binding, our average is the mean
+delta-log<sub>10</sub>(*K*<sub>A,app</sub>) relative to SARS-CoV-2
+wildtype. For expression, our average is the *median*
+delta-mean-fluorescence relative to SARS-CoV-2 wildtype. Because some
+homologs have a tail of lowly expressing barcodes (which are presumably
+selected out in the RBD+ sort prior to the binding measureements), we
+use the median as our average because it is more robust to outliers. The
+standard error of a median is higher than the standard error of the mean
+by a factor of 1.2533 if the measurement is normally distributed (which
+we are only moderately in violation of for some homologs), so we
+multiply our per-library standard errors by this factor.
 
 ``` r
 bc_homologs_bind <- data.table(read.csv(file=config$Titeseq_Kds_homologs_file))
@@ -871,7 +882,7 @@ for(i in 1:nrow(homologs)){
   bind_lib2 <- bc_homologs_bind[library=="lib2" & target==as.character(homologs$homolog[i]),delta_log10Ka]
   homologs$bind_lib2[i] <- mean(bind_lib2,na.rm=T)
   homologs$bind_lib2_SE[i] <- sd(bind_lib2,na.rm=T)/sqrt(sum(!is.na(bind_lib2)))
-  homologs$bind_avg[i] <- mean(homologs$bind_lib1[i], homologs$bind_lib2[i])
+  homologs$bind_avg[i] <- mean(c(homologs$bind_lib1[i], homologs$bind_lib2[i]))
   homologs$bind_SE[i] <- sqrt(homologs$bind_lib1_SE[i]^2 + homologs$bind_lib2_SE[i]^2)/2
   expr_lib1 <- bc_homologs_expr[library=="lib1" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
   homologs$expr_lib1[i] <- median(expr_lib1,na.rm=T)
@@ -879,7 +890,7 @@ for(i in 1:nrow(homologs)){
   expr_lib2 <- bc_homologs_expr[library=="lib2" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
   homologs$expr_lib2[i] <- median(expr_lib2,na.rm=T)
   homologs$expr_lib2_SE[i] <- 1.2533*sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
-  homologs$expr_avg[i] <- mean(homologs$expr_lib1[i], homologs$expr_lib2[i])
+  homologs$expr_avg[i] <- mean(c(homologs$expr_lib1[i], homologs$expr_lib2[i]))
   homologs$expr_SE[i] <- sqrt(homologs$expr_lib1_SE[i]^2 + homologs$expr_lib2_SE[i]^2)/2
 }
 ```
@@ -915,6 +926,6 @@ downstream analysis and sharing.
 
 ``` r
 homologs %>%
-  mutate_if(is.numeric, round, digits=2) %>%
+  mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$homolog_effects_file, row.names=F)
 ```

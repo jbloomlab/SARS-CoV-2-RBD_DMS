@@ -911,7 +911,12 @@ often more familiar with *K*<sub>D</sub>, we can refer to the
 log<sub>10</sub>(*K*<sub>A,app</sub>) as
 -log<sub>10</sub>(*K*<sub>D,app</sub>), which are identical. We will
 also compute the change in log<sub>10</sub>(*K*<sub>A,app</sub>)
-relative to the median wildtype value in each library.
+relative to the median wildtype value in each library, which should
+better account for global shifts in the *K*<sub>D,app</sub> scale
+between the two libraries (e.g. if protein dilutions were slightly
+different between the two experiments). This average wildtype
+log<sub>10</sub>(*K*<sub>D,app</sub>) is -10.764 in lib1, and -10.836 in
+lib2.
 
 ``` r
 counts_lib1[,log10Kd := log10(Kd),by=barcode]
@@ -1007,24 +1012,24 @@ invisible(dev.print(pdf, paste(config$Titeseq_Kds_dir,"/violin-plot_log10Ka-by-t
 
 Finally, let’s output our measurements for downstream analyses. Since
 only the SARS-CoV-2 data is going into the global epistasis models, we
-will output separate files, for all barcodes, and for barcodes for
-SARS-CoV-2 targets only
+will output separate files, for wildtype RBD homologs of each target,
+and for barcodes for SARS-CoV-2 targets only
 
 ``` r
 counts_lib1[,library:="lib1"]
 counts_lib2[,library:="lib2"]
 
-rbind(counts_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+rbind(counts_lib1[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                              baseline, nMSR)],
-      counts_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+      counts_lib2[n_codon_substitutions==0,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                              baseline, nMSR)]
       ) %>%
-  mutate_if(is.numeric, round, digits=2) %>%
+  mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$Titeseq_Kds_homologs_file, row.names=F)
 
-rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+rbind(counts_lib1[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                          baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)],
-      counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, Kd, Kd_SE, response,
+      counts_lib2[target=="SARS-CoV-2",.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response,
                                          baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]
       ) %>%
   mutate_if(is.numeric, round, digits=2) %>%
