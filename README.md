@@ -4,7 +4,7 @@ Analysis of deep mutational scanning of barcoded codon variants of SARS-CoV-2 RB
 Study and analysis by Tyler Starr, Allie Greaney, and [Jesse Bloom](https://research.fhcrc.org/bloom/en.html).
 
 ## Summary of workflow and results
-For a summary of the workflow and results, [click here](results/summary/summary.md).
+For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
 Reading this summary is the best way to understand the analysis.
 
 ## Running the analysis
@@ -71,10 +71,9 @@ This will occur automatically if you run them via [Snakefile](Snakefile) as desc
 
 ## Results
 Results are placed in the [./results/](results) subdirectory.
-Most results are not tracked as they are very large.
-Ones that are tracked:
-
-  - [./results/summary](./results/summary): contains the Markdown output of the Jupyter notebooks as well as the top-level summary in [./results/summary/summary.md](./results/summary/summary.md).
+Many of the files created in this subdirectory are not tracked in the `git` repo as they are very large.
+However, key results files are tracked as well as a summary that shows the code and results.
+Click [here](./results/summary/summary.md) to see that summary.
 
 The large results files are tracked via [git-lfs](https://git-lfs.github.com/).
 This requires `git-lfs` to be installed, which it is in the `conda` environment specified by [environment.yml](environment.yml).

@@ -10,8 +10,7 @@ import pandas as pd
 configfile: 'config.yaml'
 
 # run "quick" rules locally:
-localrules: all,
-            make_dag,
+localrules: make_dag,
             make_summary
 
 # Functions -------------------------------------------------------------------
@@ -27,32 +26,30 @@ pacbio_runs = (pd.read_csv(config['pacbio_runs'], dtype = str)
 assert len(pacbio_runs['pacbioRun'].unique()) == len(pacbio_runs['pacbioRun'])
 
 # Rules -----------------------------------------------------------------------
-rule all:
-    """Final output of workflow."""
-    input:
-        os.path.join(config['summary_dir'], 'summary.md'),
-        config['codon_variant_table_file'],
-        config['variant_counts_file'],
-        config['expression_sortseq_file'],
-        config['expression_sortseq_homologs_file'],
-        config['Titeseq_Kds_file'],
-        config['Titeseq_Kds_homologs_file'],
-        config['single_mut_effects_file'],
-        config['homolog_effects_file'],
 
+# making this summary is the target rule (in place of `all`) since it
+# is first rule listed.
 rule make_summary:
     """Create Markdown summary of analysis."""
     input:
         dag=os.path.join(config['summary_dir'], 'dag.svg'),
         process_ccs=nb_markdown('process_ccs.ipynb'),
         build_variants=nb_markdown('build_variants.ipynb'),
+        codon_variant_table=config['codon_variant_table_file'],
+        variant_counts_file=config['variant_counts_file'],
         count_variants=nb_markdown('count_variants.ipynb'),
         analyze_counts=nb_markdown('analyze_counts.ipynb'),
         compute_Kd='results/summary/compute_binding_Kd.md',
+        Titeseq_Kds_file=config['Titeseq_Kds_file'],
+        Titeseq_Kds_homologs_file=config['Titeseq_Kds_homologs_file'],
         compute_meanF='results/summary/compute_expression_meanF.md',
+        expression_sortseq_file=config['expression_sortseq_file'],
+        expression_sortseq_homologs_file=config['expression_sortseq_homologs_file'],
         global_epistasis_binding=nb_markdown('global_epistasis_binding.ipynb'),
         global_epistasis_expression=nb_markdown('global_epistasis_expression.ipynb'),
-        single_mut_effects='results/summary/single_mut_effects.md'
+        single_mut_effects='results/summary/single_mut_effects.md',
+        single_mut_effects_file=config['single_mut_effects_file'],
+        homolog_effects_file=config['homolog_effects_file']
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -77,20 +74,33 @@ rule make_summary:
             1. [Process PacBio CCSs]({path(input.process_ccs)}).
 
             2. [Build variants from CCSs]({path(input.build_variants)}).
+               Creates a [codon variant table]({path(input.codon_variant_table)})
+               linking barcodes to the mutations in the variants.
 
             3. [Count variants by barcode]({path(input.count_variants)}).
+               Creates a [variant counts file]({path(input.variant_counts_file)})
+               giving counts of each barcoded variant in each condition.
 
             4. [QC analysis of sequencing counts]({path(input.analyze_counts)}).
             
             5. [Computation of ACE2-binding *K*<sub>D</sub>]({path(input.compute_Kd)}).
+               Creates files giving the expression of each barcoded variant
+               [of SARS-CoV-2 RBD]({path(input.Titeseq_Kds_file)}) and of
+               [the homologs]({path(input.Titeseq_Kds_homologs_file)}).
             
             6. [Computation of expression mean fluorescence]({path(input.compute_meanF)}).
+               Creates files giving the expression of each barcoded variant
+               [of SARS-CoV-2 RBD]({path(input.expression_sortseq_file)}) and of
+               [the homologs]({path(input.expression_sortseq_homologs_file)}).
             
             7. [Global epistasis decomposition of binding effects]({path(input.global_epistasis_binding)}).
             
             8. [Global epistasis decomposition of expression effects]({path(input.global_epistasis_expression)}).
             
             9. [Calculation of final single mutant effects on binding and expression]({path(input.single_mut_effects)}).
+               Creates files giving the estimated expression and ACE2-binding of
+               [single mutants to SARS-CoV-2 RBD]({path(input.single_mut_effects_file)})
+               and [the homologs]({path(input.homolog_effects_file)}).
 
             """
             ).strip())
