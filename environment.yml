@@ -1,9 +1,11 @@
 name: null
 channels:
-  - bioconda
   - salilab
+  - bioconda
+  - r
   - conda-forge
   - defaults
+  - schrodinger
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=1_llvm
@@ -45,6 +47,7 @@ dependencies:
   - gettext=0.19.8.1=hc5be6a0_1002
   - ghostscript=9.18=1
   - giflib=5.1.9=h516909a_0
+  - git-lfs=2.11.0=0
   - gitdb=4.0.4=py_0
   - gitpython=3.1.1=py_0
   - glib=2.64.2=h6f030ca_0
@@ -260,5 +263,5 @@ dependencies:
     - regex==2020.4.4
     - scipy==1.4.1
     - statsmodels==0.11.1
-prefix: /fh/fast/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS/env
+prefix: /fh/fast/bloom_j/computational_notebooks/jbloom/2020/SARS-CoV-2-RBD_DMS/env
 

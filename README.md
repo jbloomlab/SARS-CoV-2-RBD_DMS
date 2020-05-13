@@ -4,7 +4,7 @@ Analysis of deep mutational scanning of barcoded codon variants of SARS-CoV-2 RB
 Study and analysis by Tyler Starr, Allie Greaney, and [Jesse Bloom](https://research.fhcrc.org/bloom/en.html).
 
 ## Summary of workflow and results
-For a summary of the workflow and results, [click here](results/summary/summary.md).
+For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
 Reading this summary is the best way to understand the analysis.
 
 ## Running the analysis
@@ -71,10 +71,27 @@ This will occur automatically if you run them via [Snakefile](Snakefile) as desc
 
 ## Results
 Results are placed in the [./results/](results) subdirectory.
-Most results are not tracked as they are very large.
-Ones that are tracked:
+Many of the files created in this subdirectory are not tracked in the `git` repo as they are very large.
+However, key results files are tracked as well as a summary that shows the code and results.
+Click [here](./results/summary/summary.md) to see that summary.
 
-  - [./results/summary](./results/summary): contains the Markdown output of the Jupyter notebooks as well as the top-level summary in [./results/summary/summary.md](./results/summary/summary.md).
+The large results files are tracked via [git-lfs](https://git-lfs.github.com/).
+This requires `git-lfs` to be installed, which it is in the `conda` environment specified by [environment.yml](environment.yml).
+The following commands were then run:
+
+    git lfs install
+
+You may need to run this if you are tracking these files and haven't installed `git-lfs` in your user account.
+Then the large results files were added for tracking with:
+
+    git lfs track results/variants/codon_variant_table.csv
+    git lfs track results/counts/variant_counts.csv
+    git lfs track results/expression_meanFs/expression_meanFs.csv
+    git lfs track results/expression_meanFs/expression_meanFs_homologs.csv
+    git lfs track results/binding_Kds/binding_Kds.csv
+    git lfs track results/binding_Kds/binding_Kds_homologs.csv
+    git lfs track results/single_mut_effects/single_mut_effects.csv
+    git lfs track results/single_mut_effects/homolog_effects.csv
 
 ## Updating the conda environment
 The [environment.yml](environment.yml) file contains a fully pinned conda environment.

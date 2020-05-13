@@ -12,3 +12,26 @@ env/
 
 results/*
 !results/summary
+
+!results/variants
+results/variants/*
+!results/variants/codon_variant_table.csv
+
+!results/counts
+results/counts/*
+!results/counts/variant_counts.csv
+
+!results/expression_meanFs
+results/expression_meanFs/*
+!results/expression_meanFs/expression_meanFs.csv
+!results/expression_meanFs/expression_meanFs_homologs.csv
+
+!results/binding_Kds
+results/binding_Kds/*
+!results/binding_Kds/binding_Kds.csv
+!results/binding_Kds/binding_Kds_homologs.csv
+
+!results/single_mut_effects
+results/single_mut_effects/*
+!results/single_mut_effects/single_mut_effects.csv
+!results/single_mut_effects/homolog_effects.csv
