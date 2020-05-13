@@ -506,7 +506,7 @@ Last, save our estimated single-mutant effects as a csv file. We output the esti
 
 ```{r save_output}
 betas %>%
-  mutate_if(is.numeric, round, digits=3) %>%
+  mutate_if(is.numeric, round, digits=2) %>%
   dplyr::select(site_RBD, site_SARS2, wildtype, mutant, mutation, mutation_RBD,
                 bind_lib1, bind_lib2, bind_avg, expr_lib1, expr_lib2, expr_avg) %>%
   write.csv(file=config$single_mut_effects_file, row.names=F)
