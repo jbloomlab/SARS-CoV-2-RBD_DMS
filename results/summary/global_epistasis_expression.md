@@ -244,13 +244,13 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 154.2 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 152.3 sec.
     Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 0.5 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 416.5 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 4.9 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 132.9 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 412.6 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 5.1 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 128.6 sec.
     Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 0.4 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 249.6 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 244.6 sec.
     Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 3.3 sec.
 
 
@@ -843,10 +843,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 282.2 sec.
-    Fitting no epistasis with Gaussian likelihood model... fitting took 0.9 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 700.8 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 7.9 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 276.0 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 1.0 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 677.8 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 8.4 sec.
 
 
 
