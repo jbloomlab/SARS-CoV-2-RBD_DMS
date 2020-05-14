@@ -50,7 +50,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 14.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
