@@ -258,10 +258,14 @@ and 4) the max effect of any mutation on expression. In PyMol, we can
 then visualize spheres at each Calpha, colored by spectrum from low
 (yellow) to high (blue) for each metric by manually executing the
 following commands in a PyMol session in which one of the output `pdb`
-files is opened: `hide all; show cartoon color warmpink, chain A; color
-gray80, chain E set sphere_scale, 0.6 create RBD_CA, chain E and name ca
-hide cartoon, RBD_CA; show spheres, RBD_CA spectrum b, yellow green
-blue, RBD_CA`
+files is opened:
+
+    hide all; show cartoon
+    color warmpink, chain A; color gray80, chain E
+    set sphere_scale, 0.6
+    create RBD_CA, chain E and name ca
+    hide cartoon, RBD_CA; show spheres, RBD_CA
+    spectrum b, yellow green blue, RBD_CA
 
 ``` r
 pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
@@ -382,8 +386,87 @@ variants in here (and altering the scale?):
 <img src="structure_function_files/figure-gfm/heatmap_expression_all-1.png" style="display: block; margin: auto;" />
 
 We next make these heatmaps, zooming in on residues in special
-structural and functional classes: (disulfides, putative N-linked
-glycans and possible new introductions, RBM, contact residues, “key”
+structural and functional classes. (I collapse the heatmap color range
+for all expression values below 4, so the range is better calibrated
+between expression and binding – the range of missense variants for
+expression goes to 4.07, only nonsense mutants span to 5). First, let’s
+visualize heatmaps of paired cysteines that form disulfides. The
+following heatmaps reorder sites by cysteine pair (I would love to add a
+line at the top grouping the paired cysteines, or create a small gap
+between each pair of columns, but I am gg-inept and so this will do for
+now)
+
+We can see that cysteines within a disulfide pair have similiar
+sensitivities to mutation and even similar biochemical preferences, but
+there are differing patterns of sensitivity for binding and expression.
+Disulfide pair 4 is the most sensitive to mutation with respect to
+binding, whereas it only is moderately important for expression – this
+is the disulfide pair within the RBM loop, that stabilizes regions of
+the ACE2 interface. The remaining three disulfides are in the core RBD
+domain, and show similar sensitivities for expression and binding – pair
+3 is tolerant to mutation, pair 1 is moderately sensitive, and pair 2 is
+most sensitive – though hydrophobic mutations have noticeably decreased
+deleterious effect for binding, which is cool to see.
+
+This trend is consistent with a series of Cys-\>Ala mutations made in
+SARS-CoV-2 RBD in [Wong et
+al. JBC 2004](https://www.jbc.org/content/279/5/3197.short) (I report
+the numbers converted to SARS-CoV-2 numbering): mutations at SARS-CoV-1
+RBD positions 379 and 432 severely impaired expression, mutations at
+361, 480, and 488 had only mild effects on expression but strongly
+decreased ACE2-binding, and mutations at 336 and 391 had little effect
+on expression or binding (this is in 331-524 RBD construct, so lacking
+cysteine 525).
+
+<img src="structure_function_files/figure-gfm/heatmap_bind_expr_disulfide-1.png" style="display: block; margin: auto;" />
+
+Next, let’s look at the N-linked glycosylation sites. In particular, we
+look at mutational effects at N331 and T333, N343 and T345, as well as
+N370 and A372, which in SARS-CoV-1 is an NST motif NLGS. A prior paper,
+[Chen et
+al. 2014](https://www.tandfonline.com/doi/full/10.4161/hv.27464),
+showed that in SARS-CoV-1 RBD produced in Pichia yeast, yields were
+lowered when progressively knocking out each of these glycans. (They
+didn’t do individual knockouts, it seems.) We also look at the effects
+of mutations i+2 from surface asparagines, where mutations to S or T
+could introduce new NLGS.
+
+The two NLGS in the SARS-CoV-2 RBD are important for stability. We can
+see similar effects of mutating the focal asparagine or the +2 residue
+(except mutations from T to S are well-tolerated), both of which point
+to the N343 glycan being more important for stability. Re-introducing
+the SARS-CoV-1 NLGS has just a mild deleterious effect on expression.
+None of these three glycan mutants have major impacts on binding,
+consistent with their distance from the ACE2-interface.
+
+At other asparagines, I don’t see many strong indications of major
+effects for introducing possible glycans with +2 residue mutations to
+S/T. The only sites that possibly stick out, are that adding an NLGS to
+N501 with 503 T/S mutations has a mild deleterious effect on binding
+(consistent with this residue [being at the
+ACE2-interface](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=501%2C503)),
+adding an NLGS to N487 (also an interface residue) may also be
+especially detrimental, but it’s hard to say since many mutations
+besides S/T are very deleterious at position 489. More broadly, it seems
+there are quite a few positions where introducing NxS/T NLGS motifs is
+not detrimental for expression, suggesting NLGS modifications could be
+used to mask or resurface engineered RBD constructs for vaccine design
+or epitope-specific probes for identifying neutralizing antibodies. The
+asparagines at positions 354, 360, 388, 394, 437, 439, 448, 450, 460,
+481, 487, and 501 may all be (at least individually) tolerated with
+regards to RBD stability – these sites are [visualized on the RBD
+structure](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=354%2C360%2C388%2C394%2C437%2C439%2C448%2C450%2C460%2C481%2C487%2C501),
+illustrating that many surfaces could be masked (though not all), and
+that even with the RBM, where many ACE2-competitive neutralizing Abs
+bind, one could engineer in glycans that block one half of the interface
+or the other to target certain potential epitopes. (You can also see
+that some of these asparagines do make structural contacts within little
+loops, particularly around the RBM, so they might not be exposed enough
+to be actually glycosylated even with the introduction of the +2 S/T)
+
+<img src="structure_function_files/figure-gfm/heatmap_bind_expr_NLGS-1.png" style="display: block; margin: auto;" />
+
+(next up, zoom in on residues in the RBM, contact residues, “key”
 contacts \[sites of adaptation within SARS-CoV-1\], sites with diversity
 in SARS-CoV-2 clade, differences between SARS-CoV-1 and SARS-CoV-2)
 
