@@ -403,17 +403,17 @@ introduction of an NLGS to N501 with mutation of site 503 to T or S may
 have a detreimental effet on biinding, consistent with this interface
 residue making key ACE2-interactions (site 501 is one of the “key
 contacts” from the SARS-CoV-1 literature). Knockin of a possible N439
-NLGS also has a mild deleterious effect on affinity, specific to the T/S
-mutations at this i+2 position; site 439 is sort of “second shell” from
-the ACE2 interface, but close enough to imagine a glycan could impact
-affinity. There are other positions where i+2 S/T mutations have large
-deleterious effects on binding affinity (putatively glycosylating N422
-(sort of buried, so might not actually be glycosylated) and N487
-(interface\!)), but other amino acid mutations at these positions also
-have strong deleterious effects, so it is hard to know whether the
-effect of the T/S mutants stems from the addition of the glycan, or loss
-of the wildtype amino acid at this i+2 residue independent of the glycan
-effect.
+NLGS (via T/S mutatiions at site 441) also has a mild deleterious effect
+on affinity, specific to the T/S mutations at this i+2 position; site
+439 is sort of “second shell” from the ACE2 interface, but close enough
+to imagine a glycan could impact affinity. There are other positions
+where i+2 S/T mutations have large deleterious effects on binding
+affinity (putatively glycosylating N422 (sort of buried, so might not
+actually be glycosylated) and N487 (interface\!)), but other amino acid
+mutations at these positions also have strong deleterious effects, so it
+is hard to know whether the effect of the T/S mutants stems from the
+addition of the glycan, or loss of the wildtype amino acid at this i+2
+residue independent of the glycan effect.
 
 <img src="structure_function_files/figure-gfm/heatmap_bind_expr_NLGS-1.png" style="display: block; margin: auto;" />
 
