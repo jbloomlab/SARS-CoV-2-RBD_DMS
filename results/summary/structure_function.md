@@ -94,13 +94,13 @@ setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2
 homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := "#EF4136"]; homologs[clade=="Clade 2",clade_color := "#009444"]; homologs[clade=="Clade 3",clade_color := "#EE2A7B"]; homologs[clade=="SARS-CoV-2",clade_color := "#2E3192"]
 ```
 
-## Overall relationship between structure and function
+## General structural constraints on RBD affinity and stability
 
 Let’s investigate how the RBD structure influences mutational effects on
 expression and binding. First, we compute the *mean* effect of mutations
-on binding and expression for each site in the structure, as well as the
-best (max) and worst (min) mutational effects on these two measurements
-(excluding nonsense and synonymous mutants).
+on binding and expression for each RBD site, as well as the best (max)
+and worst (min) mutational effects on these two measurements (excluding
+nonsense and synonymous mutants).
 
 ``` r
 RBD_sites[,mean_bind := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
@@ -112,21 +112,25 @@ RBD_sites[,max_expr := max(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",expr_avg],na.rm=T),by=site_SARS2]
 ```
 
-First, let’s see how mutational effects on binding expression correlate
-at the level of individual mutations and at the level of site-level mean
-effects of mutation. We can see below that for many mutations and sites,
-mutational effects on expression and binding are intertwined. However,
-several positions are tolerant to mutation with respect to expression
-despite being sensitive to mutation with respect to binding. Below, we
-output the sites of these mutations, which we can visualize on the
-ACE2-bound RBD structure using `dms-view`, linked [here for
-per-site](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=447%2C449%2C456%2C473%2C476%2C487%2C489%2C496%2C500%2C502%2C505)
+First, let’s see how mutational effects on binding and expression
+correlate at the level of individual mutations and at the site-level
+mean effects of mutation. We can see below that for many mutations and
+sites, mutational effects on expression and binding are related,
+indicating that stability is a generic constraint on mutational effects
+on ACE2-binding. However, there are a handful of positions that deviate
+from this pattern, being tolerant to mutation with respect to expression
+despite being quite sensitive to mutation with respect to binding.
+Below, we output the sites of these mutations, which we can visualize on
+the ACE2-bound RBD structure using `dms-view`, linked [here for
+sites](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=447%2C449%2C456%2C473%2C476%2C487%2C489%2C496%2C500%2C502%2C505)
 and [here for
-per-mutation](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=443%2C455%2C456%2C475%2C487%2C489%2C496%2C498%2C500%2C501%2C502%2C505).
-We can see that these sites exhibiting binding-specific mutational
-sensitivity are invariably at the ACE2-contact interface, or in the case
-of at least one mutation (S443N), perhaps second shell posititions that
-are still ACE2-proximal.
+mutations](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=443%2C455%2C456%2C475%2C487%2C489%2C496%2C498%2C500%2C501%2C502%2C505)
+that fall in this biinding-specific defective class. We can see that
+these sites exhibiting binding-specific mutational sensitivity are at
+the ACE2-contact interface, or in the case of one mutation (S443N),
+perhaps second shell posititions that are still ACE2-proximal. This is
+consistent with these positions having binding constraints independent
+of stability because of their direct interaction with ACE2.
 
 ``` r
 par(mfrow=c(1,2))
@@ -138,6 +142,8 @@ plot(mutants$expr_avg,mutants$bind_avg,pch=19,col="#00000050",xlab="mutational e
 <img src="structure_function_files/figure-gfm/correlation_mut_expression_binding-1.png" style="display: block; margin: auto;" />
 
 ``` r
+invisible(dev.print(pdf, paste(config$structure_function_dir,"/correlation_expression_v_binding.pdf",sep="")))
+
 #output sites and mutations with seemingly binding-specific detrimental effects
 RBD_sites[mean_expr > -1 & mean_bind < -1,site_SARS2]
 ```
@@ -145,83 +151,18 @@ RBD_sites[mean_expr > -1 & mean_bind < -1,site_SARS2]
     ##  [1] 443 447 449 456 473 475 476 487 489 496 500 502 505
 
 ``` r
-mutants[expr_avg > -0.5 & bind_avg < -2,.(SARS2_site,mutation)]
+mutants[expr_avg > -0.5 & bind_avg < -2,mutation]
 ```
 
-    ##     SARS2_site mutation
-    ##  1:        443    S443N
-    ##  2:        455    L455D
-    ##  3:        455    L455E
-    ##  4:        456    F456A
-    ##  5:        456    F456E
-    ##  6:        456    F456G
-    ##  7:        456    F456N
-    ##  8:        456    F456Q
-    ##  9:        456    F456R
-    ## 10:        456    F456S
-    ## 11:        475    A475D
-    ## 12:        487    N487C
-    ## 13:        487    N487E
-    ## 14:        487    N487K
-    ## 15:        487    N487L
-    ## 16:        487    N487M
-    ## 17:        487    N487Q
-    ## 18:        487    N487R
-    ## 19:        489    Y489A
-    ## 20:        489    Y489C
-    ## 21:        489    Y489E
-    ## 22:        489    Y489I
-    ## 23:        489    Y489K
-    ## 24:        489    Y489L
-    ## 25:        489    Y489N
-    ## 26:        489    Y489P
-    ## 27:        489    Y489Q
-    ## 28:        489    Y489R
-    ## 29:        489    Y489S
-    ## 30:        489    Y489T
-    ## 31:        489    Y489V
-    ## 32:        496    G496D
-    ## 33:        496    G496E
-    ## 34:        496    G496F
-    ## 35:        498    Q498K
-    ## 36:        500    T500I
-    ## 37:        501    N501D
-    ## 38:        501    N501K
-    ## 39:        501    N501R
-    ## 40:        502    G502A
-    ## 41:        502    G502C
-    ## 42:        502    G502D
-    ## 43:        502    G502E
-    ## 44:        502    G502F
-    ## 45:        502    G502H
-    ## 46:        502    G502I
-    ## 47:        502    G502K
-    ## 48:        502    G502L
-    ## 49:        502    G502M
-    ## 50:        502    G502N
-    ## 51:        502    G502P
-    ## 52:        502    G502Q
-    ## 53:        502    G502R
-    ## 54:        502    G502S
-    ## 55:        502    G502T
-    ## 56:        502    G502V
-    ## 57:        502    G502W
-    ## 58:        502    G502Y
-    ## 59:        505    Y505A
-    ## 60:        505    Y505C
-    ## 61:        505    Y505D
-    ## 62:        505    Y505E
-    ## 63:        505    Y505G
-    ## 64:        505    Y505I
-    ## 65:        505    Y505K
-    ## 66:        505    Y505L
-    ## 67:        505    Y505M
-    ## 68:        505    Y505Q
-    ## 69:        505    Y505R
-    ## 70:        505    Y505S
-    ## 71:        505    Y505T
-    ## 72:        505    Y505V
-    ##     SARS2_site mutation
+    ##  [1] "S443N" "L455D" "L455E" "F456A" "F456E" "F456G" "F456N" "F456Q"
+    ##  [9] "F456R" "F456S" "A475D" "N487C" "N487E" "N487K" "N487L" "N487M"
+    ## [17] "N487Q" "N487R" "Y489A" "Y489C" "Y489E" "Y489I" "Y489K" "Y489L"
+    ## [25] "Y489N" "Y489P" "Y489Q" "Y489R" "Y489S" "Y489T" "Y489V" "G496D"
+    ## [33] "G496E" "G496F" "Q498K" "T500I" "N501D" "N501K" "N501R" "G502A"
+    ## [41] "G502C" "G502D" "G502E" "G502F" "G502H" "G502I" "G502K" "G502L"
+    ## [49] "G502M" "G502N" "G502P" "G502Q" "G502R" "G502S" "G502T" "G502V"
+    ## [57] "G502W" "G502Y" "Y505A" "Y505C" "Y505D" "Y505E" "Y505G" "Y505I"
+    ## [65] "Y505K" "Y505L" "Y505M" "Y505Q" "Y505R" "Y505S" "Y505T" "Y505V"
 
 The relative solvent accessiibility (RSA) of an amino acid residue is
 known to be a dominant factor influencing its tolerance to mutation.
@@ -230,24 +171,15 @@ sensitivity for binding. We use RSA in two different structural contexts
 – the free RBD structure, and the RBD structure when complexed with
 ACE2. We can see that mutational sensitivity of a position with respect
 to binding is better described by RSA in the ACE2-bound RBD complex.
-
-``` r
-par(mfrow=c(1,3))
-plot(RBD_sites$RSA_unbound,RBD_sites$mean_bind,pch=19,col="gray80",xlab="Residue relative solvent accessibility, unbound",ylab="Mean effect of mutation on binding",main="Unbound RBD",xlim=c(0,1))
-
-plot(RBD_sites$RSA_bound,RBD_sites$mean_bind,pch=19,col="gray20",xlab="Residue relative solvent accessibility, ACE2-bound",ylab="Mean effect of mutation on binding",main="ACE2-bound RBD")
-
-
-plot(RBD_sites$RSA_unbound,RBD_sites$mean_bind,pch=19,col="gray80",xlab="Residue relative solvent accessibility",ylab="Mean effect of mutation on binding",main="overlaid")
-points(RBD_sites$RSA_bound,RBD_sites$mean_bind,pch=19, col="gray20")
-```
+This explains our observation above – some positions are mutationally
+sensitive, because they are buried in the isolated RBD, and so mutations
+destabilize the core fold and thereby hamper binding, while others are
+mutationally sensitive not because they are buried in the core fold and
+are sensitive to destabilizing mutations, but because they are buried at
+the ACE2 interface. These two factors combine to explain our overall
+observed patterns of mutational tolerance.
 
 <img src="structure_function_files/figure-gfm/mean_mut_effect_versus_RSA-1.png" style="display: block; margin: auto;" />
-
-``` r
-#save pdf
-invisible(dev.print(pdf, paste(config$structure_function_dir,"/mean-bind_v_RSA.pdf",sep="")))
-```
 
 To further visualize site-wise mutational sensitivity on the 3D
 structure, let’s output `.pdb` files for the ACE2-bound RBD structure in
@@ -323,78 +255,85 @@ for(i in 1:nrow(pdb_max_expr$atom)){
 write.pdb(pdb=pdb_max_expr,file=paste(config$structure_function_dir,"/6m0j_b-factor-max-expr.pdb",sep=""), b = pdb_max_expr$atom$b)
 ```
 
-## DFEs and heatmaps
+## Distribution of functional effects of mutatioin
 
-Let’s look at the distribution of single-mutant effects on binding, and
-compare the fraction of mutations that are within the window defined by
-known functional RBD homologs for these two phenotypes.
+Let’s look at the distribution of single-mutant effects on our two
+phenotypes, and compare the fraction of mutations that are within the
+window defined by known functional RBD homologs for these two
+phenotypes.
 
 For the binding plot on the left, the intermediate blue point on the
-x-scale is RaTG13, which *can* promote huACE2-mediated cell entry in in
-vitro cellular infection assays (though less efficiently than
-SARS-CoV-2), though whether this is sufficient to enable efficient viral
-replication in more complex models is uncertain. For the cluster of
-points near 0, the farthest-left point is LYRa11, which according to
-Letko et al. can also promote huACE2-mediated cellular entry, though
-less efficiently than SARS-CoV-1 and other bat CoV isolates such as
-WIV1/16 (identical RBDs). Therefore, these two points define a window of
-affinites that can at least support in vitro cellular infection – but in
-reality, the window of possible “neutrality” with regards to actual
-human infectivity is probably better set by the remaining four points
-with delta log<sub>10</sub>(*K*<sub>A,app</sub>) values \~ 0, consisting
-of SARS-CoV-1, WIV1/16, SARS-CoV-2, and GD-Pangolin RBDs, in that
-rank-order. Taken together, we identify 1732 single mutants (45.55%)
-whose affinity effects are mild enough to potentially enable human
-infectivity (SARS-CoV-1 cutoff), and 3188 single mutants (83.85%) whose
-affinity is potentially sufficient to enable in vitro cellular
-infectivity (RaTG13 cutoff). Taken together, this suggests a quite large
-sequence space of RBD diversity that is consistent with huACE2 binding
-and entry.
+x-scale is RaTG13, which *can* promote huACE2-mediated cell entry in an
+in vitro cellular infection assay (though less efficiently than
+SARS-CoV-2) according to [Shang et
+al. 2020](https://www.nature.com/articles/s41586-020-2179-y/figures/3),
+though whether this is sufficient to enable efficient viral replication
+in more complex models is uncertain. For the cluster of homologs near 0,
+the farthest-left point is LYRa11, which according to [Letko et
+al. 2020](https://www.nature.com/articles/s41564-020-0688-y/figures/1)
+can also promote huACE2-mediated cellular entry, though less efficiently
+than SARS-CoV-1 and other bat CoV isolates such as WIV1/16 (identical
+RBDs). Therefore, these two points define a window of affinites that can
+at least support in vitro cellular infection – but in reality, the
+window of possible “neutrality” with regards to actual human infectivity
+is perhaps better set by the remaining four points with delta
+log<sub>10</sub>(*K*<sub>A,app</sub>) values \~ 0 – these four points
+are the RBDs from SARS-CoV-1, WIV1/16, SARS-CoV-2, and GD-Pangolin RBDs,
+in that rank-order. Taken together, we identify 1732 single mutants
+(45.55%) whose affinity effects are within a neutral window that
+potentially enables huACE2-mediated infectivity (SARS-CoV-1 cutoff), and
+3188 single mutants (83.85%) whose affinity is potentially sufficient to
+enable huACE2-mediated in vitro cellular infectivity (RaTG13 cutoff).
+Taken together, this suggests a quite large sequence space of RBD
+diversity that is consistent with huACE2 binding and entry.
 
-``` r
-plot(density(mutants[wildtype != mutant,bind_avg],na.rm=T,adjust=0.5),main="SARS-CoV-2 mutant log10Ka,app",xlab="delta log10(KA,app)"); polygon(density(mutants[wildtype != mutant,bind_avg],na.rm=T,adjust=0.5),col="gray50",border="black")
-set.seed(100);points(homologs[,bind_avg],sample(seq(1.45,1.55,by=0.005),nrow(homologs)),col=homologs[,clade_color],pch=19,cex=1.1)
-```
+For expression, our range set by homologs may be improperly aligned to
+the SARS-CoV-2 range – not least, because all other RBD homologs were
+observed to have very slightly higher expression than SARS-CoV-2 (could
+be artefactual because the SARS-CoV-2 variants went through the
+mutagenesis protocol, though we eliminated the clear outliers that must
+bear unseen mutations outside the RBD sequence. SARS-CoV-2 is still
+posited to have lower expression than the other homologs, but this
+elimination of low-expression wildtype/synonymous variants may have
+further distanced it from the true “library-average” wildtype expression
+and thereby make more of the single mutants look deleterious? Tough
+problem to solve…)
 
 <img src="structure_function_files/figure-gfm/DFE_bind-1.png" style="display: block; margin: auto;" />
 
-``` r
-# plot(density(mutants[wildtype != mutant & mutant != "*",expr_avg],na.rm=T,adjust=0.5),main="SARS-CoV-2 mutant expression",xlab="delta expression"); polygon(density(mutants[wildtype != mutant & mutant != "*",expr_avg],na.rm=T,adjust=0.5),col="gray50",border="black")
-# set.seed(100);points(homologs[,expr_avg],sample(seq(0.63,0.67,by=0.002),nrow(homologs)),col=homologs[,clade_color],pch=19,cex=1.1)
-#can also make plot for expression, but our expression range is less well calibrated, probably because of the issue with rare barcodes exhibiting lower than expected expression probably due to unseen defects in the plasmid.
-```
+## Exploratory heatmaps
 
 Next, let’s make heatmaps of per-amino acid mutational effects on
 binding and expression. We first make these heatmaps for all mutations
 at all sites, colored by delta log<sub>10</sub>(*K*<sub>A,app</sub>). (I
-would eventually like to flesh out these heatmap by providing additional
-indicator variables as ‘heatmap’ style rows on the top – things could
-include a color scale for RSA, conservation, an asterisk or something to
-indicate contact residues, indicators for NLGS or disulfides, an
-indicator for strucutrla contacts in full length Spike trimer, etc. I
-also want to think about whether there are better color scales to use,
-including the “divergence” in scale between the blue (goes from white to
-bluest in a 0.5-unit scale), versus red (0 to reddest in a 5-unit
-scale). Happy for additional things to think about to refine these
-plots):
+would eventually like to flesh out these heatmaps by providing
+additional indicator variables as ‘heatmap’ style rows on the top –
+things could include a color scale for RSA, conservation, an asterisk or
+something to indicate contact residues, indicators for NLGS or
+disulfides, an indicator for strucutral contacts in full length Spike
+trimer, etc. I also want to think about whether there are better color
+scales to use, including the “divergence” in scale between the blue
+(goes from white to bluest in a 0.5-unit scale for binding, 1-unit scale
+for expression), versus red (0 to reddest in a 5-unit scale). Happy for
+additional things to think about to refine these plots):
 
 <img src="structure_function_files/figure-gfm/heatmap_binding_all-1.png" style="display: block; margin: auto;" />
 And next, the same heat map, colored by delta mean fluorescence
-(expression) (once again, happy for thoughts. Do we like having the stop
-variants in here (and altering the scale?):
+(expression). I altered the scale such that anything less than -4 gets
+the darkest red color – the lowest missense mutant score is -4.07, only
+nonsense mutants push the scale down to -5, so this helps the relative
+red scale be better calibrated between the binding and expression
+measurements w.r.t. single missense mutations. (once again, happy for
+thoughts.):
 
 <img src="structure_function_files/figure-gfm/heatmap_expression_all-1.png" style="display: block; margin: auto;" />
 
-We next make these heatmaps, zooming in on residues in special
-structural and functional classes. (I collapse the heatmap color range
-for all expression values below 4, so the range is better calibrated
-between expression and binding – the range of missense variants for
-expression goes to 4.07, only nonsense mutants span to 5). First, let’s
-visualize heatmaps of paired cysteines that form disulfides. The
-following heatmaps reorder sites by cysteine pair (I would love to add a
-line at the top grouping the paired cysteines, or create a small gap
-between each pair of columns, but I am gg-inept and so this will do for
-now)
+To make more sense of these heatmaps, we now zoom in and group residues
+in special structural and functional classes. First, let’s visualize
+heatmaps of paired cysteines that form disulfides. The following
+heatmaps reorder sites by cysteine pair. (I would love to add a line at
+the top grouping the paired cysteines, or create a small gap between
+each pair of columns, but I am gg-inept and so this will do for now.)
 
 We can see that cysteines within a disulfide pair have similiar
 sensitivities to mutation and even similar biochemical preferences, but
@@ -402,11 +341,13 @@ there are differing patterns of sensitivity for binding and expression.
 Disulfide pair 4 is the most sensitive to mutation with respect to
 binding, whereas it only is moderately important for expression – this
 is the disulfide pair within the RBM loop, that stabilizes regions of
-the ACE2 interface. The remaining three disulfides are in the core RBD
-domain, and show similar sensitivities for expression and binding – pair
-3 is tolerant to mutation, pair 1 is moderately sensitive, and pair 2 is
-most sensitive – though hydrophobic mutations have noticeably decreased
-deleterious effect for binding, which is cool to see.
+the ACE2 interface, consistent with its exacerbated importance for
+binding versus expression. The remaining three disulfides are in the
+core RBD domain, and show similar sensitivities for expression and
+binding – pair 3 is tolerant to mutation (and may even support
+replacement with polar amino acids), pair 1 is moderately sensitive, and
+pair 2 is most sensitive – though hydrophobic mutations have noticeably
+decreased deleterious effect for binding, which is interesting to see.
 
 This trend is consistent with a series of Cys-\>Ala mutations made in
 SARS-CoV-2 RBD in [Wong et
@@ -421,58 +362,211 @@ cysteine 525).
 <img src="structure_function_files/figure-gfm/heatmap_bind_expr_disulfide-1.png" style="display: block; margin: auto;" />
 
 Next, let’s look at the N-linked glycosylation sites. In particular, we
-look at mutational effects at N331 and T333, N343 and T345, as well as
-N370 and A372, which in SARS-CoV-1 is an NST motif NLGS. A prior paper,
-[Chen et
+look at mutational effects at NLGS motiifs consisting of N331 and T333,
+and N343 and T345, as well as N370 and A372, which in SARS-CoV-1 is an
+NST NLGS motif. A prior paper, [Chen et
 al. 2014](https://www.tandfonline.com/doi/full/10.4161/hv.27464),
 showed that in SARS-CoV-1 RBD produced in Pichia yeast, yields were
-lowered when progressively knocking out each of these glycans. (They
-didn’t do individual knockouts, it seems.) We also look at the effects
-of mutations i+2 from surface asparagines, where mutations to S or T
-could introduce new NLGS.
+lowered when progressively knocking out each of these glycans,
+suggesting they are important for expression. (They didn’t do individual
+knockouts, it seems.) Finally, on the righthand side, we look at the
+effets of mutations i+2 from surface asparagines, to see whether
+potential glycan knockins (mutations to S or T) have any interesting
+effects.
 
-The two NLGS in the SARS-CoV-2 RBD are important for stability. We can
-see similar effects of mutating the focal asparagine or the +2 residue
-(except mutations from T to S are well-tolerated), both of which point
-to the N343 glycan being more important for stability. Re-introducing
-the SARS-CoV-1 NLGS has just a mild deleterious effect on expression.
-None of these three glycan mutants have major impacts on binding,
-consistent with their distance from the ACE2-interface.
+As expected the two NLGS in the SARS-CoV-2 RBD are important for
+stability. We can see that mutations to the focal asparagine or the N+2
+threoniine are uniiversally deleterious with regards to expression,
+except mutations to S at the NxS/T position are well tolerated. Overall,
+the N343 glycan appears more important to RBD stability than the N331
+glycan. Re-introducing the SARS-CoV-1 NLGS at site 370 has just a mildly
+deleterious effect on expression. None of these three glycan mutants
+have major impacts on binding, consistent with their distance from the
+ACE2-interface.
 
-At other asparagines, I don’t see many strong indications of major
-effects for introducing possible glycans with +2 residue mutations to
-S/T. The only sites that possibly stick out, are that adding an NLGS to
-N501 with 503 T/S mutations has a mild deleterious effect on binding
-(consistent with this residue [being at the
-ACE2-interface](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=501%2C503)),
-adding an NLGS to N487 (also an interface residue) may also be
-especially detrimental, but it’s hard to say since many mutations
-besides S/T are very deleterious at position 489. More broadly, it seems
-there are quite a few positions where introducing NxS/T NLGS motifs is
-not detrimental for expression, suggesting NLGS modifications could be
-used to mask or resurface engineered RBD constructs for vaccine design
-or epitope-specific probes for identifying neutralizing antibodies. The
-asparagines at positions 354, 360, 388, 394, 437, 439, 448, 450, 460,
-481, 487, and 501 may all be (at least individually) tolerated with
-regards to RBD stability – these sites are [visualized on the RBD
+At other non-glycosylated asparagines, I don’t see many strong effects
+when introducing NLGS motifs with an i+2 mutation to S/T. Glycosylation
+of N354, N360, N448, N450, N481, and N487 may have mildly beneficial
+effects on expression, and glycosylation may be at least \~neutrally or
+tolerated with only minor detrimental effects with regards to expression
+at sites 388, 394, 437, 439, 460, and 501. These sites are [visualized
+on the RBD
 structure](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=354%2C360%2C388%2C394%2C437%2C439%2C448%2C450%2C460%2C481%2C487%2C501),
-illustrating that many surfaces could be masked (though not all), and
-that even with the RBM, where many ACE2-competitive neutralizing Abs
-bind, one could engineer in glycans that block one half of the interface
-or the other to target certain potential epitopes. (You can also see
-that some of these asparagines do make structural contacts within little
-loops, particularly around the RBM, so they might not be exposed enough
-to be actually glycosylated even with the introduction of the +2 S/T)
+illustrating that quite a few surfaces on the RBD could potentially be
+masked with glycan introductions, including different portions of the
+RBM if wanting to target different epitopes with vaccine immunogens or
+probes for isolating mAbs for particular epitope surfaces.
+
+In contrast to novel glycans that could be tolerated in an engineered
+RBD construct with respect to stability/expression, we can see that
+introduction of an NLGS to N501 with mutation of site 503 to T or S may
+have a detreimental effet on biinding, consistent with this interface
+residue making key ACE2-interactions (site 501 is one of the “key
+contacts” from the SARS-CoV-1 literature). Knockin of a possible N439
+NLGS also has a mild deleterious effect on affinity, specific to the T/S
+mutations at this i+2 position; site 439 is sort of “second shell” from
+the ACE2 interface, but close enough to imagine a glycan could impact
+affinity. There are other positions where i+2 S/T mutations have large
+deleterious effects on binding affinity (putatively glycosylating N422
+(sort of buried, so might not actually be glycosylated) and N487
+(interface\!)), but other amino acid mutations at these positions also
+have strong deleterious effects, so it is hard to know whether the
+effect of the T/S mutants stems from the addition of the glycan, or loss
+of the wildtype amino acid at this i+2 residue independent of the glycan
+effect.
 
 <img src="structure_function_files/figure-gfm/heatmap_bind_expr_NLGS-1.png" style="display: block; margin: auto;" />
 
-(next up, zoom in on residues in the RBM, contact residues, “key”
-contacts \[sites of adaptation within SARS-CoV-1\], sites with diversity
-in SARS-CoV-2 clade, differences between SARS-CoV-1 and SARS-CoV-2)
+Here are the heat maps, zoomed in on residues in the “Receptor Binding
+Motif”, the section of the RBM that extends out from the core alpha+beta
+fold and contains the ACE2-contact residues. This motif is contiguous in
+space, so there’s really no point to this heat map beyond the full-RBD
+map shown above, once I figure out how to add e.g. a line at the top
+across these positions to incidicate RBM. I have some interpretation of
+expression/binding tradeoff from this heatmap, but this point is better
+made in the subsequent figure focusing only on contact positions, so I
+will elaborate it there. Haven’t looked into this RBM map in too much
+more detail beyond that, so there might be something else interesting,
+or this figure could definitely get the axe as it probably doesn’t add
+much.
+
+<img src="structure_function_files/figure-gfm/heatmap_RBM-1.png" style="display: block; margin: auto;" />
+
+Next, let’s look at expression and binding effects for annotated contact
+residues. Below, we are looking at the 19 residues that form ACE2
+contacts in the SARS-CoV-2 (6m0j) or SARS-CoV-1 (2ajf) ACE2-bound RBD
+crystal structures, where we annotated a residue as a contact if it
+contains non-hydrogen atoms within 4 Angstroms of ACE2. 14 residues were
+annotated as contacts in both structures, 3 contacts (417, 446, 475) are
+unique to the SARS-CoV-2 structure, and 2 (439, 503) are unique to
+SARS-CoV-1. We indicate the wildtype SARS-CoV-2 and -1 amino acids with
+an “x” and “o”, respectively.
+
+Putting this reduced display of binding and expression next to each
+other is really interesting, as it highlights some potential
+binding-expression tradeoffs at positions 417, 449, 455, 486, 502, and
+505, which are visualized in `dms-view`
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=417%2C449%2C455%2C486%2C502%2C505).
+
+For four of these residues (449, 455, 486, 505), binding prefers the
+wildtype hydrophobic state, though this exposed hydrophobic amino acid
+is evidently detrimental to expression, as polar amino acid mutations
+improve expression. Site 417 is the opposite, consistent with its more
+buried position a bit further from ACE2 – for expression, keeping this
+amino acid hydrophobic would be preferred, but mutations to K or R can
+enhance affinity, presumably because their long side chains can snorkel
+out and make contact with ACE2 interface. Finally, site 502 is a
+glycine, which accomodates the ACE2 loop bearing the critical K31
+“hotspot” residue, which would clash sterically if mutating site 502
+to any amino acid with a side chain, even though most polar side chains
+at this position would improve exression. If we want to follow up on
+this, we should really check out what these positions are doing in the
+“down” RBD conformation, to see whether they are still e.g. exposed
+hydrophobic residues, or whether in the full Spike context, they are
+generally buried and wouldn’t be suffering a simple stability/binding
+tradeoff.
+
+Within this heatmap is specific information about the “key” contact
+sites that are often discussed in the literature. These sites primarily
+came from observations about amino acid changes relating civet- and
+human-adapted SARS-CoV-1 sequences, and other experimental evolution and
+structural studies in the SARS-CoV-1 side of the tree. These sites are
+455, 486, 493, 494, 501. May be worth extra glances when looking at
+these exploratory data.
+
+<img src="structure_function_files/figure-gfm/heatmap_ACE2_contacts-1.png" style="display: block; margin: auto;" />
+
+Next, are heatmaps for the positions that differ in amino acid identity
+between SARS-CoV-1 and -2, with the same “x” and “o” indicators for the
+SARS-CoV-2 and -1 wildtype state. The positions of all of the variable
+amino acids between these virus RBDs is shown in `dms-view`
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=346%2C348%2C354%2C357%2C372%2C373%2C384%2C393%2C402%2C403%2C406%2C417%2C430%2C434%2C438%2C439%2C441%2C443%2C444%2C445%2C446%2C452%2C455%2C456%2C458%2C459%2C460%2C462%2C470%2C471%2C472%2C473%2C474%2C475%2C476%2C477%2C478%2C481%2C482%2C484%2C485%2C486%2C490%2C493%2C494%2C498%2C499%2C501%2C503%2C519%2C529).
+
+Overall, there are not any *major* incompatibilities that emerge – that
+is, no amino acids found in SARS-CoV-1 have huge negative effects if
+introduced into the SARS-CoV-2 background – the only quite minor
+affinity defects that are evident seem to be horizontal swap mutations
+K417V, L455V, II472P, A475P, G476D, G482P, F486L, and S494D, along with
+slight expression defects caused by S438T, N439R. These negative-effect
+SARS-CoV-1 mutations are highlighted in `dms-view`
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=417%2C455%2C472%2C475%2C476%2C482%2C486%2C494),
+where we can see that they cluster in two parts of the RBM – the lateral
+loop containing the RBM disulfide, and the medial portion of the RBM
+loop.
+
+On the other hand, many mutations to SARS-CoV-1 amino acid identities
+seem to have *positive* effects on binding and expression. Most notably
+for expression, are mutations N354E, R357K (mild), K417V (discussed
+above, also in context of binding/expression trade-off), and L452K, and
+for binding, beneficial effects are also seen for N460K, Q498V (quite
+substantial positive effect, direct interface residue), N501T (also
+quite substantial, interface, site of key adaptation in SARS-CoV-1),
+V503I, H519N. These positions are highlighted on the structure
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=354%2C357%2C417%2C452%2C460%2C498%2C501%2C503%2C519),
+where we can see that many are distant from the ACE2 interface
+(primarily the expression observations). Interestingly, the beneficial
+*binding* SARS-CoV-1 residues are on the *other* lateral end of the RBM
+compared to the detrimental swaps highlighted above. Therefore, it seems
+like, of the interface differences between SARS-CoV-1 and -2, one “edge”
+of the RBM saddle is better optimized for ACE2-binding in SARS-CoV-1,
+while the middle and the other edge are more optimized in SARS-CoV-2. I
+am actually surprised to see that there are seemingly so many
+*beneficial* swaps to SARS-CoV-1 identities (should more rigorously
+compare in number and magnitude with the *detrimental* swaps), in light
+of the fact that SARS-CoV-2 has repeatedly been demonstrated to have
+overall tighter ACE2-binding affinity than SARS-CoV-1 – and this
+suggests that the SARS-CoV-2 RBD could bind ACE2 even more tightly if
+there was pressure to do so (although we don’t actually know what the
+impact of tighter affinity is with regards to transmissibility,
+pathogenicity, tropism etc. which is a very important caveat.)
+
+<img src="structure_function_files/figure-gfm/heatmap_SARS_CoV_2_1_diff-1.png" style="display: block; margin: auto;" />
+
+Next, let’s look at the differences between RaTG13 and SARS-CoV-2 – in
+contrast to SARS-CoV-1, which has just slightly weaker ACE2-binding
+affinity, RaTG13 has affinity a couple orders of magnitude lower than
+SARS-CoV-2 – so, comparing their states might identify some of the key
+adaptations that occurred from their common ancestor on the SARS-CoV-2
+lineage (a proper analysis should reconstruct ancestral states, but for
+now I’ve just included an indicator of the GD-Pangolin state at these
+positions, which helps to polarize the ancestral state of the
+RaTG13+SARS-CoV-2 ancestor for “by-eye” parsimony reconstructions.
+Though there is also some uncertainty whether the RaTG13 or GD-Pangolin
+RBD is sister to SARS-CoV-2 – our phylogeny puts RaTG13, but not with
+100% certain bootstrap support. GX-Pangolin is the next branch out, so
+can also potentially inform as to polarization. We could eventually do
+true ASR if we wanted to focus on any of this in more detail). In the
+heatmaps below, “o” continues to mark the WT SARS-CoV-2 amino acid, “^”
+represents RaTG13, and “\#” represents GD-Pangolin. It’s kind of
+ugly/crowded with the three symbols and we will ultimately wnat to
+change/remove the pangolin, but I wanted it there to help in initial
+interpreation of the polarization.
+
+The main thing to note, is that site 501 seems to explain a large degree
+of difference between RaTG13 and SARS-CoV-2 affinity – from the
+GD-Pangolin sequence, it appears that the difference may be an N501D
+substitution on the RaTG13 branch (so not part of the adaptation from
+ancestor to SARS-CoV-2 – GX-Pangolin is a T here, so perhaps not helpful
+in the by-eye ASR). Site 501 was a key site of adaptation between civet-
+and human-adapted strains in SARS-CoV-1, so it’s interesting to see it
+cropping up again here, regardless of the polarization of the change
+(and different amino acid states than the S/T SARS-CoV-1 stuff).
+Mutations to the RaTG13 amino acid are also more mildly deleterious
+w.r.t. binding for R403T (GD-Pangolin has R, GX-Pangolin K), Y449F
+(GD-Pangolin has Y, GX-Pangolin Y), F486L (GD-Pangolin has F,
+GX-Pangolin L…), and Y505H (GD-Pangolin has Y, GX-Pangolin Y). So, from
+parsimony, it does seem most of these ‘deleterious’ amino acids are
+*derived* substitutions on the RaTG13 lineage, instead of reflecting
+‘adaptive’ changes on the SARS-CoV-2 ancestral lineage. I do think
+it’s a bit hard to say by eye/parsimony, though, so probably a true
+ancestral sequence reconstruction would be needed here.
+
+<img src="structure_function_files/figure-gfm/heatmap_SARS_CoV_2_RaTG13_diff-1.png" style="display: block; margin: auto;" />
 
 Does mutational tolerance with respect to binding and/or expression
 differ systematically between positions in the core-RBD versus the RBM
-loops?
+loops? (Hypothesis is: expression is more constrained in the core RBD,
+while binding is more constrained in the RBM)
 
 Next let’s look at beneficial mutations on binding and expression. We
 want to look at where they occur, and identify any interesting
