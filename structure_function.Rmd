@@ -168,6 +168,13 @@ write.pdb(pdb=pdb_max_expr,file=paste(config$structure_function_dir,"/6m0j_b-fac
 
 ```
 
+Does mutational tolerance with respect to binding and/or expression differ systematically between positions in the core-RBD versus the RBM loops? (Hypothesis is: expression is more constrained in the core RBD, while binding is more constrained in the RBM)
+```{r RBM_versus_core_fold}
+
+```
+
+
+
 ## Distribution of functional effects of mutatioin
 
 Let's look at the distribution of single-mutant effects on our two phenotypes, and compare the fraction of mutations that are within the window defined by known functional RBD homologs for these two phenotypes.
@@ -454,19 +461,20 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_SARS-2-R
 
 ```
 
-Does mutational tolerance with respect to binding and/or expression differ systematically between positions in the core-RBD versus the RBM loops? (Hypothesis is: expression is more constrained in the core RBD, while binding is more constrained in the RBM)
-```{r }
+Based on heatmap gazing along with structures and prior literature, I would propose the following validation mutants. As you can see, several positions are prioritized in these panels -- sites 455, and 501 are positions of interest from prior literature on SARS-CoV-1 adaptation; site 502 is the second most constrained position w.r.t. to binding in our dataset, with the most sensitive position (G431) being more constrained by stability/expression affects than binding itself per se. Site 498 exhibits lots of differences amongst the relevant strains I've been looking at (SARS-CoV-2 versus -1, RaTG13, GD-Pangolin) and has large variation in functional effects of mutation, and so is clearly a position of interest for our data. All of these positions are in the RBM and direct or near-direct ACE2 contact positions.
 
+For yeast display validation of beneficial mutation effects and expression/binding tradeoff, I would propose to validate the following six mutations:
+
+```{r yeast_display_validation_table, echo=FALSE}
+kable(mutants[mutation %in% c("Q498Y","Q498H","N501D","N501T","N501F","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
 ```
 
+For pseudovirus growth assays, I would propose to validate the following six mutations:
 
-
-Next let's look at beneficial mutations on binding and expression. We want to look at where they occur, and identify any interesting hypothesized biochemical mechanisms, etc. Pick some to validate!
-
-
-```{r }
-
+```{r  pseudovirus_validation_table, echo=FALSE}
+kable(mutants[mutation %in% c("L455Y","A475P","Q498Y","N501D","N501Q","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
 ```
+
 
 ## Output for dms-view visualization of mutational effects
 

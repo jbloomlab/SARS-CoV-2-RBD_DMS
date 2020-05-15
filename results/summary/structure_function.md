@@ -255,6 +255,11 @@ for(i in 1:nrow(pdb_max_expr$atom)){
 write.pdb(pdb=pdb_max_expr,file=paste(config$structure_function_dir,"/6m0j_b-factor-max-expr.pdb",sep=""), b = pdb_max_expr$atom$b)
 ```
 
+Does mutational tolerance with respect to binding and/or expression
+differ systematically between positions in the core-RBD versus the RBM
+loops? (Hypothesis is: expression is more constrained in the core RBD,
+while binding is more constrained in the RBM)
+
 ## Distribution of functional effects of mutatioin
 
 Let’s look at the distribution of single-mutant effects on our two
@@ -563,13 +568,42 @@ ancestral sequence reconstruction would be needed here.
 
 <img src="structure_function_files/figure-gfm/heatmap_SARS_CoV_2_RaTG13_diff-1.png" style="display: block; margin: auto;" />
 
-Does mutational tolerance with respect to binding and/or expression
-differ systematically between positions in the core-RBD versus the RBM
-loops? (Hypothesis is: expression is more constrained in the core RBD,
-while binding is more constrained in the RBM)
+Based on heatmap gazing along with structures and prior literature, I
+would propose the following validation mutants. As you can see, several
+positions are prioritized in these panels – sites 455, and 501 are
+positions of interest from prior literature on SARS-CoV-1 adaptation;
+site 502 is the second most constrained position w.r.t. to binding in
+our dataset, with the most sensitive position (G431) being more
+constrained by stability/expression affects than binding itself per se.
+Site 498 exhibits lots of differences amongst the relevant strains I’ve
+been looking at (SARS-CoV-2 versus -1, RaTG13, GD-Pangolin) and has
+large variation in functional effects of mutation, and so is clearly a
+position of interest for our data. All of these positions are in the RBM
+and direct or near-direct ACE2 contact positions.
 
-Next let’s look at beneficial mutations on binding and expression. We
-want to look at where they occur, and identify any interesting
-hypothesized biochemical mechanisms, etc. Pick some to validate\!
+For yeast display validation of beneficial mutation effects and
+expression/binding tradeoff, I would propose to validate the following
+six mutations:
+
+| mutation | RBD\_site | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_lib1 | expr\_lib2 | expr\_avg | SARS1\_indicator | RaTG13\_indicator | GDPangolin\_indicator |
+| :------- | --------: | ---------: | ---------: | --------: | ---------: | ---------: | --------: | :--------------- | :---------------- | :-------------------- |
+| Q498H    |       168 |       0.30 |       0.31 |      0.30 |       0.15 |       0.16 |      0.16 |                  |                   | \#                    |
+| Q498Y    |       168 |       0.01 |       0.30 |      0.16 |       0.19 |     \-0.07 |      0.06 | o                | ^                 |                       |
+| N501D    |       171 |     \-2.40 |     \-2.44 |    \-2.42 |       0.09 |       0.07 |      0.08 |                  | ^                 |                       |
+| N501F    |       171 |       0.22 |       0.36 |      0.29 |     \-0.03 |     \-0.16 |    \-0.10 |                  |                   |                       |
+| N501T    |       171 |     \-0.14 |       0.33 |      0.10 |     \-0.35 |     \-0.16 |    \-0.25 | o                |                   |                       |
+| G502D    |       172 |     \-4.29 |     \-4.03 |    \-4.16 |       0.62 |       0.66 |      0.64 |                  |                   |                       |
+
+For pseudovirus growth assays, I would propose to validate the following
+six mutations:
+
+| mutation | RBD\_site | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_lib1 | expr\_lib2 | expr\_avg | SARS1\_indicator | RaTG13\_indicator | GDPangolin\_indicator |
+| :------- | --------: | ---------: | ---------: | --------: | ---------: | ---------: | --------: | :--------------- | :---------------- | :-------------------- |
+| L455Y    |       125 |     \-1.48 |     \-1.52 |    \-1.50 |     \-0.16 |     \-0.03 |    \-0.10 | o                |                   |                       |
+| A475P    |       145 |     \-1.52 |     \-1.72 |    \-1.62 |     \-1.44 |     \-1.34 |    \-1.39 | o                |                   |                       |
+| Q498Y    |       168 |       0.01 |       0.30 |      0.16 |       0.19 |     \-0.07 |      0.06 | o                | ^                 |                       |
+| N501D    |       171 |     \-2.40 |     \-2.44 |    \-2.42 |       0.09 |       0.07 |      0.08 |                  | ^                 |                       |
+| N501Q    |       171 |     \-0.09 |     \-0.04 |    \-0.06 |       0.02 |       0.26 |      0.14 |                  |                   |                       |
+| G502D    |       172 |     \-4.29 |     \-4.03 |    \-4.16 |       0.62 |       0.66 |      0.64 |                  |                   |                       |
 
 ## Output for dms-view visualization of mutational effects
