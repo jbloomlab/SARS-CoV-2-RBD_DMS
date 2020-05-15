@@ -50,6 +50,7 @@ single_mut_effects_dir: results/single_mut_effects
 single_mut_effects_file: results/single_mut_effects/single_mut_effects.csv
 homolog_effects_file: results/single_mut_effects/homolog_effects.csv
 structure_function_dir: results/structure_function
+dms_view_dir: dms_view
 
 # parameters for running PacBio `ccs` program
 min_ccs_accuracy: 0.999

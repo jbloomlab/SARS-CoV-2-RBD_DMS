@@ -27,9 +27,13 @@ config <- read_yaml("config.yaml")
 #read in file giving concordance between RBD numbering and SARS-CoV-2 Spike numbering
 RBD_sites <- data.table(read.csv(file="data/RBD_sites.csv",stringsAsFactors=F))
 
-#make output directory
+#make output directories
 if(!file.exists(config$structure_function_dir)){
   dir.create(file.path(config$structure_function_dir))
+}
+#make output directory
+if(!file.exists(config$dms_view_dir)){
+  dir.create(file.path(config$dms_view_dir))
 }
 ```
 
@@ -607,3 +611,33 @@ six mutations:
 | G502D    |       172 |     \-4.29 |     \-4.03 |    \-4.16 |       0.62 |       0.66 |      0.64 |                  |                   |                       |
 
 ## Output for dms-view visualization of mutational effects
+
+Let’s output data in a format for import into `dms-view`. We want to
+remove nonsense mutants, rename columns per the `dms-view` input column
+specifications, and move our bind and expression effect measurements
+into a long data frame format. We will start with our delta binding and
+expression measurements relative to wildtype, though later on we might
+want to convert to a different scale that scales effects similar to
+preferences on a logo scale that fills a relative one-unit scale.
+
+We retitle the columns already in our data table to the header names
+specified in the `dms-view` input file guidelines. We then convert to
+“long” data frame format, and incorporate the desired mutation- and
+site-level mutation measurements. We treat binding and expression as
+separate “conditions”, for which we will show site-wise metrics of mean,
+max, and min effect of mutations at the site on the condition phenotype,
+and the mutations will be illustrated as their delta-phenotype compared
+to wildtype, where phenotype is log<sub>10</sub>(*K*<sub>A,app</sub>)
+for binding, or mean fluorescence for expression.
+
+``` r
+dmsview_output_bind <- mutants[mutant != "*",.(site=RBD_site,label_site=SARS2_site,wildtype,mutation=mutant,protein_chain="E",protein_site=SARS2_site,condition="ACE2-binding",mut_deltaP=bind_avg)]
+dmsview_output_expr <- mutants[mutant != "*",.(site=RBD_site,label_site=SARS2_site,wildtype,mutation=mutant,protein_chain="E",protein_site=SARS2_site,condition="expression",mut_deltaP=expr_avg)]
+
+dmsview_output <- rbind(dmsview_output_bind,dmsview_output_expr)
+
+dmsview_output[condition=="ACE2-binding", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_bind","max_bind","min_bind")],by=c("label_site","mutation","condition")]
+dmsview_output[condition=="expression", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_expr","max_expr","min_expr")],by=c("label_site","mutation","condition")]
+
+write.csv(dmsview_output,file=paste(config$dms_view_dir,"/dms-view_table.csv",sep=""))
+```
