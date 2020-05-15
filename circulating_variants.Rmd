@@ -103,3 +103,6 @@ Let's expand our sequence set to all Spike sequences available on GISAID. On the
 
 
 How do the specific effects of these mutations compare to the raw distribution of functional effects on binding and expression, and how do the inherent tolerance of the sites of these mutations compare to the rest of RBD/RBM sites?
+
+
+Are many affinity- or expression-enhancing mutations accessible by single mutation from WT?
