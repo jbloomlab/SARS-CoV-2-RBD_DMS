@@ -45,7 +45,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 14.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -650,5 +650,5 @@ dmsview_output <- rbind(dmsview_output_bind,dmsview_output_expr)
 dmsview_output[condition=="ACE2-binding", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_bind","max_bind","min_bind")],by=c("label_site","mutation","condition")]
 dmsview_output[condition=="expression", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_expr","max_expr","min_expr")],by=c("label_site","mutation","condition")]
 
-write.csv(dmsview_output,file=paste(config$dms_view_dir,"/dms-view_table.csv",sep=""))
+write.csv(dmsview_output,file=config$dms_view_file)
 ```

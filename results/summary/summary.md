@@ -41,3 +41,5 @@ workflow:
    Creates files giving the estimated expression and ACE2-binding of
    [single mutants to SARS-CoV-2 RBD](../single_mut_effects/single_mut_effects.csv)
    and [the homologs](../single_mut_effects/homolog_effects.csv).
+
+10. [Structure-function analysis of mutational effects](structure_function.md).

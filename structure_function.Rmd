@@ -4,7 +4,7 @@ author: "Tyler Starr"
 date: "5/11/2020"
 output:
   github_document:
-  html_preview: true
+    html_preview: false
 editor_options: 
   chunk_output_type: inline
 
@@ -404,7 +404,7 @@ muts_temp <- mutants[SARS2_site %in% RBD_sites[amino_acid_SARS1 != amino_acid_SA
 p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
   scale_x_discrete(expand=c(0,0))+
-  labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
   geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
@@ -412,7 +412,7 @@ p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
 p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
   scale_x_discrete(expand=c(0,0))+
-  labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
   geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
@@ -446,7 +446,7 @@ muts_temp <- mutants[SARS2_site %in% RBD_sites[amino_acid_RaTG13 != amino_acid_S
 p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
   scale_x_discrete(expand=c(0,0))+
-  labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
   geom_text(aes(label=RaTG13_indicator),size=2,color="gray10")+
@@ -455,7 +455,7 @@ p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
 p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
   scale_x_discrete(expand=c(0,0))+
-  labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
   geom_text(aes(label=RaTG13_indicator),size=2,color="gray10")+
@@ -504,7 +504,7 @@ dmsview_output <- rbind(dmsview_output_bind,dmsview_output_expr)
 dmsview_output[condition=="ACE2-binding", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_bind","max_bind","min_bind")],by=c("label_site","mutation","condition")]
 dmsview_output[condition=="expression", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_expr","max_expr","min_expr")],by=c("label_site","mutation","condition")]
 
-write.csv(dmsview_output,file=paste(config$dms_view_dir,"/dms-view_table.csv",sep=""))
+write.csv(dmsview_output,file=config$dms_view_file)
 
 ```
 

@@ -127,8 +127,6 @@ func_scores.head()
       <th>func_score</th>
       <th>delta_log10Ka</th>
       <th>log10SE</th>
-      <th>Kd</th>
-      <th>Kd_SE</th>
       <th>response</th>
       <th>baseline</th>
       <th>nMSR</th>
@@ -149,8 +147,6 @@ func_scores.head()
       <td>8.72</td>
       <td>-2.05</td>
       <td>0.12</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>1.64</td>
       <td>1.13</td>
       <td>0.01</td>
@@ -169,8 +165,6 @@ func_scores.head()
       <td>10.35</td>
       <td>-0.42</td>
       <td>0.05</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.87</td>
       <td>1.01</td>
       <td>0.00</td>
@@ -189,8 +183,6 @@ func_scores.head()
       <td>6.00</td>
       <td>-4.76</td>
       <td>2.00</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>1.50</td>
       <td>1.15</td>
       <td>0.01</td>
@@ -209,8 +201,6 @@ func_scores.head()
       <td>10.15</td>
       <td>-0.61</td>
       <td>0.09</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.64</td>
       <td>1.09</td>
       <td>0.00</td>
@@ -229,8 +219,6 @@ func_scores.head()
       <td>9.61</td>
       <td>-1.15</td>
       <td>0.19</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.00</td>
       <td>1.11</td>
       <td>0.01</td>
@@ -281,14 +269,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 80.8 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 86.1 sec.
     Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 3.2 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 202.9 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 16.2 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 77.5 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.2 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 228.3 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 20.7 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 213.1 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 16.4 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 81.5 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.3 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 239.1 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 20.9 sec.
 
 
 Now we want to see which model fits the data better.
@@ -762,8 +750,6 @@ dt.head().round(2)
       <th>log10Ka</th>
       <th>delta_log10Ka</th>
       <th>log10SE</th>
-      <th>Kd</th>
-      <th>Kd_SE</th>
       <th>response</th>
       <th>baseline</th>
       <th>nMSR</th>
@@ -788,8 +774,6 @@ dt.head().round(2)
       <td>AAAAAAAAAATTGTAA</td>
       <td>1</td>
       <td>0.00</td>
-      <td>NaN</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -821,8 +805,6 @@ dt.head().round(2)
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
       <td>&gt;1 nonsynonymous</td>
       <td>N13S L60P K94N S147T C150Y</td>
       <td>5</td>
@@ -845,8 +827,6 @@ dt.head().round(2)
       <td>8.72</td>
       <td>-2.05</td>
       <td>0.12</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>1.64</td>
       <td>1.13</td>
       <td>0.01</td>
@@ -872,8 +852,6 @@ dt.head().round(2)
       <td>10.35</td>
       <td>-0.42</td>
       <td>0.05</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.87</td>
       <td>1.01</td>
       <td>0.00</td>
@@ -896,8 +874,6 @@ dt.head().round(2)
       <td>AAAAAAAACAATATAA</td>
       <td>1</td>
       <td>2.48</td>
-      <td>NaN</td>
-      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -965,8 +941,6 @@ func_scores_joint.head()
       <th>log10Ka</th>
       <th>func_score</th>
       <th>log10SE</th>
-      <th>Kd</th>
-      <th>Kd_SE</th>
       <th>response</th>
       <th>baseline</th>
       <th>nMSR</th>
@@ -987,8 +961,6 @@ func_scores_joint.head()
       <td>8.72</td>
       <td>-2.05</td>
       <td>0.12</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>1.64</td>
       <td>1.13</td>
       <td>0.01</td>
@@ -1007,8 +979,6 @@ func_scores_joint.head()
       <td>10.35</td>
       <td>-0.42</td>
       <td>0.05</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.87</td>
       <td>1.01</td>
       <td>0.00</td>
@@ -1027,8 +997,6 @@ func_scores_joint.head()
       <td>6.00</td>
       <td>-4.76</td>
       <td>2.00</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>1.50</td>
       <td>1.15</td>
       <td>0.01</td>
@@ -1047,8 +1015,6 @@ func_scores_joint.head()
       <td>10.15</td>
       <td>-0.61</td>
       <td>0.09</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.64</td>
       <td>1.09</td>
       <td>0.00</td>
@@ -1067,8 +1033,6 @@ func_scores_joint.head()
       <td>9.61</td>
       <td>-1.15</td>
       <td>0.19</td>
-      <td>0.0</td>
-      <td>0.0</td>
       <td>2.00</td>
       <td>1.11</td>
       <td>0.01</td>
@@ -1109,10 +1073,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 148.6 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 152.6 sec.
     Fitting no epistasis with Gaussian likelihood model... fitting took 6.1 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 124.6 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 31.7 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 125.5 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 29.8 sec.
 
 
 
