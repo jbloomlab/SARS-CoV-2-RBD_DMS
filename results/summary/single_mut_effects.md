@@ -310,7 +310,20 @@ First, let’s look at what fraction of mutations were sampled as sole
 mutations on at least one barcode background in each library. (This
 differs from what’s reported in the `build_variants.ipynb` notebook, as
 we are now quantifying coverage among barcodes *for which we determined
-a QC-filtered phenotype*.)
+a QC-filtered phenotype*.) We also calculate the total number of
+barcodes on which a variant is sampled, and make ecdf plots illustrating
+barcode counts among determined phenotypes. The top two plots show, for
+pooled libraries, the total number of bcs and the number of
+single-mutant barcodes on which each mutation is found. The bottom plots
+show something slightly different, related to the mutational effects we
+will be taking forward later down in the analysis. This plot shows the
+number of barcodes on which each type of measurement that we take forth
+is made on – for single-lib mutational measurements in which there is no
+direct 1mut bc sampled, we show the cdf for number of (multi-mutant) bcs
+on which a mutation was sampled; and for single-lib mutational
+measurements in which there is at least one 1mut direct bc sampled, the
+cdf of the number of these 1mut barcodes on which the mutation was
+sampled.
 
 ``` r
 #build master "betas" data table that lists *all* mutations, including those that are undetermined in the model outputs
@@ -331,8 +344,8 @@ betas <- data.table(betas)
 bc_bind[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
 #gives total number of barcodes with a determined binding phenotype in each library on which a genotype was sampled (takes a while to compute)
-betas[,n_bc_bind_lib1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-betas[,n_bc_bind_lib2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_bind_lib1 := sum(unlist(lapply(bc_bind[library=="lib1" & !is.na(log10Ka),aa_subs_list], function(x) mutation_RBD %in% x))),by=mutation]
+betas[,n_bc_bind_lib2 := sum(unlist(lapply(bc_bind[library=="lib2" & !is.na(log10Ka),aa_subs_list], function(x) mutation_RBD %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   delta_log10Ka_1 <- bc_bind[aa_substitutions==betas[i,"mutation_RBD"] & library=="lib1",delta_log10Ka]
@@ -342,7 +355,25 @@ for(i in 1:nrow(betas)){
   betas$bind_lib1_direct[i] <- mean(delta_log10Ka_1,na.rm=T)
   betas$bind_lib2_direct[i] <- mean(delta_log10Ka_2,na.rm=T)
 }
+
+par(mfrow=c(2,2))
+#output ecdf plots: first, for all mutants, counts across all barcodes and across 1mut barcodes
+plot(ecdf(betas[mutant!="*" & wildtype!=mutant,n_bc_bind_lib1+n_bc_bind_lib2]),xlim=c(0,200),verticals=T,pch=NA,col.01line=NA,main=paste("pooled binding scores, median =",median(betas[mutant!="*" & wildtype!=mutant,n_bc_bind_lib1+n_bc_bind_lib2])),xlab="number of barcodes",ylab="fraction mutations found < X times")
+abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_bind_lib1+n_bc_bind_lib2]),lty=2);abline(h=0.5,lty=2)
+
+plot(ecdf(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_bind_lib1+n_bc_1mut_bind_lib2]),verticals=T,pch=NA,col.01line=NA,main=paste("pooled binding scores, 1mut barcodes,\nmedian =",median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_bind_lib1+n_bc_1mut_bind_lib2])),xlab="number of single-mutant barcodes",ylab="fraction mutations found < X times",xlim=c(0,25))
+abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_bind_lib1+n_bc_1mut_bind_lib2]),lty=2);abline(h=0.5,lty=2)
+
+#next, output ecdf for all-barcode counts *only for single-lib obs that do not have single-mut barcodes*
+plot(ecdf(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 == 0, n_bc_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 == 0, n_bc_bind_lib2])), xlim=c(0,50), verticals=T,pch=NA, col.01line=NA, main=paste("single-lib, no direct 1mut bc\nmedian =",median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 == 0, n_bc_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 == 0, n_bc_bind_lib2]))),xlab="number of barcodes",ylab="fraction mutations found < X times")
+abline(v=median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 == 0, n_bc_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 == 0, n_bc_bind_lib2])),lty=2);abline(h=0.5,lty=2)
+
+#next, output ecdf for 1mut counts *only for single-lib obs that have at least 1 1mut barcode*
+plot(ecdf(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0, n_bc_1mut_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 > 0, n_bc_1mut_bind_lib2])), xlim=c(0,25), verticals=T,pch=NA, col.01line=NA, main=paste("single-lib, 1mut bc for directly sampled muts\nmedian =",median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0, n_bc_1mut_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 > 0, n_bc_1mut_bind_lib2]))),xlab="number of barcodes",ylab="fraction mutations found < X times")
+abline(v=median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0, n_bc_1mut_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 > 0, n_bc_1mut_bind_lib2])),lty=2);abline(h=0.5,lty=2)
 ```
+
+<img src="single_mut_effects_files/figure-gfm/bind_effects_direct_singles-1.png" style="display: block; margin: auto;" />
 
 In lib1, we directly measured the effects of 85.73% of mutations *as
 sole mutations* on at least one barcode background (a higher percentage
@@ -696,15 +727,19 @@ there’s quite a large number of mutations with positive expression
 effects, which will be interesting to look at later on.
 
 Next, let’s look at directly sampled single-mutant effects on expression
-from barcodes carrying just single mutations.
+from barcodes carrying just single mutations. We calculate the number of
+barcodes each mutation is found on, including single-mutant barcodes and
+all barcodes for which expression measurements were fit and kept
+post-filtering. We also make cdf plots of the number of barcodes on
+which a mutation is sampled.
 
 ``` r
 #add to master "betas" data table that lists *all* mutations, including those that are undetermined in the model outputs
 bc_expr[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
 #gives total number of barcodes with a determined expring phenotype in each library on which a genotype was sampled (takes a while to compute)
-betas[,n_bc_expr_lib1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
-betas[,n_bc_expr_lib2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation %in% x))),by=mutation]
+betas[,n_bc_expr_lib1 := sum(unlist(lapply(bc_expr[library=="lib1" & !is.na(ML_meanF),aa_subs_list], function(x) mutation_RBD %in% x))),by=mutation]
+betas[,n_bc_expr_lib2 := sum(unlist(lapply(bc_expr[library=="lib2" & !is.na(ML_meanF),aa_subs_list], function(x) mutation_RBD %in% x))),by=mutation]
 
 for(i in 1:nrow(betas)){
   delta_meanF_1 <- bc_expr[aa_substitutions==betas[i,"mutation_RBD"] & library=="lib1",delta_ML_meanF]
@@ -714,7 +749,17 @@ for(i in 1:nrow(betas)){
   betas$expr_lib1_direct[i] <- mean(delta_meanF_1,na.rm=T)
   betas$expr_lib2_direct[i] <- mean(delta_meanF_2,na.rm=T)
 }
+
+par(mfrow=c(1,2))
+#output ecdf plots: for all mutants, counts across all barcodes and across 1mut barcodes between the pooled libraries, and separately for each library measurement which is used to average
+plot(ecdf(betas[mutant!="*" & wildtype!=mutant,n_bc_expr_lib1+n_bc_expr_lib2]),xlim=c(0,200),verticals=T,pch=NA,col.01line=NA,main=paste("pooled expression scores, median =",median(betas[mutant!="*" & wildtype!=mutant,n_bc_expr_lib1+n_bc_expr_lib2])),xlab="number of barcodes",ylab="fraction mutations found < X times")
+abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_expr_lib1+n_bc_expr_lib2]),lty=2);abline(h=0.5,lty=2)
+
+plot(ecdf(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2]),verticals=T,pch=NA,col.01line=NA,main=paste("pooled expression scores, 1mut barcodes,\nmedian =",median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2])),xlab="number of single-mutant barcodes",ylab="fraction mutations found < X times",xlim=c(0,25))
+abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2]),lty=2);abline(h=0.5,lty=2)
 ```
+
+![](single_mut_effects_files/figure-gfm/expr_effects_direct_singles-1.png)<!-- -->
 
 In lib1, we directly measured the effects of 86.12% of mutations *as
 sole mutations* on at least one barcode background (a higher percentage
@@ -883,7 +928,6 @@ for(i in 1:nrow(homologs)){
   homologs$bind_lib2[i] <- mean(bind_lib2,na.rm=T)
   homologs$bind_lib2_SE[i] <- sd(bind_lib2,na.rm=T)/sqrt(sum(!is.na(bind_lib2)))
   homologs$bind_avg[i] <- mean(c(homologs$bind_lib1[i], homologs$bind_lib2[i]))
-  homologs$bind_SE[i] <- sqrt(homologs$bind_lib1_SE[i]^2 + homologs$bind_lib2_SE[i]^2)/2
   expr_lib1 <- bc_homologs_expr[library=="lib1" & target==as.character(homologs$homolog[i]),delta_ML_meanF]
   homologs$expr_lib1[i] <- median(expr_lib1,na.rm=T)
   homologs$expr_lib1_SE[i] <- 1.2533*sd(expr_lib1,na.rm=T)/sqrt(sum(!is.na(expr_lib1))) #assumes normal distribution which is not quite correct, so revisit this if using SE for any hard-core statistics
@@ -891,7 +935,6 @@ for(i in 1:nrow(homologs)){
   homologs$expr_lib2[i] <- median(expr_lib2,na.rm=T)
   homologs$expr_lib2_SE[i] <- 1.2533*sd(expr_lib2,na.rm=T)/sqrt(sum(!is.na(expr_lib2)))
   homologs$expr_avg[i] <- mean(c(homologs$expr_lib1[i], homologs$expr_lib2[i]))
-  homologs$expr_SE[i] <- sqrt(homologs$expr_lib1_SE[i]^2 + homologs$expr_lib2_SE[i]^2)/2
 }
 ```
 
