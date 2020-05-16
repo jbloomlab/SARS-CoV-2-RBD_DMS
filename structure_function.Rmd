@@ -110,6 +110,32 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/mean-bind_v_RSA.p
 
 ```
 
+Next, we want to investigate how mutational tolerance differs between the core alpha+beta RBD fold versus the 'Receptor Binding Motif' (RBM) loops. In particular, I want to test the hypothesis that the core RBD is more constrained with regards to mutational effects on expression, while the RBM is constrained with regards to ACE2-binding. 
+
+```{r RBM_versus_core_fold_sites, fig.width=12,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
+p1 <- ggplot(RBD_sites, aes(x=RBM,y=mean_bind))+
+  geom_violin(trim=F)+coord_flip()+
+  geom_dotplot(binaxis='y',stackdir='center',dotsize=0.4)+
+  ylab("mean mutational effect on binding")+xlab("Site in RBM?")
+
+
+p2 <- ggplot(RBD_sites, aes(x=RBM,y=mean_expr))+
+  geom_violin(trim=F)+coord_flip()+
+  geom_dotplot(binaxis='y',stackdir='center',dotsize=0.4)+
+  ylab("mean mutational effect on expression")+xlab("Site in RBM?")
+#wilcox.test(sites[!is.na(sites$SHM) & sites$SHM==T,"mean_bind"],sites[!is.na(sites$SHM) & sites$SHM==F,"mean_bind"]) #SHMs accr
+
+
+grid.arrange(p1,p2,ncol=2)
+```
+Visually, sites in the RBM are more sensitive to mutation with respect to binding, while sites in the core RBD are more sensitive to mutation with respect to expression. Below, we test the statistical significance of this obervation with the Wilcoxon rank sum test. The difference for binding is not significant, with a p-value of `r round(wilcox.test(RBD_sites[RBM==T,mean_bind],RBD_sites[RBM==F,mean_bind])$p.value,digits=4)`, while the difference for expression is significant, with a p-value of `r round(wilcox.test(RBD_sites[RBM==T,mean_expr],RBD_sites[RBM==F,mean_expr])$p.value,digits=5)`. I am not surprised by this difference in significance -- since expression defects affect binding (but not vice-versa), it should be harder to pull out the RBM binding specific trend without first normalizing by expression. I should probably devise a better hypothesis testing scheme that accounts for this fact, because visually and from my knowledge about these two phenotypes, it definitely seems like this enrichment holds true.
+
+```{r RBM_stats_summary}
+wilcox.test(RBD_sites[RBM==T,mean_bind],RBD_sites[RBM==F,mean_bind])
+wilcox.test(RBD_sites[RBM==T,mean_expr],RBD_sites[RBM==F,mean_expr])
+```
+
+
 To further visualize site-wise mutational sensitivity on the 3D structure, let's output `.pdb` files for the ACE2-bound RBD structure in which we replace the B factor column with metrics of interest for each site: 1) the mean effect of mutation on binding, 2) the mean effect of mutation on expression, 3) the max effect of any mutation on binding, and 4) the max effect of any mutation on expression. In PyMol, we can then visualize spheres at each Calpha, colored by spectrum from low (yellow) to high (blue) for each metric by manually executing the following commands in a PyMol session in which one of the output `pdb` files is opened:
 ```
 hide all; show cartoon
@@ -173,13 +199,6 @@ write.pdb(pdb=pdb_max_expr,file=paste(config$structure_function_dir,"/6m0j_b-fac
 
 
 ```
-
-Does mutational tolerance with respect to binding and/or expression differ systematically between positions in the core-RBD versus the RBM loops? (Hypothesis is: expression is more constrained in the core RBD, while binding is more constrained in the RBM) -- analysis upcoming
-```{r RBM_versus_core_fold}
-
-```
-
-
 
 ## Distribution of functional effects of mutatioin
 

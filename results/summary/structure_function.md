@@ -185,6 +185,52 @@ observed patterns of mutational tolerance.
 
 <img src="structure_function_files/figure-gfm/mean_mut_effect_versus_RSA-1.png" style="display: block; margin: auto;" />
 
+Next, we want to investigate how mutational tolerance differs between
+the core alpha+beta RBD fold versus the ‘Receptor Binding Motif’ (RBM)
+loops. In particular, I want to test the hypothesis that the core RBD is
+more constrained with regards to mutational effects on expression, while
+the RBM is constrained with regards to ACE2-binding.
+
+    ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.
+
+<img src="structure_function_files/figure-gfm/RBM_versus_core_fold_sites-1.png" style="display: block; margin: auto;" />
+Visually, sites in the RBM are more sensitive to mutation with respect
+to binding, while sites in the core RBD are more sensitive to mutation
+with respect to expression. Below, we test the statistical significance
+of this obervation with the Wilcoxon rank sum test. The difference for
+binding is not significant, with a p-value of 0.0597, while the
+difference for expression is significant, with a p-value of 6.9^{-4}. I
+am not surprised by this difference in significance – since expression
+defects affect binding (but not vice-versa), it should be harder to pull
+out the RBM binding specific trend without first normalizing by
+expression. I should probably devise a better hypothesis testing scheme
+that accounts for this fact, because visually and from my knowledge
+about these two phenotypes, it definitely seems like this enrichment
+holds true.
+
+``` r
+wilcox.test(RBD_sites[RBM==T,mean_bind],RBD_sites[RBM==F,mean_bind])
+```
+
+    ## 
+    ##  Wilcoxon rank sum test with continuity correction
+    ## 
+    ## data:  RBD_sites[RBM == T, mean_bind] and RBD_sites[RBM == F, mean_bind]
+    ## W = 3899, p-value = 0.05972
+    ## alternative hypothesis: true location shift is not equal to 0
+
+``` r
+wilcox.test(RBD_sites[RBM==T,mean_expr],RBD_sites[RBM==F,mean_expr])
+```
+
+    ## 
+    ##  Wilcoxon rank sum test with continuity correction
+    ## 
+    ## data:  RBD_sites[RBM == T, mean_expr] and RBD_sites[RBM == F, mean_expr]
+    ## W = 5987, p-value = 0.0006857
+    ## alternative hypothesis: true location shift is not equal to 0
+
 To further visualize site-wise mutational sensitivity on the 3D
 structure, let’s output `.pdb` files for the ACE2-bound RBD structure in
 which we replace the B factor column with metrics of interest for each
@@ -258,11 +304,6 @@ for(i in 1:nrow(pdb_max_expr$atom)){
 #save pdb
 write.pdb(pdb=pdb_max_expr,file=paste(config$structure_function_dir,"/6m0j_b-factor-max-expr.pdb",sep=""), b = pdb_max_expr$atom$b)
 ```
-
-Does mutational tolerance with respect to binding and/or expression
-differ systematically between positions in the core-RBD versus the RBM
-loops? (Hypothesis is: expression is more constrained in the core RBD,
-while binding is more constrained in the RBM) – analysis upcoming
 
 ## Distribution of functional effects of mutatioin
 
