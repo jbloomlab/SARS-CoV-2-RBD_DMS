@@ -21,6 +21,13 @@ sites_alignment[sites_alignment$site_SARS2 %in% c(379, 432),"disulfide"] <- 2
 sites_alignment[sites_alignment$site_SARS2 %in% c(391, 525),"disulfide"] <- 3
 sites_alignment[sites_alignment$site_SARS2 %in% c(480, 488),"disulfide"] <- 4
 
+#annotate residues of putative and potential N-linked glycosylation sites
+sites_alignment$NLGS <- NA
+sites_alignment[sites_alignment$site_SARS2 %in% c(331, 333),"NLGS"] <- "putative1"
+sites_alignment[sites_alignment$site_SARS2 %in% c(343, 345),"NLGS"] <- "putative2"
+sites_alignment[sites_alignment$site_SARS2 %in% c(370, 372),"NLGS"] <- "SARS-CoV-1" #these sites are NLGS in SARS-CoV-1, but T to A difference removes in SARS-CoV-2
+sites_alignment[sites_alignment$amino_acid_SARS2 == "N" & is.na(sites_alignment$NLGS),"NLGS"] <- "surfaceN" #all N's are at least partially solvent exposed, perhaps some more buried than others. But, will annotate all for now
+
 #read in PDB of 6m0j, gives SARS-CoV-2 RBD (chain E) bound to huACE2 (chain A)
 RBD2_ACE2 <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
 RBD2_ACE2_atoms <- RBD2_ACE2$atom
@@ -71,6 +78,10 @@ for(i in 1:nrow(sites_alignment)){
   sites_alignment$RSA_bound[i] <- sites_alignment$SASA_bound[i]/max_SASA[max_SASA$AA==sites_alignment$amino_acid_SARS2[i],"max_SASA"]
   sites_alignment$RSA_unbound[i] <- sites_alignment$SASA_unbound[i]/max_SASA[max_SASA$AA==sites_alignment$amino_acid_SARS2[i],"max_SASA"]
 }
+
+#T333 is the first structured residue, so it gets an abnormally high RSA (>1), probably due to its exposed N-terminus. Set this value to maximum 1, since that is the max defined relative solvent accessibility
+sites_alignment[sites_alignment$site_SARS2==333,"RSA_bound"] <- 1
+sites_alignment[sites_alignment$site_SARS2==333,"RSA_unbound"] <- 1
 
 #annotate as contact residue if within (4 Angstrom) from ACE2 atoms
 #use binding.site function from bio3d to determine interaction residues as <4 Angstrom distance

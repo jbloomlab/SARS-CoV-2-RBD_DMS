@@ -269,14 +269,14 @@ for (lib), scores in func_scores.groupby(['library']):
         models[(epistasistype, likelihoodtype, lib)] = model
 ```
 
-    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 86.9 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib1... fitting took 86.1 sec.
     Fitting no epistasis with Gaussian likelihood model to lib1... fitting took 3.2 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 217.0 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 16.7 sec.
-    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 85.3 sec.
-    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.4 sec.
-    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 248.8 sec.
-    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 21.2 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib1... fitting took 213.1 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib1... fitting took 16.4 sec.
+    Fitting global epistasis with Gaussian likelihood model to lib2... fitting took 81.5 sec.
+    Fitting no epistasis with Gaussian likelihood model to lib2... fitting took 3.3 sec.
+    Fitting global epistasis with Cauchy likelihood model to lib2... fitting took 239.1 sec.
+    Fitting no epistasis with Cauchy likelihood model to lib2... fitting took 20.9 sec.
 
 
 Now we want to see which model fits the data better.
@@ -1073,10 +1073,10 @@ for (target), scores in func_scores_joint.groupby(['target']):
 
 ```
 
-    Fitting global epistasis with Gaussian likelihood model... fitting took 164.1 sec.
-    Fitting no epistasis with Gaussian likelihood model... fitting took 6.9 sec.
-    Fitting global epistasis with Cauchy likelihood model... fitting took 133.6 sec.
-    Fitting no epistasis with Cauchy likelihood model... fitting took 32.8 sec.
+    Fitting global epistasis with Gaussian likelihood model... fitting took 152.6 sec.
+    Fitting no epistasis with Gaussian likelihood model... fitting took 6.1 sec.
+    Fitting global epistasis with Cauchy likelihood model... fitting took 125.5 sec.
+    Fitting no epistasis with Cauchy likelihood model... fitting took 29.8 sec.
 
 
 

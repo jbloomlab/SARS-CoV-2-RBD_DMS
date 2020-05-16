@@ -49,7 +49,8 @@ rule make_summary:
         global_epistasis_expression=nb_markdown('global_epistasis_expression.ipynb'),
         single_mut_effects='results/summary/single_mut_effects.md',
         single_mut_effects_file=config['single_mut_effects_file'],
-        homolog_effects_file=config['homolog_effects_file']
+        homolog_effects_file=config['homolog_effects_file'],
+        structure_function='results/summary/structure_function.md'
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -101,6 +102,9 @@ rule make_summary:
                Creates files giving the estimated expression and ACE2-binding of
                [single mutants to SARS-CoV-2 RBD]({path(input.single_mut_effects_file)})
                and [the homologs]({path(input.homolog_effects_file)}).
+               
+            10. [Structure-function analysis of mutational effects]({path(input.structure_function)}).
+
 
             """
             ).strip())
@@ -113,6 +117,27 @@ rule make_dag:
         os.path.join(config['summary_dir'], 'dag.svg')
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
+
+rule structure_function:
+    input:
+        config['single_mut_effects_file'],
+        config['homolog_effects_file']
+    output:
+        config['dms_view_file'],
+        md='results/summary/structure_function.md',
+        md_files = directory('results/summary/structure_function_files')
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='structure_function.Rmd',
+        md='structure_function.md',
+        md_files='structure_function_files'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {output.md};
+        mv {params.md_files} {output.md_files}
+        """
 
 rule single_mut_effects:
     input:
