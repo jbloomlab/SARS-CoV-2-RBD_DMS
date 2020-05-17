@@ -53,3 +53,8 @@ structure_function:
   cpus: 8
   partition: largenode
   mem: 50000
+
+circulating_variants:
+  cpus: 8
+  partition: largenode
+  mem: 50000
