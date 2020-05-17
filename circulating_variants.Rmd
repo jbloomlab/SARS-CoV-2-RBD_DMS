@@ -57,24 +57,24 @@ setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2
 ```
 
 The 5/16/2020 GISAID report on Receptor binding surveillance for current sequences lists the following RBD variants (number of times seen). I believe this report focuses on just RBM variants, not all variants observed in the rest of the RBD. I also think this is just mutants added in the most recent data update? Not sure:
-* N439K (94x Scotland)
-* K444R (1x Spain)
-* V445I (1x England)
-* G446S (1x England)
-* G446V (2x Australia)
-* L455F (1x England)
-* F456L (1x USA)
-* A475V (2x USA)
-* G476S (9x USA, 1x Belgium)
-* T478I (44x England)
-* V483A (29x USA, 1x England)
-* V483F (4x Spain)
-* V483I (2x England)
-* F490L (1x Australia, 1x USA)
-* F490S (1x England)
-* S494P (3x USA, 1x each England, Spain, India, Sweden)
-* Y495N (1x Luxembourg)
-* V503F (1x USA)
+ * N439K (94x Scotland)
+ * K444R (1x Spain)
+ * V445I (1x England)
+ * G446S (1x England)
+ * G446V (2x Australia)
+ * L455F (1x England)
+ * F456L (1x USA)
+ * A475V (2x USA)
+ * G476S (9x USA, 1x Belgium)
+ * T478I (44x England)
+ * V483A (29x USA, 1x England)
+ * V483F (4x Spain)
+ * V483I (2x England)
+ * F490L (1x Australia, 1x USA)
+ * F490S (1x England)
+ * S494P (3x USA, 1x each England, Spain, India, Sweden)
+ * Y495N (1x Luxembourg)
+ * V503F (1x USA)
 
 First, let's output the effects of these mutations in our summary mutation table.
 
@@ -95,6 +95,8 @@ variants$expr_avg[i] <- mutants[mutation==variants$mutation[i], expr_avg]
 kable(variants)
 
 ```
+
+
 Let's visualize the positions with circulating variants in our *favorite* exploratory heatmaps!
 
 ```{r heatmap_circulating_variants, fig.width=8,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
@@ -148,7 +150,6 @@ alignment_RBD <- alignment; alignment_RBD$ali <- alignment$ali[,RBD_sites$site_S
 # }
 
 #remove bat, pangolin sequences
-length(alignment_RBD$id)==nrow(alignment_RBD$ali)
 remove <- grep("bat",alignment_RBD$id);  alignment_RBD$ali <- alignment_RBD$ali[-remove,]; alignment_RBD$id <- alignment_RBD$id[-remove]
 remove <- grep("pangolin",alignment_RBD$id);  alignment_RBD$ali <- alignment_RBD$ali[-remove,]; alignment_RBD$id <- alignment_RBD$id[-remove]
 
@@ -223,7 +224,7 @@ mutants_1mut[singlemut==F,expr_avg:=NA]
 
 ```
 
-Below is a heatmap for all mutations accessible in single nucleotide changes from the SARS-CoV-2 WT reference sequence, with others grayed out. We can see that several affinity-enhancing mutations (including at least two that we are currently planning to validiate), are accessible with single-nt mutations. Therefore, affinity-enhancing mutations, if selectively beneficial, would be readily accessible via mutation.
+Below is a heatmap for all mutations accessible in single nucleotide changes from the SARS-CoV-2 WT reference sequence, with others grayed out. We can see that several affinity-enhancing mutations (including at least two that we are currently planning to validiate), are accessible with single-nt mutations. Therefore, affinity-enhancing mutations, if selectively beneficial, would be readily accessible via mutation. However, there are some positions where beneficial mutations are possible, but none are available from single-nt mutations (e.g. site 455, perhaps others if I dig in more...)
 
 ```{r heatmap_binding_single_muts, fig.width=12,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
 p1 <- ggplot(mutants_1mut[mutant!="*" & SARS2_site %in% seq(331,431),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+

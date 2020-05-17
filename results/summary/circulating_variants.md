@@ -123,27 +123,29 @@ variants$expr_avg[i] <- mutants[mutation==variants$mutation[i], expr_avg]
 kable(variants)
 ```
 
-| mutation    |    nobs |    ncountry |  bind\_lib1 |   bind\_lib2 |    bind\_avg |    expr\_lib1 |   expr\_lib2 | expr\_avg |
-| :---------- | ------: | ----------: | ----------: | -----------: | -----------: | ------------: | -----------: | --------: |
-| N439K       |      94 |           1 |        0.11 |       \-0.02 |         0.04 |        \-0.33 |       \-0.36 |    \-0.35 |
-| K444R       |       1 |           1 |      \-0.08 |       \-0.04 |       \-0.06 |        \-0.01 |       \-0.17 |    \-0.09 |
-| V445I       |       1 |           1 |      \-0.20 |         0.18 |       \-0.01 |          0.08 |       \-0.16 |    \-0.04 |
-| G446S       |       1 |           1 |      \-0.19 |       \-0.22 |       \-0.20 |        \-0.25 |       \-0.55 |    \-0.40 |
-| G446V       |       2 |           1 |      \-0.26 |       \-0.28 |       \-0.27 |        \-0.46 |       \-0.50 |    \-0.48 |
-| L455F       |       1 |           1 |      \-0.16 |       \-0.22 |       \-0.19 |        \-0.05 |       \-0.05 |    \-0.05 |
-| F456L       |       1 |           1 |      \-0.05 |       \-0.18 |       \-0.11 |        \-0.40 |       \-0.58 |    \-0.49 |
-| A475V       |       2 |           1 |      \-0.11 |       \-0.17 |       \-0.14 |        \-0.10 |       \-0.32 |    \-0.21 |
-| G476S       |      10 |           2 |      \-0.02 |       \-0.03 |       \-0.02 |        \-0.05 |       \-0.07 |    \-0.06 |
-| T478I       |      44 |           1 |      \-0.05 |       \-0.02 |       \-0.04 |        \-0.14 |       \-0.18 |    \-0.16 |
-| V483A       |      30 |           2 |        0.00 |       \-0.05 |       \-0.03 |          0.01 |         0.17 |      0.09 |
-| V483F       |       4 |           1 |        0.04 |       \-0.06 |       \-0.01 |        \-0.29 |       \-0.33 |    \-0.31 |
-| V483I       |       2 |           1 |      \-0.01 |       \-0.06 |       \-0.03 |        \-0.23 |       \-0.06 |    \-0.14 |
-| F490L       |       2 |           2 |      \-0.04 |       \-0.17 |       \-0.11 |        \-0.38 |       \-0.32 |    \-0.35 |
-| F490S       |       1 |           1 |        0.02 |       \-0.02 |         0.00 |        \-0.07 |       \-0.12 |    \-0.10 |
-| S494P       |       7 |           5 |      \-0.05 |         0.06 |         0.00 |        \-0.02 |       \-0.02 |    \-0.02 |
-| Y495N       |       1 |           1 |      \-1.36 |       \-1.50 |       \-1.43 |        \-2.16 |       \-2.03 |    \-2.09 |
-| V503F       |       1 |           1 |        0.06 |       \-0.07 |       \-0.01 |        \-0.45 |       \-0.32 |    \-0.38 |
-| Let’s visua | lize th | e positions | with circul | ating varian | ts in our \* | favorite\* ex | ploratory he |  atmaps\! |
+| mutation | nobs | ncountry | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_lib1 | expr\_lib2 | expr\_avg |
+| :------- | ---: | -------: | ---------: | ---------: | --------: | ---------: | ---------: | --------: |
+| N439K    |   94 |        1 |       0.11 |     \-0.02 |      0.04 |     \-0.33 |     \-0.36 |    \-0.35 |
+| K444R    |    1 |        1 |     \-0.08 |     \-0.04 |    \-0.06 |     \-0.01 |     \-0.17 |    \-0.09 |
+| V445I    |    1 |        1 |     \-0.20 |       0.18 |    \-0.01 |       0.08 |     \-0.16 |    \-0.04 |
+| G446S    |    1 |        1 |     \-0.19 |     \-0.22 |    \-0.20 |     \-0.25 |     \-0.55 |    \-0.40 |
+| G446V    |    2 |        1 |     \-0.26 |     \-0.28 |    \-0.27 |     \-0.46 |     \-0.50 |    \-0.48 |
+| L455F    |    1 |        1 |     \-0.16 |     \-0.22 |    \-0.19 |     \-0.05 |     \-0.05 |    \-0.05 |
+| F456L    |    1 |        1 |     \-0.05 |     \-0.18 |    \-0.11 |     \-0.40 |     \-0.58 |    \-0.49 |
+| A475V    |    2 |        1 |     \-0.11 |     \-0.17 |    \-0.14 |     \-0.10 |     \-0.32 |    \-0.21 |
+| G476S    |   10 |        2 |     \-0.02 |     \-0.03 |    \-0.02 |     \-0.05 |     \-0.07 |    \-0.06 |
+| T478I    |   44 |        1 |     \-0.05 |     \-0.02 |    \-0.04 |     \-0.14 |     \-0.18 |    \-0.16 |
+| V483A    |   30 |        2 |       0.00 |     \-0.05 |    \-0.03 |       0.01 |       0.17 |      0.09 |
+| V483F    |    4 |        1 |       0.04 |     \-0.06 |    \-0.01 |     \-0.29 |     \-0.33 |    \-0.31 |
+| V483I    |    2 |        1 |     \-0.01 |     \-0.06 |    \-0.03 |     \-0.23 |     \-0.06 |    \-0.14 |
+| F490L    |    2 |        2 |     \-0.04 |     \-0.17 |    \-0.11 |     \-0.38 |     \-0.32 |    \-0.35 |
+| F490S    |    1 |        1 |       0.02 |     \-0.02 |      0.00 |     \-0.07 |     \-0.12 |    \-0.10 |
+| S494P    |    7 |        5 |     \-0.05 |       0.06 |      0.00 |     \-0.02 |     \-0.02 |    \-0.02 |
+| Y495N    |    1 |        1 |     \-1.36 |     \-1.50 |    \-1.43 |     \-2.16 |     \-2.03 |    \-2.09 |
+| V503F    |    1 |        1 |       0.06 |     \-0.07 |    \-0.01 |     \-0.45 |     \-0.32 |    \-0.38 |
+
+Let’s visualize the positions with circulating variants in our
+*favorite* exploratory heatmaps\!
 
 <img src="circulating_variants_files/figure-gfm/heatmap_circulating_variants-1.png" style="display: block; margin: auto;" />
 
@@ -172,12 +174,6 @@ alignment_RBD <- alignment; alignment_RBD$ali <- alignment$ali[,RBD_sites$site_S
 # }
 
 #remove bat, pangolin sequences
-length(alignment_RBD$id)==nrow(alignment_RBD$ali)
-```
-
-    ## [1] TRUE
-
-``` r
 remove <- grep("bat",alignment_RBD$id);  alignment_RBD$ali <- alignment_RBD$ali[-remove,]; alignment_RBD$id <- alignment_RBD$id[-remove]
 remove <- grep("pangolin",alignment_RBD$id);  alignment_RBD$ali <- alignment_RBD$ali[-remove,]; alignment_RBD$id <- alignment_RBD$id[-remove]
 
@@ -304,6 +300,9 @@ out. We can see that several affinity-enhancing mutations (including at
 least two that we are currently planning to validiate), are accessible
 with single-nt mutations. Therefore, affinity-enhancing mutations, if
 selectively beneficial, would be readily accessible via mutation.
+However, there are some positions where beneficial mutations are
+possible, but none are available from single-nt mutations (e.g. site
+455, perhaps others if I dig in more…)
 
 <img src="circulating_variants_files/figure-gfm/heatmap_binding_single_muts-1.png" style="display: block; margin: auto;" />
 
