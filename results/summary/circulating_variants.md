@@ -313,9 +313,9 @@ out. We can see that several affinity-enhancing mutations (including at
 least two that we are currently planning to validiate), are accessible
 with single-nt mutations. Therefore, affinity-enhancing mutations, if
 selectively beneficial, would be readily accessible via mutation.
-However, there are some positions where beneficial mutations are
-possible, but none are available from single-nt mutations (e.g. site
-455, perhaps others if I dig in more…)
+However, there are probably some positions where beneficial mutations
+are possible, but none are available from single-nt mutations which we
+could dig into.
 
 <img src="circulating_variants_files/figure-gfm/heatmap_binding_single_muts-1.png" style="display: block; margin: auto;" />
 
