@@ -217,11 +217,12 @@ statistics of sequencing errors could somehow explain these two modes?
 
 We plot each mutations delta-log<sub>10</sub>(*K*<sub>A,app</sub>)
 versus the number of times it is observed in the circulating Spike
-alignment. We can see that many of the mutations that are observed \<25
-times are highly deleterious, though some of the mutations with \~40
-observations are also highly deleterious. The plot on the right zooms in
-on the range closer to neutral, to better see any distribution \>0.
-There is no significant difference in median
+alignment, with nobs=0 points in red to distinguish from \>0. We can see
+that many of the mutations that are observed \<25 times are highly
+deleterious, though some of the mutations with \~40 observations are
+also highly deleterious. The plot on the right zooms in on the range
+closer to neutral, to better see any distribution \>0. There is no
+significant difference in median
 delta-log<sub>10</sub>(*K*<sub>A,app</sub>) for mutations that are
 observed more than 25 times versus those observed 1 to 25 times (P-value
 0.7278863, Wilcoxon rank-sum test). Similarly, there is no significant
