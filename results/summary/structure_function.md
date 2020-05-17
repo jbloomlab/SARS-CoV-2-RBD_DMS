@@ -45,7 +45,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -138,9 +138,9 @@ of stability because of their direct interaction with ACE2.
 
 ``` r
 par(mfrow=c(1,2))
-plot(RBD_sites$mean_expr,RBD_sites$mean_bind,pch=19,col="#00000050",xlab="mean mutational effect on expression",ylab="mean mutational effect on binding",main="binding versus expression effects,\naverage per site")
+plot(RBD_sites$mean_expr,RBD_sites$mean_bind,pch=16,col="#00000050",xlab="mean mutational effect on expression",ylab="mean mutational effect on binding",main="binding versus expression effects,\naverage per site")
 
-plot(mutants$expr_avg,mutants$bind_avg,pch=19,col="#00000050",xlab="mutational effect on expression",ylab="mutational effect on binding",main="binding versus expression effects,\nper mutant")
+plot(mutants$expr_avg,mutants$bind_avg,pch=16,col="#00000050",xlab="mutational effect on expression",ylab="mutational effect on binding",main="binding versus expression effects,\nper mutant")
 ```
 
 <img src="structure_function_files/figure-gfm/correlation_mut_expression_binding-1.png" style="display: block; margin: auto;" />

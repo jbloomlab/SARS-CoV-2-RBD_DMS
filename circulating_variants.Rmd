@@ -4,7 +4,7 @@ author: "Tyler Starr"
 date: "5/12/2020"
 output:
   github_document:
-  html_preview: true
+    html_preview: false
 editor_options: 
   chunk_output_type: inline
 
@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse")
+packages = c("yaml","data.table","tidyverse","gridExtra","bio3d","seqinr")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -56,28 +56,33 @@ setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2
 
 ```
 
-The 5/12/2020 GISAID report on Receptor binding surveillance for current sequences lists the following RBD variants (number of times seen). I believe this report focuses on just RBM variants, not all variants observed in the rest of the RBD:
-  * N439K (2x UK)
-* G446A (2x Australia)
-* L455I + F456V (1x Brazil)
-* F456L (1x England)
+The 5/16/2020 GISAID report on Receptor binding surveillance for current sequences lists the following RBD variants (number of times seen). I believe this report focuses on just RBM variants, not all variants observed in the rest of the RBD. I also think this is just mutants added in the most recent data update? Not sure:
+ 
+* N439K (94x Scotland)
+* K444R (1x Spain)
+* V445I (1x England)
+* G446S (1x England)
+* G446V (2x Australia)
+* L455F (1x England)
+* F456L (1x USA)
 * A475V (2x USA)
-* G476S (18x USA, 1x Belgium)
-* T478I (1x England)
-* V483A (30x USA)
+* G476S (9x USA, 1x Belgium)
+* T478I (44x England)
+* V483A (29x USA, 1x England)
 * V483F (4x Spain)
-* V483I (1x UK)
-* F490L (1x Australia)
-* S494P (3x USA, 1x UK, 1x Spain, 1x India)
+* V483I (2x England)
+* F490L (1x Australia, 1x USA)
+* F490S (1x England)
+* S494P (3x USA, 1x each England, Spain, India, Sweden)
 * Y495N (1x Luxembourg)
 * V503F (1x USA)
 
 First, let's output the effects of these mutations in our summary mutation table.
 
 ```{r circulating_variants}
-variants <- data.frame(mutation=c("N439K","G446A","L455I","F456V","F456L","A475V","G476S","T478I","V483A","V483F","V483I","F490L","S494P","Y495N","V503F"),
-nobs=c(2, 2, 1, 1, 1, 2, 19, 1, 30, 4, 1, 1, 6, 1, 1),
-ncountry=c(1,1,1,1,1,1,2,1,1,1,1,1,4,1,1))
+variants <- data.frame(mutation=c("N439K","K444R","V445I","G446S","G446V","L455F","F456L","A475V","G476S","T478I","V483A","V483F","V483I","F490L","F490S","S494P","Y495N","V503F"),
+nobs=c(94,1,1,1,2,1,1,2,10,44,30,4,2,2,1,7,1,1),
+ncountry=c(1,1,1,1,1,1,1,1,2,1,2,1,1,2,1,5,1,1))
 
 for(i in 1:nrow(variants)){
 variants$bind_lib1[i] <- mutants[mutation==variants$mutation[i], bind_lib1]
@@ -88,21 +93,169 @@ variants$expr_lib2[i] <- mutants[mutation==variants$mutation[i], expr_lib2]
 variants$expr_avg[i] <- mutants[mutation==variants$mutation[i], expr_avg]
 }
 
+kable(variants)
+
 ```
 
-Let's visualize the positions of these circulating RBM variants in `dms-view`, linked [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=439%2C446%2C455%2C456%2C475%2C476%2C478%2C483%2C490%2C494%2C495%2C503). We can see that these variants occur at sites that vary pretty extensively across the sarbecovirus clade (except Y495, the mutation of which we ascribe a large deleterious effect).
 
-Let's expand our sequence set to all Spike sequences available on GISAID. On the EpiCoV page, under downloads, one of the pre-made options is an alignment of all Spike sequences isolated thus far. Let's load in this alignment.
+Let's visualize the positions with circulating variants in our *favorite* exploratory heatmaps!
+
+```{r heatmap_circulating_variants, fig.width=8,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#order mutant as a factor for grouping by rough biochemical grouping
+mutants$mutant <- factor(mutants$mutant, levels=c("*","C","P","G","V","M","L","I","A","F","W","Y","T","S","N","Q","E","D","H","K","R"))
+#add character vector indicating wildtype to use as plotting symbols for wt
+mutants[,wildtype_indicator := ""]
+mutants[mutant==wildtype,wildtype_indicator := "x"]
+
+#make smaller data frame of positions with variants in this preliminary set
+muts_temp <- mutants[SARS2_site %in% mutants[mutants$mutation %in% variants$mutation,SARS2_site],]; muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+#add indicator "*" for observed variant amino acids
+muts_temp[,variant_indicator:=""]
+muts_temp[mutation %in% variants$mutation,variant_indicator:="^"]
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=variant_indicator),size=2,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=variant_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,ncol=2)
+
+#invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_SARS-2-1-differences.pdf",sep="")))
+```
+
+
+Let's expand our sequence set to all Spike sequences available on GISAID. On the EpiCoV page, under downloads, one of the pre-made options is an alignment of all Spike sequences isolated thus far, which is updated each day. We load in this alignment using the `read.fasta` function of the `bio3d` package, and trim the alignment to RBD residues. (This function trims fasta header names at the first space, which causes premature cuttiing off e.g. of "Hong Kong" sequences -- in the future, we might want to include a script in the data/alignments/Spike_GISAID folder which could fill spaces with underscores, remove any sequences whose header matches "pangolin", "bat", etc.). We remove sequecnes from bat and pangolin isolates, and then iterate through the alignment and save any observed mutations. Finally, we add counts of observations for each mutation in our mutations data table
+
+
 
 ```{r gisaid_spike_alignment}
+alignment <- bio3d::read.fasta(file="data/alignments/Spike_GISAID/spikeprot0516.fasta", rm.dup=F)
+
+alignment_RBD <- alignment; alignment_RBD$ali <- alignment$ali[,RBD_sites$site_SARS2]
+
+#quick but dumb way to check that the first sequence entry matches our reference RBD sequence
+# for(i in 1:length(alignment_RBD$ali[1,])){
+#   print(alignment_RBD$ali[1,i] == RBD_sites[i,amino_acid_SARS2])
+# }
+
+#remove bat, pangolin sequences
+remove <- grep("bat",alignment_RBD$id);  alignment_RBD$ali <- alignment_RBD$ali[-remove,]; alignment_RBD$id <- alignment_RBD$id[-remove]
+remove <- grep("pangolin",alignment_RBD$id);  alignment_RBD$ali <- alignment_RBD$ali[-remove,]; alignment_RBD$id <- alignment_RBD$id[-remove]
+
+#output all mutation differences from the WT/reference RBD sequence
+#I do this by iterating over rows and columns of the alignment matrix which is STUPID but effective
+variants_vec <- c()
+isolates_vec <- c()
+for(j in 1:ncol(alignment_RBD$ali)){
+  #print(i)
+  for(i in 1:nrow(alignment_RBD$ali)){
+    if(alignment_RBD$ali[i,j] != alignment_RBD$ali[1,j] & !(alignment_RBD$ali[i,j] %in% c("X","-"))){
+      variants_vec <- c(variants_vec, paste(alignment_RBD$ali[1,j],j,alignment_RBD$ali[i,j],sep=""))
+      isolates_vec <- c(isolates_vec, alignment_RBD$id[i])
+    }
+  }
+}
+
+mutants[,nobs:=sum(mutation_RBD == variants_vec),by=mutation]
 
 ```
 
+We see `r length(variants_vec)` amino acid polymorphisims among sequences uploaded in GISAID, which represent `r sum(mutants$nobs>0)` of our `r nrow(mutants[mutant!=wildtype & mutant!="*",])` measured missense mutants. (This, of course, is not making any attempt to deal with sequencing artefacts, TC adaptations, etc.). In the table below, we can see that most of these mutations are observed only one or a few times, so these may either be sequencing errors or unfit genotypes. There is sort of a second "mode" of observed mutation counts around ~35 -- I wonder if the statistics of sequencing errors could somehow explain these two modes?
+
+We plot each mutations delta-log<sub>10</sub>(*K*<sub>A,app</sub>) versus the number of times it is observed in the circulating Spike alignment, with nobs=0 points in red to distinguish from >0. We can see that many of the mutations that are observed <25 times are highly deleterious, though some of the mutations with ~40 observations are also highly deleterious. The plot on the right zooms in on the range closer to neutral, to better see any distribution >0. There is no significant difference in median delta-log<sub>10</sub>(*K*<sub>A,app</sub>) for mutations that are observed more than 25 times versus those observed 1 to 25 times (P-value `r wilcox.test(mutants[nobs>0 & nobs<25,bind_avg],mutants[nobs>25,bind_avg])$p.value`, Wilcoxon rank-sum test). Similarly, there is no significant difference in median delta-expression for mutations observed more than 25 times versus those observed 1 to 25 times (P-value `r wilcox.test(mutants[nobs>0 & nobs<25,expr_avg],mutants[nobs>25,expr_avg])$p.value`, Wilcoxon rank-sum test). Similarly, there is not a significantly different median effect on binding or expression for mutations observed >0 versus 0 times (excluding nonsense mutants -- P-value `r wilcox.test(mutants[mutant != "*" & mutant != wildtype & nobs==0,bind_avg],mutants[mutant != "*" & mutant != wildtype & nobs>0,bind_avg])$p.value` and `r wilcox.test(mutants[mutant != "*" & mutant != wildtype & nobs==0,expr_avg],mutants[mutant != "*" & mutant != wildtype & nobs>0,expr_avg])$p.value` for binding and expression, respectively. P-values are also non-significant for >25 nobs versus 0 nobs comparisons). 
+
+```{r table_circulating_variants_nobs}
+table(mutants$nobs)
+```
+
+```{r scatter_circulating_variants_nobs, fig.width=8,fig.height=8.5,fig.align="center", dpi=500,dev="png",echo=FALSE}
+par(mfrow=c(2,2))
+plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)");abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=16,col="#ff000030")
+
+plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)",ylim=c(-0.5,0.1));abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=16,col="#ff000030")
+
+plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF");abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=16,col="#ff000030")
+
+plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF",ylim=c(-1,1));abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=16,col="#ff000030")
+
+```
+
+This preliminary anlaysis, though perhaps with its caveats given its simplified parsing of mutations in the alignment, shows the overall distribution of functional effects of observed mutations does not differ from the overall distribution of functional effects of mutation, suggesting some combination of a) purifying selection on RBD being relatively weak (could be consistent with big population expansion into a susceptible population with little inter-strain competition) and b) these variants are deleterious tip sequences that are stochastically sampled but are in the process of being purged (i.e. normal observation that viral tips often have deleterious mutations even though purifying selection along the trunk lineage is retained -- hence why all of the observed homolog RBDs have a tight distribution of expression scores even though so many mutations reduce affinity, including those sampled in SARS-CoV-2 isolates). Anyway, if these are points we wanted to pursue, we should think about how we should properly be approaching these conclusions.
+
+In addition to touching on the statement that purifying selection might not be super strong on the RBD, we also can see that there isn't really an enrichment of affinity- (or stability) enhancing mutations among the >20,000 sequenced isolates -- if we show that plenty of single-nt mutations in the SARS-CoV-2 RBD *could* enhance ACE2-affinity, I think we could make a somewhat interesting conclusiona round the idea that there is no strong selective benefit for enhanced ACE2-affinity, at least so far at this stage in the pandemic. (And that sufficient adaptation to huACE2 occurred prior to the origins of the current pandemic).
+
+Let's look not only at the overall DFE, but the distribution of funcitonal effects of single-nt changes to the SARS-CoV-2 RBD genetic sequence. The RBD_sites table already gives the codon sequence for each site, so we can quickly output 
+
+```{r single_codon_muts}
+#define a function that takes a character of three nucleotides (a codon), and outputs all amino acids that can be accessed via single-nt mutation of that codon
+get.codon.muts <- function(codon){
+  nt <- c("a","c","g","t")
+  codon_split <- strsplit(codon,split="")[[1]]
+  codon_muts <- vector()
+  for(i in nt[nt!=codon_split[1]]){
+    codon_muts <- c(codon_muts,translate(c(i,codon_split[2:3])))
+  }
+  for(i in nt[nt!=codon_split[2]]){
+    codon_muts <- c(codon_muts,translate(c(codon_split[1],i,codon_split[3])))
+  }
+  for(i in nt[nt!=codon_split[3]]){
+    codon_muts <- c(codon_muts,translate(c(codon_split[1:2],i)))
+  }
+  return(codon_muts)
+}
+
+#make mutants table that is restricted to single nt mutants of the SARS-CoV-2 sequence
+mutants_1mut <- copy(mutants)
+mutants_1mut[,codon:=RBD_sites[site_SARS2==SARS2_site,codon_SARS2],by=mutation]
+mutants_1mut[,singlemut := mutant %in% get.codon.muts(codon),by=mutation]
+mutants_1mut[singlemut==F,bind_avg:=NA]
+mutants_1mut[singlemut==F,expr_avg:=NA]
+
+```
+
+Below is a heatmap for all mutations accessible in single nucleotide changes from the SARS-CoV-2 WT reference sequence, with others grayed out. We can see that several affinity-enhancing mutations (including at least two that we are currently planning to validiate), are accessible with single-nt mutations. Therefore, affinity-enhancing mutations, if selectively beneficial, would be readily accessible via mutation. However, there are probably some positions where beneficial mutations are possible, but none are available from single-nt mutations which we could dig into.
+
+```{r heatmap_binding_single_muts, fig.width=12,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
+p1 <- ggplot(mutants_1mut[mutant!="*" & SARS2_site %in% seq(331,431),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(340,430,by=5)))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+
+p2 <- ggplot(mutants_1mut[mutant!="*" & SARS2_site %in% seq(432,531),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(440,530,by=5)))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,ncol=1)
+
+#invisible(dev.print(pdf, paste(config$circulatiing_variants_dir,"/heatmap_all-bind.pdf",sep="")))
+```
+
+As has been seen in other studies, attributed to the conservative nature of the genetic code with regards to codon mutational neighbors tending toward conservative biochemical properties, we can see that amino acid changes introduced with single nt changes have a smaller median deleterious effect than all amino acid changes agnostic of codon structure.
+
+```{r median_bind_1mut_vs_allmut}
+wilcox.test(mutants_1mut$bind_avg,mutants$bind_avg)
+median(mutants_1mut[mutant!=wildtype,bind_avg],na.rm=T);median(mutants[mutant!=wildtype,bind_avg],na.rm=T)
+```
 
 
-
-
-How do the specific effects of these mutations compare to the raw distribution of functional effects on binding and expression, and how do the inherent tolerance of the sites of these mutations compare to the rest of RBD/RBM sites?
-
-
-Are many affinity- or expression-enhancing mutations accessible by single mutation from WT?

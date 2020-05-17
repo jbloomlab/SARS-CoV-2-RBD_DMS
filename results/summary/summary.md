@@ -43,3 +43,5 @@ workflow:
    and [the homologs](../single_mut_effects/homolog_effects.csv).
 
 10. [Structure-function analysis of mutational effects](structure_function.md).
+
+11. [Analysis of amino acid variants in SARS-CoV-2 isolates](circulating_variants.md).

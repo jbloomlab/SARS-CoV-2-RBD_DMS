@@ -50,7 +50,8 @@ rule make_summary:
         single_mut_effects='results/summary/single_mut_effects.md',
         single_mut_effects_file=config['single_mut_effects_file'],
         homolog_effects_file=config['homolog_effects_file'],
-        structure_function='results/summary/structure_function.md'
+        structure_function='results/summary/structure_function.md',
+        circulating_variants='results/summary/circulating_variants.md'
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -104,6 +105,8 @@ rule make_summary:
                and [the homologs]({path(input.homolog_effects_file)}).
                
             10. [Structure-function analysis of mutational effects]({path(input.structure_function)}).
+            
+            11. [Analysis of amino acid variants in SARS-CoV-2 isolates]({path(input.circulating_variants)}).
 
 
             """
@@ -117,6 +120,25 @@ rule make_dag:
         os.path.join(config['summary_dir'], 'dag.svg')
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
+
+rule circulating_variants:
+    input:
+        config['single_mut_effects_file'],
+    output:
+        md='results/summary/circulating_variants.md',
+        md_files = directory('results/summary/circulating_variants_files')
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='circulating_variants.Rmd',
+        md='circulating_variants.md',
+        md_files='circulating_variants_files'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {output.md};
+        mv {params.md_files} {output.md_files}
+        """
 
 rule structure_function:
     input:
