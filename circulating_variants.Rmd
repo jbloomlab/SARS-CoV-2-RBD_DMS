@@ -182,17 +182,17 @@ table(mutants$nobs)
 
 ```{r scatter_circulating_variants_nobs, fig.width=8,fig.height=8.5,fig.align="center", dpi=500,dev="png",echo=FALSE}
 par(mfrow=c(2,2))
-plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=19,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)");abline(h=0,lty=2)
-points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=19,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)");abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=16,col="#ff000030")
 
-plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=19,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)",ylim=c(-0.5,0.1));abline(h=0,lty=2)
-points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=19,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)",ylim=c(-0.5,0.1));abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=16,col="#ff000030")
 
-plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=19,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF");abline(h=0,lty=2)
-points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=19,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF");abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=16,col="#ff000030")
 
-plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=19,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF",ylim=c(-1,1));abline(h=0,lty=2)
-points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=19,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF",ylim=c(-1,1));abline(h=0,lty=2)
+points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=16,col="#ff000030")
 
 ```
 
