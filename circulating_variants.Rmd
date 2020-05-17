@@ -57,24 +57,25 @@ setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2
 ```
 
 The 5/16/2020 GISAID report on Receptor binding surveillance for current sequences lists the following RBD variants (number of times seen). I believe this report focuses on just RBM variants, not all variants observed in the rest of the RBD. I also think this is just mutants added in the most recent data update? Not sure:
- * N439K (94x Scotland)
- * K444R (1x Spain)
- * V445I (1x England)
- * G446S (1x England)
- * G446V (2x Australia)
- * L455F (1x England)
- * F456L (1x USA)
- * A475V (2x USA)
- * G476S (9x USA, 1x Belgium)
- * T478I (44x England)
- * V483A (29x USA, 1x England)
- * V483F (4x Spain)
- * V483I (2x England)
- * F490L (1x Australia, 1x USA)
- * F490S (1x England)
- * S494P (3x USA, 1x each England, Spain, India, Sweden)
- * Y495N (1x Luxembourg)
- * V503F (1x USA)
+ 
+* N439K (94x Scotland)
+* K444R (1x Spain)
+* V445I (1x England)
+* G446S (1x England)
+* G446V (2x Australia)
+* L455F (1x England)
+* F456L (1x USA)
+* A475V (2x USA)
+* G476S (9x USA, 1x Belgium)
+* T478I (44x England)
+* V483A (29x USA, 1x England)
+* V483F (4x Spain)
+* V483I (2x England)
+* F490L (1x Australia, 1x USA)
+* F490S (1x England)
+* S494P (3x USA, 1x each England, Spain, India, Sweden)
+* Y495N (1x Luxembourg)
+* V503F (1x USA)
 
 First, let's output the effects of these mutations in our summary mutation table.
 
