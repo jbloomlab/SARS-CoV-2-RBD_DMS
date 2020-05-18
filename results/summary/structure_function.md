@@ -635,10 +635,11 @@ and direct or near-direct ACE2 contact positions.
 
 For yeast display validation of beneficial mutation effects and
 expression/binding tradeoff, I would propose to validate the following
-six mutations:
+seven mutations:
 
 | mutation | RBD\_site | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_lib1 | expr\_lib2 | expr\_avg | SARS1\_indicator | RaTG13\_indicator | GDPangolin\_indicator |
 | :------- | --------: | ---------: | ---------: | --------: | ---------: | ---------: | --------: | :--------------- | :---------------- | :-------------------- |
+| N439K    |       109 |       0.11 |     \-0.02 |      0.04 |     \-0.33 |     \-0.36 |    \-0.35 |                  | ^                 |                       |
 | Q498H    |       168 |       0.30 |       0.31 |      0.30 |       0.15 |       0.16 |      0.16 |                  |                   | \#                    |
 | Q498Y    |       168 |       0.01 |       0.30 |      0.16 |       0.19 |     \-0.07 |      0.06 | o                | ^                 |                       |
 | N501D    |       171 |     \-2.40 |     \-2.44 |    \-2.42 |       0.09 |       0.07 |      0.08 |                  | ^                 |                       |
@@ -647,15 +648,16 @@ six mutations:
 | G502D    |       172 |     \-4.29 |     \-4.03 |    \-4.16 |       0.62 |       0.66 |      0.64 |                  |                   |                       |
 
 For pseudovirus growth assays, I would propose to validate the following
-six mutations:
+seven mutations:
 
 | mutation | RBD\_site | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_lib1 | expr\_lib2 | expr\_avg | SARS1\_indicator | RaTG13\_indicator | GDPangolin\_indicator |
 | :------- | --------: | ---------: | ---------: | --------: | ---------: | ---------: | --------: | :--------------- | :---------------- | :-------------------- |
+| C432D    |       102 |     \-4.57 |     \-4.84 |    \-4.71 |     \-3.27 |     \-3.02 |    \-3.14 |                  |                   |                       |
+| N439K    |       109 |       0.11 |     \-0.02 |      0.04 |     \-0.33 |     \-0.36 |    \-0.35 |                  | ^                 |                       |
 | L455Y    |       125 |     \-1.48 |     \-1.52 |    \-1.50 |     \-0.16 |     \-0.03 |    \-0.10 | o                |                   |                       |
-| A475P    |       145 |     \-1.52 |     \-1.72 |    \-1.62 |     \-1.44 |     \-1.34 |    \-1.39 | o                |                   |                       |
 | Q498Y    |       168 |       0.01 |       0.30 |      0.16 |       0.19 |     \-0.07 |      0.06 | o                | ^                 |                       |
 | N501D    |       171 |     \-2.40 |     \-2.44 |    \-2.42 |       0.09 |       0.07 |      0.08 |                  | ^                 |                       |
-| N501Q    |       171 |     \-0.09 |     \-0.04 |    \-0.06 |       0.02 |       0.26 |      0.14 |                  |                   |                       |
+| N501F    |       171 |       0.22 |       0.36 |      0.29 |     \-0.03 |     \-0.16 |    \-0.10 |                  |                   |                       |
 | G502D    |       172 |     \-4.29 |     \-4.03 |    \-4.16 |       0.62 |       0.66 |      0.64 |                  |                   |                       |
 
 ## Output for dms-view visualization of mutational effects
