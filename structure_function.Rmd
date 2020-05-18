@@ -495,16 +495,16 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_SARS-2-R
 
 Based on heatmap gazing along with structures and prior literature, I would propose the following validation mutants. As you can see, several positions are prioritized in these panels -- sites 455, and 501 are positions of interest from prior literature on SARS-CoV-1 adaptation; site 502 is the second most constrained position w.r.t. to binding in our dataset, with the most sensitive position (G431) being more constrained by stability/expression affects than binding itself per se. Site 498 exhibits lots of differences amongst the relevant strains I've been looking at (SARS-CoV-2 versus -1, RaTG13, GD-Pangolin) and has large variation in functional effects of mutation, and so is clearly a position of interest for our data. All of these positions are in the RBM and direct or near-direct ACE2 contact positions.
 
-For yeast display validation of beneficial mutation effects and expression/binding tradeoff, I would propose to validate the following six mutations:
+For yeast display validation of beneficial mutation effects and expression/binding tradeoff, I would propose to validate the following seven mutations:
 
 ```{r yeast_display_validation_table, echo=FALSE}
-kable(mutants[mutation %in% c("Q498Y","Q498H","N501D","N501T","N501F","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
+kable(mutants[mutation %in% c("N439K","Q498Y","Q498H","N501D","N501T","N501F","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
 ```
 
-For pseudovirus growth assays, I would propose to validate the following six mutations:
+For pseudovirus growth assays, I would propose to validate the following seven mutations:
 
 ```{r  pseudovirus_validation_table, echo=FALSE}
-kable(mutants[mutation %in% c("L455Y","A475P","Q498Y","N501D","N501Q","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
+kable(mutants[mutation %in% c("C432D","N439K","L455Y","Q498Y","N501D","N501F","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
 ```
 
 
