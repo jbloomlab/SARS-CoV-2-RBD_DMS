@@ -10,7 +10,9 @@ editor_options:
 
 ---
 
-This notebook analyzes the mutational tolerance of residues within eptiopes of different monoclonal antibodies 
+This notebook analyzes the mutational tolerance of residues within epitopes of different monoclonal antibodies 
+
+## Setup
 
 ```{r setup, message=FALSE, warning=FALSE, error=FALSE}
 require("knitr")
@@ -44,8 +46,6 @@ Session info for reproducing environment:
 sessionInfo()
 ```
 
-## Setup
-
 Read in tables of variant effects on binding and expression for single mutations to the SARS-CoV-2 RBD and for homolog RBDs.
 
 ```{r read_data}
@@ -67,11 +67,11 @@ RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 
 ```
 
-## Compare mutational tolerance of antibody epitopes
+## Compare mutational tolerance within antibody epitopes
 
-We have mapped antibody epitope residues for seven mAbs with published structures -- six of the seven mAbs were raised against SARS-CoV-1, but at least two of them cross-react with SARS-CoV-2 (CR3022, VHH72), and more generally, they highlight the types of epitopes that SARS-related CoV RBDs can induce. The seventh, B38, was isolated from a SARS-CoV-2 convalescent patient. I expect many more SARS-CoV-2 raised mAbs will be upcoming, and we can add them in as needed, including preprint structures (e.g. S309) whose structures are not yet publically available.
+We have mapped antibody epitope residues for seven mAbs with published structures -- six of the seven mAbs were raised against SARS-CoV-1, but at least two of them cross-react with SARS-CoV-2 (CR3022, VHH72), and more generally, they highlight the types of epitopes that SARS-related CoV RBDs can induce. The seventh, B38, was isolated from a SARS-CoV-2 convalescent patient. I expect many more SARS-CoV-2 raised mAbs will be upcoming, and we can add them in as needed, including preprint structures (e.g. S309) whose structures are not yet publicly available.
 
-Let's compare patterns of mutational sensitiivity within each of the mAb epitopes, and ocmpare to ACE2 contact residues for reference. (We may also need to account for epitopes like CR3022 and VHH72, where the epitope is partially overlapping with residues that make intra/inter-protomer contacts within full Spike. Perhaps analysis of natrual sequence variation can help here?) Below, we output violin plots for individual mutational effects at sites within each epitope (top row), and for the average mutational effect per site for sites within each epitope (bottom row).
+Let's compare patterns of mutational sensitivity within each of the mAb epitopes, and compare to ACE2 contact residues for reference. (We may also need to account for epitopes like CR3022 and VHH72, where the epitope is partially overlapping with residues that make intra/inter-protomer contacts within full Spike. Perhaps analysis of natrual sequence variation can help here?) Below, we output violin plots for individual mutational effects at sites within each epitope (top row), and for the average mutational effect per site for sites within each epitope (bottom row).
 
 
 ```{r violin_plot_epitope_mut_effects, fig.width=9, fig.height=6, fig.align="center",dpi=300,dev="png",echo=F}
@@ -87,11 +87,11 @@ mutants_CR3022 <- mutants[SARS2_site %in% RBD_sites[epitope_CR3022==T,site_SARS2
 
 mutants_epitope <- rbind(mutants_ACE2,mutants_B38,mutants_80R,mutants_m396,mutants_F26G19,mutants_S230,mutants_VHH72,mutants_CR3022);mutants_epitope$epitope <- factor(mutants_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022"))
 
-p1 <- ggplot(mutants_epitope[mutant!="*" & mutant!=wildtype,],aes(x=epitope,y=bind_avg))+
+p1 <- ggplot(mutants_epitope[mutant!="*" & mutant!=wildtype & !is.na(bind_avg),],aes(x=epitope,y=bind_avg))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   xlab("epitope")+ylab("delta_log10Ka,app (binding)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
 
-p2 <- ggplot(mutants_epitope[mutant!="*" & mutant!=wildtype,],aes(x=epitope,y=expr_avg))+
+p2 <- ggplot(mutants_epitope[mutant!="*" & mutant!=wildtype & !is.na(expr_avg),],aes(x=epitope,y=expr_avg))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   xlab("epitope")+ylab("delta_meanF (expression)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
 
@@ -120,7 +120,9 @@ grid.arrange(p1,p2,p3,p4,ncol=2)
 
 ```
 
-We can see for the first 5 antibodies, all of which bind epitopes mostly or fully within the RBM, that epitope sites exhibit mutational constraint with regards to binding (though not as much constraint as on the ACE2-contact residues themselves). There is *perhaps* some visual variation among antibody epitopes in the severity of the average mutational effect to epitope contact positions. (However, statistically, there is not variation in the median effect of mutatioins on binding in these five epitopes, Kruskal-Wallis ANOVA P-value `r round(kruskal.test(mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),bind_avg] ~ mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),epitope])$p.value,digits=3)`). The average mutation in these RBM motif epitope sites incurs a ~0.5-0.6 reduction in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is likely meaningful (more extreme than SARS-CoV-1 reduction in affinity (0.25 log10Ka uniits), on par with LYRa11 (0.5 log10Ka units) which can still promote huACE2-mediated cellular entry, but with reduced quantitative in vitro infectivity according to Letko et al. 2020). Furthermore, sites in B38 and S230 epitopes might exhibit slightly higher mutational constraint than those in the other RBM-directed mAbs, though these differences may be minor -- and more broadly, of course, we don't know which positions are part of the "functional epitope" and therefore which mutations in the epitope would actually confer Ab escape. S230 and B38 bind overlapping but distinct sets of RBM residues, illustrated on `dms-view` [here for S230](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=415%2C416%2C417%2C420%2C421%2C454%2C455%2C456%2C457%2C458%2C459%2C460%2C473%2C474%2C475%2C476%2C477%2C485%2C486%2C487%2C488%2C489) and [here for B38](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=403%2C405%2C406%2C409%2C415%2C416%2C417%2C420%2C421%2C453%2C455%2C456%2C457%2C458%2C459%2C460%2C473%2C474%2C475%2C476%2C484%2C486%2C487%2C489%2C490%2C492%2C493%2C495%2C496%2C498%2C500%2C501%2C502%2C505). Both bind the "inner surface" of the RBM lobe containig the disulfide-stabilized loop, but B38 contains more extensive sets of contacts through the medial and other lateral edge of the RBM saddle, while S230 only contacts this lobe. (Should re-check the S230 paper, S230 I believe binds "RBD down" and may make contacts to other Spike subunits). Taken together, it seems that RBM-directed antibodies do target epitopes that are mutationally constrained, though mutations that have no or positive effects on ACE2-binding affinity are certainly present, and further study is needed! Also suggests more constraint is possible by honing in a more focused response on the key ACE2 contact residues, which are more constrained than the average epitope position.
+We can see for the first 5 antibodies, all of which bind epitopes mostly or fully within the RBM, that epitope sites exhibit mutational constraint with regards to binding (though not as much constraint as on the ACE2-contact residues themselves). There is *perhaps* some visual variation among antibody epitopes in the severity of the average mutational effect to epitope contact positions. (However, statistically, there is not variation in the median effect of mutations on binding in these five epitopes, Kruskal-Wallis ANOVA P-value `r round(kruskal.test(mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),bind_avg] ~ mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),epitope])$p.value,digits=3)`). The average mutation in these RBM motif epitope sites incurs a ~0.5-0.6 reduction in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is likely meaningful (more extreme than SARS-CoV-1 reduction in affinity (0.25 log10Ka uniits), on par with LYRa11 (0.5 log10Ka units) which can still promote huACE2-mediated cellular entry, but with reduced quantitative in vitro infectivity according to Letko et al. 2020). 
+
+Furthermore, sites in B38 and S230 epitopes might exhibit slightly higher mutational constraint than those in the other RBM-directed mAbs, though these differences may be minor -- and more broadly, of course, we don't know which positions are part of the "functional epitope" and therefore which mutations in the epitope would actually confer Ab escape. S230 and B38 bind overlapping but distinct sets of RBM residues, illustrated on `dms-view` [here for S230](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=415%2C416%2C417%2C420%2C421%2C454%2C455%2C456%2C457%2C458%2C459%2C460%2C473%2C474%2C475%2C476%2C477%2C485%2C486%2C487%2C488%2C489) and [here for B38](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=403%2C405%2C406%2C409%2C415%2C416%2C417%2C420%2C421%2C453%2C455%2C456%2C457%2C458%2C459%2C460%2C473%2C474%2C475%2C476%2C484%2C486%2C487%2C489%2C490%2C492%2C493%2C495%2C496%2C498%2C500%2C501%2C502%2C505). Both bind the "inner surface" of the RBM lobe containig the disulfide-stabilized loop, but B38 contains more extensive sets of contacts through the medial and other lateral edge of the RBM saddle, while S230 only contacts this lobe. (Should re-check the S230 paper, S230 I believe binds "RBD down" and may make contacts to other Spike subunits). Taken together, it seems that RBM-directed antibodies do target epitopes that are mutationally constrained, though mutations that have no large effect or positive effects on ACE2-binding affinity are certainly present, and further study is needed! Also suggests more constraint is possible by honing in a more focused response on the key ACE2 contact residues, which are more constrained than the average epitope position even for epitopes that overlap ACE2 contact residues.
 
 The last two antibodies, VHH72 and CR3022, bind epitopes fully or mostly within the "core" RBD, meaning mutational effects on ACE2 binding are relatively minor -- however, these epitopes do exhibit constraint in terms of mutational effects on RBD expression/stability, with average mutational defects of ~0.5 log-MFI units, which is substantial relative to the tight range of expression seen among the panel of RBD homologs. 
 
@@ -175,13 +177,12 @@ p6 <- ggplot(mutants_epitope[mutant!="*" & epitope=="S230",],aes(SARS2_site,muta
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
 
-
-grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2)
+grid.arrange(p1,p2,p3,p4,p5,p6,nrow=2,widths=c(1.2,1.7,1.3),heights=c(1,1))
 ```
 
 To put constraint on epitopes in context, let's look at the fraction of mutations within each epitope that are compatible with two levels of affinity -- that of SARS-CoV-1, the lowest known affinity capable of mediating human infectivity, and LYRa11, which can promote huACE2-mediated cellular infection in cell culture, though at reduced infectivity compared to e.g. SARS-CoV-1 RBD.
 
-```{r table affinity cutoffs}
+```{r table affinity cutoffs, echo=F}
 epitopes_table <- data.frame(epitope=unique(mutants_epitope$epitope))
 for(i in 1:nrow(epitopes_table)){
   epitopes_table$median_bind[i] <- median(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*",bind_avg],na.rm=T)
@@ -190,13 +191,13 @@ for(i in 1:nrow(epitopes_table)){
   epitopes_table$frac_LYRa11[i] <- nrow(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*" & bind_avg > homologs[homolog=="LYRa11",bind_avg],])/nrow(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*",])
 }
 
-kable(epitopes_table, digits=2, col.names=c("epitope","median delta_log<sub>10</sub>(*K*<sub>A,app</sub>)","median delta_log-fluorescence","fraction > SARS-CoV-1 affinity","fraction > LYRa11 affinity"))
+kable(epitopes_table, digits=2, col.names=c("epitope","median delta_log<sub>10</sub>(*K*<sub>A,app</sub>)","median delta_log-fluorescence","fraction muts > SARS-CoV-1 affinity","fraction muts > LYRa11 affinity"))
 
 ```
 
 ## Comparison to natural sequence diversity
 
-Let's compare our mutational constraint on antibody epitopes to natural diversity in different antibody epitopes from an alignment of sarbecovirus RBDs. First, we read in an alignment of RBD amino acid sequences from across the sarbecovirus clade (noting that many of these sequences are so-called "Clade 2" sequences, which have not been shown to bind human or any other ACE2 -- so whether they evolve under constraint for ACE2-binding, at this point, is unclear! Bat ACE2 is also under elevated positive selection, so these Clade 2 sequences could be adapted to "odd" ACE2s within bat hosts, or who knows what...). We then compute the entropy of each alignment position, and compare the site-wise entropy of sites in each antibody epitope.
+Let's compare our mutational constraint on antibody epitopes to natural diversity in different antibody epitopes from an alignment of sarbecovirus RBDs. We read in an alignment of RBD amino acid sequences from across the sarbecovirus clade (noting that many of these sequences are so-called "Clade 2" sequences, which have not been shown to bind human or any other ACE2 -- so whether they evolve under constraint for ACE2-binding, at this point, is unclear! Bat ACE2 is also under elevated positive selection, so these Clade 2 sequences could be adapted to "odd" ACE2s within bat hosts, or who knows what...). We then compute the entropy of each alignment position, and compare the site-wise entropy/number of effective amino acids (N<sub>eff</sub>) of sites in each antibody epitope.
 
 We see that epitopes exhibit the least natural sequence variation for the core-RBD mAbs, VHH72 and CR3022. Among the RBM-directed mAbs, 80R seems to bind sites that are more variable across the sarbecovirus clade.
 
@@ -224,8 +225,6 @@ sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,si
 ggplot(sites_epitope,aes(x=epitope,y=Neff))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   xlab("epitope")+ylab("average N_eff per epitope site")+theme(axis.text.x=element_text(angle=-45,hjust=0))
-
-
 
 ```
 

@@ -4,7 +4,9 @@ Tyler Starr
 5/12/2020
 
 This notebook analyzes the mutational tolerance of residues within
-eptiopes of different monoclonal antibodies
+epitopes of different monoclonal antibodies
+
+## Setup
 
 ``` r
 require("knitr")
@@ -77,8 +79,6 @@ sessionInfo()
     ## [37] assertthat_0.2.1 colorspace_1.4-1 stringi_1.4.3    lazyeval_0.2.2  
     ## [41] munsell_0.5.0    broom_0.5.2      crayon_1.3.4
 
-## Setup
-
 Read in tables of variant effects on binding and expression for single
 mutations to the SARS-CoV-2 RBD and for homolog RBDs.
 
@@ -99,7 +99,7 @@ RBD_sites[,max_expr := max(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",expr_avg],na.rm=T),by=site_SARS2]
 ```
 
-## Compare mutational tolerance of antibody epitopes
+## Compare mutational tolerance within antibody epitopes
 
 We have mapped antibody epitope residues for seven mAbs with published
 structures – six of the seven mAbs were raised against SARS-CoV-1, but
@@ -108,11 +108,10 @@ more generally, they highlight the types of epitopes that SARS-related
 CoV RBDs can induce. The seventh, B38, was isolated from a SARS-CoV-2
 convalescent patient. I expect many more SARS-CoV-2 raised mAbs will be
 upcoming, and we can add them in as needed, including preprint
-structures (e.g. S309) whose structures are not yet publically
-available.
+structures (e.g. S309) whose structures are not yet publicly available.
 
-Let’s compare patterns of mutational sensitiivity within each of the mAb
-epitopes, and ocmpare to ACE2 contact residues for reference. (We may
+Let’s compare patterns of mutational sensitivity within each of the mAb
+epitopes, and compare to ACE2 contact residues for reference. (We may
 also need to account for epitopes like CR3022 and VHH72, where the
 epitope is partially overlapping with residues that make
 intra/inter-protomer contacts within full Spike. Perhaps analysis of
@@ -120,10 +119,6 @@ natrual sequence variation can help here?) Below, we output violin plots
 for individual mutational effects at sites within each epitope (top
 row), and for the average mutational effect per site for sites within
 each epitope (bottom row).
-
-    ## Warning: Removed 4 rows containing non-finite values (stat_ydensity).
-
-    ## Warning: Removed 4 rows containing non-finite values (stat_summary).
 
 <img src="antibody_epitopes_files/figure-gfm/violin_plot_epitope_mut_effects-1.png" style="display: block; margin: auto;" />
 
@@ -133,7 +128,7 @@ constraint with regards to binding (though not as much constraint as on
 the ACE2-contact residues themselves). There is *perhaps* some visual
 variation among antibody epitopes in the severity of the average
 mutational effect to epitope contact positions. (However, statistically,
-there is not variation in the median effect of mutatioins on binding in
+there is not variation in the median effect of mutations on binding in
 these five epitopes, Kruskal-Wallis ANOVA P-value 0.28). The average
 mutation in these RBM motif epitope sites incurs a \~0.5-0.6 reduction
 in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is
@@ -141,6 +136,7 @@ likely meaningful (more extreme than SARS-CoV-1 reduction in affinity
 (0.25 log10Ka uniits), on par with LYRa11 (0.5 log10Ka units) which can
 still promote huACE2-mediated cellular entry, but with reduced
 quantitative in vitro infectivity according to Letko et al. 2020).
+
 Furthermore, sites in B38 and S230 epitopes might exhibit slightly
 higher mutational constraint than those in the other RBM-directed mAbs,
 though these differences may be minor – and more broadly, of course, we
@@ -158,10 +154,11 @@ while S230 only contacts this lobe. (Should re-check the S230 paper,
 S230 I believe binds “RBD down” and may make contacts to other Spike
 subunits). Taken together, it seems that RBM-directed antibodies do
 target epitopes that are mutationally constrained, though mutations that
-have no or positive effects on ACE2-binding affinity are certainly
-present, and further study is needed\! Also suggests more constraint is
-possible by honing in a more focused response on the key ACE2 contact
-residues, which are more constrained than the average epitope position.
+have no large effect or positive effects on ACE2-binding affinity are
+certainly present, and further study is needed\! Also suggests more
+constraint is possible by honing in a more focused response on the key
+ACE2 contact residues, which are more constrained than the average
+epitope position even for epitopes that overlap ACE2 contact residues.
 
 The last two antibodies, VHH72 and CR3022, bind epitopes fully or mostly
 within the “core” RBD, meaning mutational effects on ACE2 binding are
@@ -184,42 +181,31 @@ mediating human infectivity, and LYRa11, which can promote
 huACE2-mediated cellular infection in cell culture, though at reduced
 infectivity compared to e.g. SARS-CoV-1 RBD.
 
-``` r
-epitopes_table <- data.frame(epitope=unique(mutants_epitope$epitope))
-for(i in 1:nrow(epitopes_table)){
-  epitopes_table$median_bind[i] <- median(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*",bind_avg],na.rm=T)
-  epitopes_table$median_expr[i] <- median(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*",expr_avg],na.rm=T)
-  epitopes_table$frac_SARS_CoV_1[i] <- nrow(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*" & bind_avg > homologs[homolog=="SARS-CoV-1",bind_avg],])/nrow(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*",])
-  epitopes_table$frac_LYRa11[i] <- nrow(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*" & bind_avg > homologs[homolog=="LYRa11",bind_avg],])/nrow(mutants_epitope[epitope==epitopes_table$epitope[i] & mutant!=wildtype & mutant!="*",])
-}
-
-kable(epitopes_table, digits=2, col.names=c("epitope","median delta_log<sub>10</sub>(*K*<sub>A,app</sub>)","median delta_log-fluorescence","fraction > SARS-CoV-1 affinity","fraction > LYRa11 affinity"))
-```
-
-| epitope | median delta\_log<sub>10</sub>(*K*<sub>A,app</sub>) | median delta\_log-fluorescence | fraction \> SARS-CoV-1 affinity | fraction \> LYRa11 affinity |
-| :------ | --------------------------------------------------: | -----------------------------: | ------------------------------: | --------------------------: |
-| ACE2    |                                              \-0.98 |                         \-0.10 |                            0.21 |                        0.34 |
-| B38     |                                              \-0.67 |                         \-0.36 |                            0.31 |                        0.42 |
-| 80R     |                                              \-0.56 |                         \-0.20 |                            0.37 |                        0.48 |
-| m396    |                                              \-0.56 |                         \-0.35 |                            0.35 |                        0.48 |
-| F26G19  |                                              \-0.55 |                         \-0.44 |                            0.35 |                        0.49 |
-| S230    |                                              \-0.65 |                         \-0.44 |                            0.33 |                        0.44 |
-| VHH72   |                                              \-0.16 |                         \-0.55 |                            0.61 |                        0.72 |
-| CR3022  |                                              \-0.14 |                         \-0.59 |                            0.63 |                        0.73 |
+| epitope | median delta\_log<sub>10</sub>(*K*<sub>A,app</sub>) | median delta\_log-fluorescence | fraction muts \> SARS-CoV-1 affinity | fraction muts \> LYRa11 affinity |
+| :------ | --------------------------------------------------: | -----------------------------: | -----------------------------------: | -------------------------------: |
+| ACE2    |                                              \-0.98 |                         \-0.10 |                                 0.21 |                             0.34 |
+| B38     |                                              \-0.67 |                         \-0.36 |                                 0.31 |                             0.42 |
+| 80R     |                                              \-0.56 |                         \-0.20 |                                 0.37 |                             0.48 |
+| m396    |                                              \-0.56 |                         \-0.35 |                                 0.35 |                             0.48 |
+| F26G19  |                                              \-0.55 |                         \-0.44 |                                 0.35 |                             0.49 |
+| S230    |                                              \-0.65 |                         \-0.44 |                                 0.33 |                             0.44 |
+| VHH72   |                                              \-0.16 |                         \-0.55 |                                 0.61 |                             0.72 |
+| CR3022  |                                              \-0.14 |                         \-0.59 |                                 0.63 |                             0.73 |
 
 ## Comparison to natural sequence diversity
 
 Let’s compare our mutational constraint on antibody epitopes to natural
 diversity in different antibody epitopes from an alignment of
-sarbecovirus RBDs. First, we read in an alignment of RBD amino acid
-sequences from across the sarbecovirus clade (noting that many of these
-sequences are so-called “Clade 2” sequences, which have not been shown
-to bind human or any other ACE2 – so whether they evolve under
-constraint for ACE2-binding, at this point, is unclear\! Bat ACE2 is
-also under elevated positive selection, so these Clade 2 sequences could
-be adapted to “odd” ACE2s within bat hosts, or who knows what…). We then
-compute the entropy of each alignment position, and compare the
-site-wise entropy of sites in each antibody epitope.
+sarbecovirus RBDs. We read in an alignment of RBD amino acid sequences
+from across the sarbecovirus clade (noting that many of these sequences
+are so-called “Clade 2” sequences, which have not been shown to bind
+human or any other ACE2 – so whether they evolve under constraint for
+ACE2-binding, at this point, is unclear\! Bat ACE2 is also under
+elevated positive selection, so these Clade 2 sequences could be adapted
+to “odd” ACE2s within bat hosts, or who knows what…). We then compute
+the entropy of each alignment position, and compare the site-wise
+entropy/number of effective amino acids (N<sub>eff</sub>) of sites in
+each antibody epitope.
 
 We see that epitopes exhibit the least natural sequence variation for
 the core-RBD mAbs, VHH72 and CR3022. Among the RBM-directed mAbs, 80R
