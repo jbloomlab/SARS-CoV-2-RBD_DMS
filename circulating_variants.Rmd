@@ -39,7 +39,7 @@ if(!file.exists(config$circulating_variants_dir)){
 }
 ```
 Session info for reproducing environment:
-  ```{r print_sessionInfo}
+```{r print_sessionInfo}
 sessionInfo()
 ```
 

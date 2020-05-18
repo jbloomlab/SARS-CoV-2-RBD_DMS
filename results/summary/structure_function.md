@@ -45,7 +45,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 14.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -248,6 +248,14 @@ files is opened:
     create RBD_CA, chain E and name ca
     hide cartoon, RBD_CA; show spheres, RBD_CA
     spectrum b, yellow green blue, RBD_CA
+
+To create a surface representation of the RBD colored by mutational
+tolerance, execute the following commands in a PyMol session with one of
+these output `pdb` files loaded:
+
+    create RBD, chain E
+    hide all; show cartoon, chain A; show surface, RBD
+    spectrum b, red white, RBD
 
 ``` r
 pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")

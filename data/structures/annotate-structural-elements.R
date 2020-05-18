@@ -153,6 +153,13 @@ RBD1_80R_contacts <- binding.site(RBD1_80R, a.inds=atom.select(RBD1_80R, chain="
 sites_alignment$epitope_80R <- F
 sites_alignment[sites_alignment$site_SARS1 %in% RBD1_80R_contacts$resno & !is.na(sites_alignment$site_SARS1),"epitope_80R"] <- T
 
+#B38 bound to SARS2 RBD, pdb 7bz5 (chain A = RBD, chain H+L=Ab)
+RBD2_B38 <- read.pdb(file="data/structures/Ab-bound/B38_7bz5.pdb")
+RBD2_B38_contacts <- binding.site(RBD2_B38, a.inds=atom.select(RBD2_B38, chain="A"), b.inds=atom.select(RBD2_B38, chain=c("H","L")),cutoff=4, hydrogens=F)
+sites_alignment$epitope_B38 <- F
+sites_alignment[sites_alignment$site_SARS2 %in% RBD2_B38_contacts$resno,"epitope_B38"] <- T
+
+
 #annotate positions that are buried with the rest of spike trimer in the RBD down conformations.
 #in pdb 6vsb, we want to identify RBD residues witin 4A from non-RBD resiidues in chains B and/or C, but not A
 STrimer_2 <- clean.pdb(read.pdb(file="data/structures/ACE2-bound/6vsb.pdb"), rm.wat=T, rm.lig=T)
