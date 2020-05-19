@@ -241,16 +241,18 @@ p2 <- ggplot(mutants_temp[!is.na(expr_avg) & RBM==T,],aes(x=clade,y=expr_avg))+
 grid.arrange(p1,p2,nrow=1)
 ```
 
-Also, let's output a table of amino acid variant seen in the SARS-CoV-2 clade and Clade 1 that have large effects on binding -- let's look at mutations with < -0.5 binding effect in the SARS-CoV-2 clade, and <1 in Clade 1. Tables are sorted by homolog (so, the same amino acid can show up multiple times in the table if found in >1 homolog).
+Also, let's output a table of amino acid variant seen in the SARS-CoV-2 clade and Clade 1 that have large effects on binding -- let's look at mutations with < -0.5 binding effect in the SARS-CoV-2 clade, and < -1 in Clade 1. Tables are sorted by homolog (so, the same amino acid can show up multiple times in the table if found in >1 homolog).
 
-We can see that within the SARS-Cov-2 clade, two amino acids found in RaTG13 have deleterious effects on binding. RaTG13 is a bat virus and *does* have reduced human ACE2 affinity in our assay, so these amino acid differences may contribute to that difference. 
+We can see below that within the SARS-Cov-2 clade, two amino acids found in RaTG13 have deleterious effects on binding. RaTG13 is a bat virus and *does* have reduced human ACE2 affinity in our assay, so these amino acid differences may contribute to that difference. 
 
-```{r table_del_states_SARS2_clade}
+```{r table_del_states_SARS2_clade, echo=F}
 kable(mutants_temp[clade %in% c("cladeSARS2") & bind_avg < -0.5,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
 ```
-In Clade 1, even SARS-CoV-1 has some amino acid variants that are deleterious in SARS-CoV-2. We can dig in further to see whether these deleterious SARS-CoV-1 states are truly shifted preferences, versus just offset by other affinity gains at the interface. (And, future DMS in SARS-CoV-1 RBM could address this!) L455 and S494 are "key adaptations" in SARS-CoV-1 (Y442 and D480), according to studies by e.g. Fang Li -- so, should be a lot of prior structural work we can look at to better understand what other RBM/interface residues might be impacting amino acid preferences at these sites between SARS-CoV-1 and 2.
 
-```{r table_del_states_clade_1}
+
+As seen in the table below, in Clade 1, sequences including SARS-CoV-1 have some amino acid variants that are deleterious in SARS-CoV-2. We can dig in further to see whether these deleterious SARS-CoV-1 states are truly shifted preferences, versus just offset by other affinity gains at the interface. (And, future DMS in SARS-CoV-1 RBM could address this!) L455 and S494 are "key adaptations" in SARS-CoV-1 (Y442 and D480), according to studies by e.g. Fang Li -- so, should be a lot of prior structural work we can look at to better understand what other RBM/interface residues might be impacting amino acid preferences at these sites between SARS-CoV-1 and 2.
+
+```{r table_del_states_clade_1, echo=F}
 kable(mutants_temp[clade %in% c("clade1") & bind_avg < -1,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
 ```
 
@@ -312,11 +314,11 @@ kable(homolog_measurements[,.(homolog,bind_lib1,bind_lib2,bind_avg,n_diff,sum_bi
 
 Below, we plot the sum of binding and expression effects versus the number of mutations present in a genotype for RBM residues. Once again, this does not take into account deletions within RBM loops present in Clade2 and Clade3 sequences. (Rationale for using RBM instead of whole RBD, is that Letko et al. showed RBM is the minimal region whose chimera is sufficient to confer a clade 2 or 3 sequence ACE2-mediated entry -- that is, putting the Clade 1 consensus RBM onto a clade 2 or 3 core RBD is sufficient to allow ACE2-mediated cellular entry)
 
-As we probably expected, we can see that the number of differences is a primary determinant of how "deleterious" a sequence is predicted to be -- both for binding and expression -- which probably more than anything else reflects epistasis and shifting preferences in the more distant backgrounds. So, it might be that these predictions work ok for within the SARS-CoV-2 clade where the number of differences is small, but in other clades, the number is just too large. However, maybe within other clades, the *relative* binding predicted from the simple sum of mutational effects is useful? E.g. in Clade 1, we do predict that WIV16 has higher affinity than SARS-CoV-1 or LYRa11, though we don't also successfully predict that SARS-CoV-1 has higher affinity than LYRa11. And within the SARS-CoV-2 clade, GD Pangolin is correctly predicted to have high affinity while RaTG13 is correctly predicted to have lower affinity. 
+As we probably expected, we can see that the number of differences is a primary determinant of how "deleterious" a sequence is predicted to be -- both for binding and expression -- which probably more than anything else reflects epistasis and shifting preferences in the more distant backgrounds. So, it might be that these predictions work ok for within the SARS-CoV-2 clade where the number of differences is small -- for example, within the SARS-CoV-2 clade GD Pangolin is correctly predicted to have high affinity while RaTG13 is correctly predicted to have lower affinity. But in other clades, the number of differences is just too large for the sum to be relevant. However, maybe within other clades, the *relative* binding predicted for one e.g. clade 1 sequence versus another predicted is useful? E.g. in Clade 1, we do predict that WIV16 has higher affinity than SARS-CoV-1 or LYRa11, though we don't also successfully predict that SARS-CoV-1 has higher affinity than LYRa11.
 
 Last, the placement of BM48-31 is quite odd! This says that (besides its deletion), the amino acid states its sampling aren't really any less compatible with huACE2 binding than those sampled in Clade 1? Honestly kind of surprising. But, if we internally also normalize by the sum of expression effects, BM48-31 is also predicted to have higher expression-per-mutation than the Clade1 sequences, which perhaps impacts its interpretation. But overall, this perhaps suggests that BM48-31 is "closer" to ACE2 utilization than Clade 2 sequences. (e.g., maybe it uses ACE2 in bats??)
 
-Here are plots relating sum of mutational effects on binding and expression to each other, to number of differences, and actual binding, for all RBM differences:
+Here are plots relating sum of mutational effects on binding and expression to each other, to number of differences, and actual binding, for all RBM differences. Points are colored by clade: purple (blue?) is SARS-CoV-2 clade sequences, orange (red?) is Clade 1 (SARS-CoV-1 clade), green is Clade 2 (deletions, have not been seen to use ACE2), magenta is clade 3 (Bulgaria and Kenya isolates) (sorry my descriptions of colors are probably wrong :/ let me know if the color scheme is hideous, I've been known to pick terrible colors in the past -- these are the colors I included in our phylogeny figure):
 
 ```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
@@ -328,6 +330,7 @@ plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog
 
 ```
 And the same plots, for only ACE2-contact residue positions:
+
 ```{r predicted_versus_actual_homolog_correlations_contact, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
 plot(homolog_measurements$n_diff_contact,homolog_measurements$sum_bind_contact,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
@@ -338,5 +341,6 @@ plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_contact,col=hom
 
 ```
 
+(What does it look like when we add in the other Clade 1/2/3 sequences that we did not measure, but see where they fall on the predicted binding versus expression plots? Particularly GX Pangolin)
 
 Overall, my intpretation from this table/figures, is that our mutational effects are perhaps useful for predictions of things very similiar to our focal background (e.g. GD Pangolin, circulating strains), but that because of epistasis, mutational preferences are quite different in other sarbecovirus clades, which complicates prediction of ability of unseen RBDs to bind ACE2. (This perhaps can mentally be loosely accounted for by taking into account the total number of amino acid differences and also their effect on expression, but that's a lot of weirdness to normalize for so overall definitely not a direction to push.) These are probably not the figures we'll want to use to communicate this, although I do think this is an interestning conclusion to communicate (that preferences have shifted between SARS-CoV-2 and -1)

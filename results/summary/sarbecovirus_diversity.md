@@ -171,32 +171,34 @@ mutations that we predict to be deleterious for binding human ACE2.
 
 Also, let’s output a table of amino acid variant seen in the SARS-CoV-2
 clade and Clade 1 that have large effects on binding – let’s look at
-mutations with \< -0.5 binding effect in the SARS-CoV-2 clade, and \<1
+mutations with \< -0.5 binding effect in the SARS-CoV-2 clade, and \< -1
 in Clade 1. Tables are sorted by homolog (so, the same amino acid can
 show up multiple times in the table if found in \>1 homolog).
 
-We can see that within the SARS-Cov-2 clade, two amino acids found in
-RaTG13 have deleterious effects on binding. RaTG13 is a bat virus and
+We can see below that within the SARS-Cov-2 clade, two amino acids found
+in RaTG13 have deleterious effects on binding. RaTG13 is a bat virus and
 *does* have reduced human ACE2 affinity in our assay, so these amino
 acid differences may contribute to that difference.
 
-``` r
-kable(mutants_temp[clade %in% c("cladeSARS2") & bind_avg < -0.5,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
-```
+| mutation | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_avg | clade      | homolog                            |
+| :------- | ---------: | ---------: | --------: | --------: | :--------- | :--------------------------------- |
+| R403T    |     \-0.67 |     \-0.71 |    \-0.69 |    \-0.99 | cladeSARS2 | RaTG13\_MN996532                   |
+| Y449F    |     \-1.01 |     \-1.15 |    \-1.08 |    \-0.03 | cladeSARS2 | RaTG13\_MN996532                   |
+| N501D    |     \-2.40 |     \-2.44 |    \-2.42 |      0.08 | cladeSARS2 | RaTG13\_MN996532                   |
+| Y505H    |     \-0.67 |     \-0.76 |    \-0.71 |      0.16 | cladeSARS2 | RaTG13\_MN996532                   |
+| E484V    |     \-0.63 |     \-0.68 |    \-0.65 |    \-0.05 | cladeSARS2 | Pangolin\_GX-P2V\_EPI\_ISL\_410542 |
+| Q493E    |     \-0.56 |     \-0.57 |    \-0.56 |    \-0.02 | cladeSARS2 | Pangolin\_GX-P2V\_EPI\_ISL\_410542 |
 
-| mutation    |  bind\_lib1 |   bind\_lib2 |   bind\_avg |  expr\_avg | clade         | homolog                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| :---------- | ----------: | -----------: | ----------: | ---------: | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R403T       |      \-0.67 |       \-0.71 |      \-0.69 |     \-0.99 | cladeSARS2    | RaTG13\_MN996532                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Y449F       |      \-1.01 |       \-1.15 |      \-1.08 |     \-0.03 | cladeSARS2    | RaTG13\_MN996532                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| N501D       |      \-2.40 |       \-2.44 |      \-2.42 |       0.08 | cladeSARS2    | RaTG13\_MN996532                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| Y505H       |      \-0.67 |       \-0.76 |      \-0.71 |       0.16 | cladeSARS2    | RaTG13\_MN996532                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| E484V       |      \-0.63 |       \-0.68 |      \-0.65 |     \-0.05 | cladeSARS2    | Pangolin\_GX-P2V\_EPI\_ISL\_410542                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| Q493E       |      \-0.56 |       \-0.57 |      \-0.56 |     \-0.02 | cladeSARS2    | Pangolin\_GX-P2V\_EPI\_ISL\_410542                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| In Clade 1, | even SARS-C | oV-1 has som | e amino aci | d variants | that are dele | terious in SARS-CoV-2. We can dig in further to see whether these deleterious SARS-CoV-1 states are truly shifted preferences, versus just offset by other affinity gains at the interface. (And, future DMS in SARS-CoV-1 RBM could address this\!) L455 and S494 are “key adaptations” in SARS-CoV-1 (Y442 and D480), according to studies by e.g. Fang Li – so, should be a lot of prior structural work we can look at to better understand what other RBM/interface residues might be impacting amino acid preferences at these sites between SARS-CoV-1 and 2. |
-
-``` r
-kable(mutants_temp[clade %in% c("clade1") & bind_avg < -1,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
-```
+As seen in the table below, in Clade 1, sequences including SARS-CoV-1
+have some amino acid variants that are deleterious in SARS-CoV-2. We can
+dig in further to see whether these deleterious SARS-CoV-1 states are
+truly shifted preferences, versus just offset by other affinity gains at
+the interface. (And, future DMS in SARS-CoV-1 RBM could address this\!)
+L455 and S494 are “key adaptations” in SARS-CoV-1 (Y442 and D480),
+according to studies by e.g. Fang Li – so, should be a lot of prior
+structural work we can look at to better understand what other
+RBM/interface residues might be impacting amino acid preferences at
+these sites between SARS-CoV-1 and 2.
 
 | mutation | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_avg | clade  | homolog                |
 | :------- | ---------: | ---------: | --------: | --------: | :----- | :--------------------- |
@@ -307,15 +309,15 @@ primary determinant of how “deleterious” a sequence is predicted to be –
 both for binding and expression – which probably more than anything else
 reflects epistasis and shifting preferences in the more distant
 backgrounds. So, it might be that these predictions work ok for within
-the SARS-CoV-2 clade where the number of differences is small, but in
-other clades, the number is just too large. However, maybe within other
-clades, the *relative* binding predicted from the simple sum of
-mutational effects is useful? E.g. in Clade 1, we do predict that WIV16
+the SARS-CoV-2 clade where the number of differences is small – for
+example, within the SARS-CoV-2 clade GD Pangolin is correctly predicted
+to have high affinity while RaTG13 is correctly predicted to have lower
+affinity. But in other clades, the number of differences is just too
+large for the sum to be relevant. However, maybe within other clades,
+the *relative* binding predicted for one e.g. clade 1 sequence versus
+another predicted is useful? E.g. in Clade 1, we do predict that WIV16
 has higher affinity than SARS-CoV-1 or LYRa11, though we don’t also
 successfully predict that SARS-CoV-1 has higher affinity than LYRa11.
-And within the SARS-CoV-2 clade, GD Pangolin is correctly predicted to
-have high affinity while RaTG13 is correctly predicted to have lower
-affinity.
 
 Last, the placement of BM48-31 is quite odd\! This says that (besides
 its deletion), the amino acid states its sampling aren’t really any less
@@ -329,11 +331,22 @@ uses ACE2 in bats??)
 
 Here are plots relating sum of mutational effects on binding and
 expression to each other, to number of differences, and actual binding,
-for all RBM differences:
+for all RBM differences. Points are colored by clade: purple (blue?) is
+SARS-CoV-2 clade sequences, orange (red?) is Clade 1 (SARS-CoV-1 clade),
+green is Clade 2 (deletions, have not been seen to use ACE2), magenta is
+clade 3 (Bulgaria and Kenya isolates) (sorry my descriptions of colors
+are probably wrong :/ let me know if the color scheme is hideous, I’ve
+been known to pick terrible colors in the past – these are the colors I
+included in our phylogeny figure):
 
 <img src="sarbecovirus_diversity_files/figure-gfm/predicted_versus_actual_homolog_correlations_RBM-1.png" style="display: block; margin: auto;" />
 And the same plots, for only ACE2-contact residue positions:
+
 <img src="sarbecovirus_diversity_files/figure-gfm/predicted_versus_actual_homolog_correlations_contact-1.png" style="display: block; margin: auto;" />
+
+(What does it look like when we add in the other Clade 1/2/3 sequences
+that we did not measure, but see where they fall on the predicted
+binding versus expression plots? Particularly GX Pangolin)
 
 Overall, my intpretation from this table/figures, is that our mutational
 effects are perhaps useful for predictions of things very similiar to
