@@ -47,3 +47,5 @@ workflow:
 11. [Characterization of amino acid variants in sequenced SARS-CoV-2 isolates](circulating_variants.md).
 
 12. [Analysis of mutational tolerance within RBD antibody epitopes](antibody_epitopes.md)
+
+13. [Analysis of amino acid diversity in natural sarbecovirus isolates](sarbecovirus_diversity.md)
