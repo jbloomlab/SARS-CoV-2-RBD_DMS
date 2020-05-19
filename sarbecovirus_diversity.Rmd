@@ -73,7 +73,7 @@ Read in an alignment of sarbecovirus RBD sequences. Many of these sequences are 
 
 Within each of these alignments, we compute the entropy of the alignment column (and the related value effective amino acids, (N<sub>eff</sub>), and compare this value to the average effect of mutations at the site from our DMS data for binding and expression.
 
-```{r natural_diversity_v_mean_effects, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png",echo=F}
+```{r natural_diversity_v_mean_effects, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
 alignment <- read.fasta(file='data/alignments/RBDs_aligned.fasta')
 #remove columns that is gap in the SARS-CoV-2 sequence (only one is a single A insertion in the BM48-31 sequence)
 alignment$ali <- alignment$ali[,which(alignment$ali[1,]!="-")]
@@ -116,7 +116,7 @@ How do the effects of individual amino acid differences among these homologs com
 
 Overall, we see that the amino acid variants that accumulated in each sarbecovirus clade are less deleterious for binding and expression than the overall DFE, suggesting that overall, the amino acid variation sampled in nature is subjected to somoe purifying selection relative to the overall DFE for these phenotypes (or other phenotypes that correlate with these measurements). I am a bit surprised to see that the amino acid variants sampled in Clades 2 and 3 are not skewed toward deleterious amino acids more than we see here! Since these have not been shown to bind ACE2s, it is unclear whether they are operating under the same selective constraint as sequences in Clade 1 and the SARS-CoV-2 clade. It is important to note that this analysis is *not* taking into account two large deletions in the RBM loops that are present in these Clade 2+3 sequences, which may explain their reduced affinity for human ACE2.
 
-```{r homolog_amino_acid_variants, fig.width=10, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homolog_amino_acid_variants, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
 #build up a list of amino acid variants observed in sequences from each of the clades
 clade1_subs <- c()
 clade1_subs_variant <- c()
@@ -221,7 +221,7 @@ Let's make the same plots, but focusing only on residues within the RBM. We do h
 
 Indeed, perhaps more aligned with what I expected to see above, among RBM mutations (excluding indels which we are not incorporating), Clade 2 sequences (unclear for Clade 3?) may appear to fix more amino acid mutations that we predict to be deleterious for binding human ACE2.
 
-```{r homolog_amino_acid_variants_RBM, fig.width=10, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homolog_amino_acid_variants_RBM, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
 for(i in 1:nrow(mutants_temp)){
   if(mutants_temp$SARS2_site[i] %in% RBD_sites[RBM==T,site_SARS2]){
     mutants_temp$RBM[i] <- as.logical(TRUE)
@@ -320,7 +320,7 @@ Last, the placement of BM48-31 is quite odd! This says that (besides its deletio
 
 Here are plots relating sum of mutational effects on binding and expression to each other, to number of differences, and actual binding, for all RBM differences. Points are colored by clade: purple (blue?) is SARS-CoV-2 clade sequences, orange (red?) is Clade 1 (SARS-CoV-1 clade), green is Clade 2 (deletions, have not been seen to use ACE2), magenta is clade 3 (Bulgaria and Kenya isolates) (sorry my descriptions of colors are probably wrong :/ let me know if the color scheme is hideous, I've been known to pick terrible colors in the past -- these are the colors I included in our phylogeny figure):
 
-```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png",echo=F}
+```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
 plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of mutational effects on binding",cex=2)
 plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of mutational effects on expression",cex=2)
@@ -331,7 +331,7 @@ plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog
 ```
 And the same plots, for only ACE2-contact residue positions:
 
-```{r predicted_versus_actual_homolog_correlations_contact, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png",echo=F}
+```{r predicted_versus_actual_homolog_correlations_contact, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
 plot(homolog_measurements$n_diff_contact,homolog_measurements$sum_bind_contact,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
 plot(homolog_measurements$n_diff_contact,homolog_measurements$sum_expr_contact,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
@@ -344,3 +344,146 @@ plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_contact,col=hom
 (What does it look like when we add in the other Clade 1/2/3 sequences that we did not measure, but see where they fall on the predicted binding versus expression plots? Particularly GX Pangolin)
 
 Overall, my intpretation from this table/figures, is that our mutational effects are perhaps useful for predictions of things very similiar to our focal background (e.g. GD Pangolin, circulating strains), but that because of epistasis, mutational preferences are quite different in other sarbecovirus clades, which complicates prediction of ability of unseen RBDs to bind ACE2. (This perhaps can mentally be loosely accounted for by taking into account the total number of amino acid differences and also their effect on expression, but that's a lot of weirdness to normalize for so overall definitely not a direction to push.) These are probably not the figures we'll want to use to communicate this, although I do think this is an interestning conclusion to communicate (that preferences have shifted between SARS-CoV-2 and -1)
+
+
+## Epistasis is library double mutants and relation to natural diversity patterns
+
+Do we see certain positions enriched for epistatic deviations in our (sparse) sampling of double mutants? How do these positions map to the positions we see varying in Clade1 versus SARS-CoV-2 clade sequences? (This analysis might make more sense ported over to structure_function, esp if it doesn't end up linking up with natural diversity patterns)
+
+First, we take our barcode measurements for double mutants, and add to the data table the component single mutation effect scores.
+
+```{r pairwise_deviations}
+#read in per-bc func scores
+bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response, baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]
+bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, variant_class, aa_substitutions, n_aa_substitutions)]
+
+bc_dbl <- merge(bc_bind[n_aa_substitutions==2 & variant_class == ">1 nonsynonymous",], bc_expr[n_aa_substitutions==2 & variant_class == ">1 nonsynonymous",], sort=F)
+
+#make columns breaking up the two substitutions
+bc_dbl[,mut1 := strsplit(aa_substitutions, split=" ")[[1]][1], by=c("library","barcode")]
+bc_dbl[,mut2 := strsplit(aa_substitutions, split=" ")[[1]][2], by=c("library","barcode")]
+
+#change mutations to be Spike numbering from RBD numbering
+bc_dbl[,mut1 := mutants[mutation_RBD==mut1,mutation],by=c("library","barcode")]
+bc_dbl[,mut2 := mutants[mutation_RBD==mut2,mutation],by=c("library","barcode")]
+
+#pull single mutant effects into table
+bc_dbl[,c("mut1_bind","mut2_bind") := list(mutants[mutation==mut1,bind_avg],mutants[mutation==mut2,bind_avg]),by=c("library","barcode")]
+bc_dbl[,c("mut1_expr","mut2_expr") := list(mutants[mutation==mut1,expr_avg],mutants[mutation==mut2,expr_avg]),by=c("library","barcode")]
+
+```
+
+Next, let's take a look at the distribution of these double mutant binding phenotypes, and their relation to the component single mutational effects. We can see that for many double mutant barcodes, the sum of component singles predicts the double mutant phenotype quite nicely, both fo binding and even for expression. Let's focus on the binding phenotypes, as they are better correlated and have less weird shape components (e.g. the censoring is a much tighter/defined boundary, compared to the loose scatter boundary in expression, and we don't have those annoying false-negative observed phenotypes like we do with expression, since these are weeded out by the RBD+ sort). The green lines on the binding plot describe the positive epistasis cutoffs we use in the next section.
+
+```{r pairwise_deviations_plots, fig.width=8.5, fig.height=4.5, fig.align="center",dpi=300,dev="png",echo=F}
+par(mfrow=c(1,2))
+plot(bc_dbl$mut1_bind + bc_dbl$mut2_bind, bc_dbl$delta_log10Ka,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="binding")
+abline(a=0,b=1,col="red",lty=2,lwd=2)
+abline(a=1,b=1,col="green",lty=2,lwd=2)
+abline(h=-2,col="green",lty=2,lwd=2)
+
+plot(bc_dbl$mut1_expr + bc_dbl$mut2_expr, bc_dbl$delta_ML_meanF,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="expression")
+abline(a=0,b=1,col="red",lty=2,lwd=2)
+
+```
+
+We are primarily interested in *positive* epistasis (that is, observed double mutants that bind better than predicted from the component single mutations), and we probably don't care about positive epistasis if the double mutant is still severely deleterious. Therefore, let's check out double mutant combinations whose observed binding phenotype is > -2 that exhibit positive epistasis in which the double mutant binds with delta log<sub>10</sub>(*K*<sub>A,app</sub>) of at least 1 units stronger than predicted from the component singles. (So, the difference in observed - predicted binding is >1). These are points in the plot above in the upper-left quadrant defined by the dashed green lines.
+
+```{r identify_positive_epistasis, echo=F}
+#define epistasis metric from observed - predicted binding phenotype
+bc_dbl[,epistasis_bind := delta_log10Ka - (mut1_bind+mut2_bind),by=c("library","barcode")]
+
+#table sorted by positive epistasis score, for dbl mutant bcs with measured binding no worse than -2 log10Ka units
+bc_dbl[epistasis_bind > 1 & delta_log10Ka > -2,.(avgcount,mut1,mut2,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
+
+```
+
+Let's see if there's an enrichment of positive epistasis among close contact positions. We use bio3d to return all pairwise distances between RBD residues, and populate our table with the contact distance for the residue pair mutated in each double mutant. We then look at the relationship between epistasis scores and pairwise distance, for all scores, and for those where the observed double mutant delta log<sub>10</sub>(*K*<sub>A,app</sub>) is > -3 (to avoid weirdness with censored/boundary observations).
+
+```{r epistasis_versus_residue_pair_distance}
+#ouput residue numbers for the mutant pair
+bc_dbl[,c("site1","site2") := list(paste(strsplit(mut1,split="")[[1]][2:4],collapse=""),paste(strsplit(mut2,split="")[[1]][2:4],collapse="")),by=c("library","barcode")]
+
+#read in RBD structure
+pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
+pdb_atoms <- pdb$atom
+
+#make data frame giving pairwise distances -- either Calpha distances, or closest atomic distances
+pdb_dists <- expand.grid(site1=RBD_sites$site_SARS2,site2=RBD_sites$site_SARS2)
+pdb_dists <- pdb_dists[order(pdb_dists$site1, pdb_dists$site2),]
+pdb_dists <- pdb_dists[pdb_dists$site1 < pdb_dists$site2,]
+
+calc.dist <- function(x1,y1,z1,x2,y2,z2){ #function to calculate 3D distance from xyz coordinates
+  return(sqrt((x2-x1)^2+(y2-y1)^2+(z2-z1)^2))
+}
+
+for(i in 1:nrow(pdb_dists)){
+  if(pdb_dists[i,"site1"] %in% unique(pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$type=="ATOM","resno"]) & pdb_dists[i,"site2"] %in% unique(pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$type=="ATOM","resno"])){
+    atoms1 <- pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$resno==pdb_dists[i,"site1"],]
+    atoms2 <- pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$resno==pdb_dists[i,"site2"],]
+    if(nrow(atoms1)>0 & nrow(atoms2)>0){
+      pdb_dists$CA_dist[i] <- calc.dist(atoms1[atoms1$elety=="CA","x"],atoms1[atoms1$elety=="CA","y"],atoms1[atoms1$elety=="CA","z"],
+                                        atoms2[atoms2$elety=="CA","x"],atoms2[atoms2$elety=="CA","y"],atoms2[atoms2$elety=="CA","z"])
+      all_dists <- c()
+      for(i1 in 1:nrow(atoms1)){for(i2 in 1:nrow(atoms2)){
+        all_dists <- c(all_dists,calc.dist(atoms1[i1,"x"],atoms1[i1,"y"],atoms1[i1,"z"],atoms2[i2,"x"],atoms2[i2,"y"],atoms2[i2,"z"]))}}
+      pdb_dists$min_dist[i] <- min(all_dists)
+    }else{pdb_dists$CA_dist[i] <- NA;pdb_dists$min_dist[i] <- NA}
+  }else{pdb_dists$CA_dist[i] <- NA;pdb_dists$min_dist[i] <- NA}
+}
+pdb_dists <- data.table(pdb_dists)
+
+#add distances to dbl mut dataframe
+bc_dbl$CA_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc_dbl[x,site1] & site2==bc_dbl[x,site2],CA_dist]))
+bc_dbl$min_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc_dbl[x,site1] & site2==bc_dbl[x,site2],min_dist]))
+
+
+```
+
+We can see that plenty of positive epistatic pairs are distributed quite far in the structure, suggesting nonspecific effects (or noise). But plenty, including some we saw in the tables above, are at close 3D contact!
+
+```{r plot_epistasis_v_residue_pair_distance, fig.width=6, fig.height=6, fig.align="center",dpi=300,dev="png",echo=F}
+par(mfrow=c(2,2))
+plot(bc_dbl$CA_dist, bc_dbl$epistasis_bind, pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="all doubles")
+plot(bc_dbl$min_dist, bc_dbl$epistasis_bind, pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="all doubles")
+
+plot(bc_dbl[delta_log10Ka > -3, CA_dist], bc_dbl[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="doubles with measured bind > -3")
+plot(bc_dbl[delta_log10Ka > -3, min_dist], bc_dbl[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="doubles with measured bind > -3")
+
+
+```
+
+Next, let's subset the double mutant info for just the RBM residues, to touch on the observation above that Clade 1 sequences frequently have wildtype RBM states that are poorly tolerated in the SARS-CoV-2 background.
+
+```{r plot_epistasis_v_residue_pair_distance_RBM, fig.width=6, fig.height=9, fig.align="center",dpi=300,dev="png",echo=F}
+bc_dbl_RBM <- bc_dbl[site1 %in% RBD_sites[RBM==T,site_SARS2] & site2 %in% RBD_sites[RBM==T,site_SARS2],]
+
+par(mfrow=c(3,2))
+plot(bc_dbl_RBM$mut1_bind + bc_dbl_RBM$mut2_bind, bc_dbl_RBM$delta_log10Ka,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="binding, RBM")
+abline(a=0,b=1,col="red",lty=2,lwd=2)
+#abline(a=1,b=1,col="green",lty=2,lwd=2)
+#abline(h=-2,col="green",lty=2,lwd=2)
+
+plot(bc_dbl_RBM$mut1_expr + bc_dbl_RBM$mut2_expr, bc_dbl_RBM$delta_ML_meanF,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="expression, RBM")
+abline(a=0,b=1,col="red",lty=2,lwd=2)
+
+plot(bc_dbl_RBM[, CA_dist], bc_dbl_RBM[, epistasis_bind], pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="all RBM doubles")
+plot(bc_dbl_RBM[, min_dist], bc_dbl_RBM[, epistasis_bind], pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="all RBM doubles")
+
+plot(bc_dbl_RBM[delta_log10Ka > -3, CA_dist], bc_dbl_RBM[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="RBM doubles with measured bind > -3")
+plot(bc_dbl_RBM[delta_log10Ka > -3, min_dist], bc_dbl_RBM[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="RBM doubles with measured bind > -3")
+
+
+```
+
+Let's look at the RBM residue pairs with high positive epistasis scores. We can see that many of the positive epistatic interactions surround the cysteines at positions 480 and 488 which form a key disulfide that stabilizes one of the lateral loops of the RBM. We can see that double cysteine mutants are less deleterious than expected by their single mutations, as we'd expect (knocking out the second cysteine when the other is already gone is not going to incur the same binding cost as the initial breaking of this disulfide). Another cool thing to see is that positive epistasis also emerges by knockout of one cysteine, followed by knock-in of a cysteine at a *different* position in this loop, e.g Q474C or S477C.
+
+```{r RBM_positive_epistasis, echo=F}
+#table sorted by positive epistasis score, for dbl mutant bcs w/i RBM 
+bc_dbl_RBM[epistasis_bind > 1 & delta_log10Ka > -3, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
+
+
+```
+
+
+
