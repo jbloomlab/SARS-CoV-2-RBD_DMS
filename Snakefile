@@ -52,7 +52,8 @@ rule make_summary:
         homolog_effects_file=config['homolog_effects_file'],
         structure_function='results/summary/structure_function.md',
         circulating_variants='results/summary/circulating_variants.md',
-        antibody_epitopes='results/summary/antibody_epitopes.md'
+        antibody_epitopes='results/summary/antibody_epitopes.md',
+        sarbecovirus_diversity='results/summary/sarbecovirus_diversity.md'
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -110,6 +111,8 @@ rule make_summary:
             11. [Characterization of amino acid variants in sequenced SARS-CoV-2 isolates]({path(input.circulating_variants)}).
             
             12. [Analysis of mutational tolerance within RBD antibody epitopes]({path(input.antibody_epitopes)})
+            
+            13. [Analysis of amino acid diversity in natural sarbecovirus isolates]({path(input.sarbecovirus_diversity)})
 
             """
             ).strip())
@@ -122,6 +125,26 @@ rule make_dag:
         os.path.join(config['summary_dir'], 'dag.svg')
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
+
+rule sarbecovirus_diversity:
+    input:
+        config['single_mut_effects_file'],
+        config['homolog_effects_file']
+    output:
+        md='results/summary/sarbecovirus_diversity.md',
+        md_files = directory('results/summary/sarbecovirus_diversity_files')
+    envmodules:
+        'R/3.6.1-foss-2016b'
+    params:
+        nb='sarbecovirus_diversity.Rmd',
+        md='sarbecovirus_diversity.md',
+        md_files='sarbecovirus_diversity_files'
+    shell:
+        """
+        R -e \"rmarkdown::render(input=\'{params.nb}\')\";
+        mv {params.md} {output.md};
+        mv {params.md_files} {output.md_files}
+        """
 
 rule antibody_epitopes:
     input:
