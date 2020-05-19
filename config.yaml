@@ -54,7 +54,7 @@ dms_view_dir: dms_view
 dms_view_file: dms_view/dms-view_table.csv
 circulating_variants_dir: results/circulating_variants
 antibody_epitopes_dir: results/antibody_epitopes
-sarbecovirus_diversity_dir: sarbecovirus_diversity
+sarbecovirus_diversity_dir: results/sarbecovirus_diversity
 
 # parameters for running PacBio `ccs` program
 min_ccs_accuracy: 0.999

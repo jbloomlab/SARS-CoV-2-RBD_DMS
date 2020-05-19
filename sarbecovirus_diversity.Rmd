@@ -250,7 +250,7 @@ kable(mutants_temp[clade %in% c("cladeSARS2") & bind_avg < -0.5,.(mutation,bind_
 ```
 In Clade 1, even SARS-CoV-1 has some amino acid variants that are deleterious in SARS-CoV-2. We can dig in further to see whether these deleterious SARS-CoV-1 states are truly shifted preferences, versus just offset by other affinity gains at the interface. (And, future DMS in SARS-CoV-1 RBM could address this!) L455 and S494 are "key adaptations" in SARS-CoV-1 (Y442 and D480), according to studies by e.g. Fang Li -- so, should be a lot of prior structural work we can look at to better understand what other RBM/interface residues might be impacting amino acid preferences at these sites between SARS-CoV-1 and 2.
 
-```{r table_del_states_SARS2_clade}
+```{r table_del_states_clade_1}
 kable(mutants_temp[clade %in% c("clade1") & bind_avg < -1,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
 ```
 
