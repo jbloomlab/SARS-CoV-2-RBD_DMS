@@ -660,6 +660,273 @@ seven mutations:
 | N501F    |       171 |       0.22 |       0.36 |      0.29 |     \-0.03 |     \-0.16 |    \-0.10 |                  |                   |                       |
 | G502D    |       172 |     \-4.29 |     \-4.03 |    \-4.16 |       0.62 |       0.66 |      0.64 |                  |                   |                       |
 
+## Epistasis in library double mutants
+
+Do we see evidence for specific epistasis between pairs of mutations
+found in our (sparse sampling) of double mutants?
+
+First, we take our barcode measurements for double mutants, and add to
+the data table the component single mutation effect scores.
+
+``` r
+#read in per-bc func scores
+bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response, baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]
+bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, variant_class, aa_substitutions, n_aa_substitutions)]
+
+bc_dbl <- merge(bc_bind[n_aa_substitutions==2 & variant_class == ">1 nonsynonymous",], bc_expr[n_aa_substitutions==2 & variant_class == ">1 nonsynonymous",], sort=F)
+
+#make columns breaking up the two substitutions
+bc_dbl[,mut1 := strsplit(aa_substitutions, split=" ")[[1]][1], by=c("library","barcode")]
+bc_dbl[,mut2 := strsplit(aa_substitutions, split=" ")[[1]][2], by=c("library","barcode")]
+
+#change mutations to be Spike numbering from RBD numbering
+bc_dbl[,mut1 := mutants[mutation_RBD==mut1,mutation],by=c("library","barcode")]
+bc_dbl[,mut2 := mutants[mutation_RBD==mut2,mutation],by=c("library","barcode")]
+
+#pull single mutant effects into table
+bc_dbl[,c("mut1_bind","mut2_bind") := list(mutants[mutation==mut1,bind_avg],mutants[mutation==mut2,bind_avg]),by=c("library","barcode")]
+bc_dbl[,c("mut1_expr","mut2_expr") := list(mutants[mutation==mut1,expr_avg],mutants[mutation==mut2,expr_avg]),by=c("library","barcode")]
+```
+
+Next, let’s take a look at the distribution of these double mutant
+binding phenotypes, and their relation to the component single
+mutational effects. We can see that for many double mutant barcodes, the
+sum of component singles predicts the double mutant phenotype quite
+nicely, both for binding and even for expression. Let’s focus on the
+binding phenotypes, as they are better correlated and have less weird
+shape components (e.g. the censoring is a much tighter/defined boundary,
+compared to the loose scatter boundary in expression, and we don’t have
+those annoying false-negative observed phenotypes like we do with
+expression, since these are weeded out by the RBD+ sort). The green
+lines on the binding plot describe the positive epistasis cutoffs we use
+in the next section.
+
+<img src="structure_function_files/figure-gfm/pairwise_deviations_plots-1.png" style="display: block; margin: auto;" />
+
+We might be primarily interested in *positive* epistasis (that is,
+observed double mutants that bind better than predicted from the
+component single mutations), and we probably don’t care about positive
+epistasis if the double mutant is still severely deleterious. Therefore,
+let’s check out double mutant combinations whose observed binding
+phenotype is \> -2 that exhibit positive epistasis in which the double
+mutant binds with delta log<sub>10</sub>(*K*<sub>A,app</sub>) of at
+least 1 units stronger than predicted from the component singles. (So,
+the difference in observed - predicted binding is \>1). These are points
+in the plot above in the upper-left quadrant defined by the dashed green
+lines.
+
+We see many of these positive epistatic interactions involve prolines
+and cysteines (e.g. G416P/N422L), which may exhibit epistasis because
+these larger structural changes engineered by proline and cysteine
+changes can dramatically alter nearby amino acid preferences. We also
+see some simple epistatic interactions, such as R355L/D398M (which we
+actually see in \>1 barcode, even), which correspond to a salt bridge
+interaction, where losing one is deleterious, but substituting both to
+aliphatic residues compensates this deleterious effect. We also see some
+interactions between mutations in the RBM and at the ACE2 interface,
+such as R454S+P491V, and N437K/F497S.
+
+    ##      avgcount  mut1  mut2 mut1_bind mut2_bind delta_log10Ka epistasis_bind
+    ##   1:    73.32 G416P N422L     -4.40     -4.80         -0.76           8.44
+    ##   2:    28.23 F429P G431C     -4.47     -2.77         -0.71           6.53
+    ##   3:   169.37 F429P G431C     -4.47     -2.77         -0.81           6.43
+    ##   4:    10.78 G416V F515K     -4.60     -1.46         -0.36           5.70
+    ##   5:    16.44 C432R N437M     -4.80     -1.62         -1.29           5.13
+    ##  ---                                                                      
+    ## 167:    85.99 N334R R355F      0.00     -3.01         -1.99           1.02
+    ## 168:    61.67 P412H D428N     -2.32      0.01         -1.30           1.01
+    ## 169:     6.71 F429L N437K     -0.69     -0.78         -0.46           1.01
+    ## 170:    10.42 D389W N437V     -0.25     -1.46         -0.70           1.01
+    ## 171:    58.82 N422G K458S     -2.48     -0.04         -1.51           1.01
+    ##      mut1_expr mut2_expr delta_ML_meanF
+    ##   1:     -2.68     -2.54          -1.18
+    ##   2:     -2.93     -2.65          -2.09
+    ##   3:     -2.93     -2.65          -1.86
+    ##   4:     -1.91     -3.07          -1.25
+    ##   5:     -3.19     -2.02          -2.77
+    ##  ---                                   
+    ## 167:     -0.12     -2.56          -2.54
+    ## 168:     -2.73      0.18          -2.18
+    ## 169:     -2.17     -1.31          -2.17
+    ## 170:     -0.77     -2.08          -2.42
+    ## 171:     -2.56     -0.05          -2.33
+
+Let’s see if there’s an enrichment of positive epistasis among close
+contact positions. We use bio3d to return all pairwise distances between
+RBD residues, and populate our table with the contact distance for the
+residue pair mutated in each double mutant. We then look at the
+relationship between epistasis scores and pairwise distance, for all
+scores, and for those where the observed double mutant delta
+log<sub>10</sub>(*K*<sub>A,app</sub>) is \> -3 (to avoid weirdness with
+censored/boundary observations). (Expectation from prior DMS work is
+that negative epistasis is often global and dispersed in terms of
+residue pair distance, whereas positive epistasis is enriched for
+spatially proximal, specific compensatory interactions.)
+
+``` r
+#ouput residue numbers for the mutant pair
+bc_dbl[,c("site1","site2") := list(paste(strsplit(mut1,split="")[[1]][2:4],collapse=""),paste(strsplit(mut2,split="")[[1]][2:4],collapse="")),by=c("library","barcode")]
+
+#read in RBD structure
+pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
+```
+
+    ##    PDB has ALT records, taking A only, rm.alt=TRUE
+
+``` r
+pdb_atoms <- pdb$atom
+
+#make data frame giving pairwise distances -- either Calpha distances, or closest atomic distances
+pdb_dists <- expand.grid(site1=RBD_sites$site_SARS2,site2=RBD_sites$site_SARS2)
+pdb_dists <- pdb_dists[order(pdb_dists$site1, pdb_dists$site2),]
+pdb_dists <- pdb_dists[pdb_dists$site1 < pdb_dists$site2,]
+
+calc.dist <- function(x1,y1,z1,x2,y2,z2){ #function to calculate 3D distance from xyz coordinates
+  return(sqrt((x2-x1)^2+(y2-y1)^2+(z2-z1)^2))
+}
+
+for(i in 1:nrow(pdb_dists)){
+  if(pdb_dists[i,"site1"] %in% unique(pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$type=="ATOM","resno"]) & pdb_dists[i,"site2"] %in% unique(pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$type=="ATOM","resno"])){
+    atoms1 <- pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$resno==pdb_dists[i,"site1"],]
+    atoms2 <- pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$resno==pdb_dists[i,"site2"],]
+    if(nrow(atoms1)>0 & nrow(atoms2)>0){
+      pdb_dists$CA_dist[i] <- calc.dist(atoms1[atoms1$elety=="CA","x"],atoms1[atoms1$elety=="CA","y"],atoms1[atoms1$elety=="CA","z"],
+                                        atoms2[atoms2$elety=="CA","x"],atoms2[atoms2$elety=="CA","y"],atoms2[atoms2$elety=="CA","z"])
+      all_dists <- c()
+      for(i1 in 1:nrow(atoms1)){for(i2 in 1:nrow(atoms2)){
+        all_dists <- c(all_dists,calc.dist(atoms1[i1,"x"],atoms1[i1,"y"],atoms1[i1,"z"],atoms2[i2,"x"],atoms2[i2,"y"],atoms2[i2,"z"]))}}
+      pdb_dists$min_dist[i] <- min(all_dists)
+    }else{pdb_dists$CA_dist[i] <- NA;pdb_dists$min_dist[i] <- NA}
+  }else{pdb_dists$CA_dist[i] <- NA;pdb_dists$min_dist[i] <- NA}
+}
+pdb_dists <- data.table(pdb_dists)
+
+#add distances to dbl mut dataframe
+bc_dbl$CA_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc_dbl[x,site1] & site2==bc_dbl[x,site2],CA_dist]))
+bc_dbl$min_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc_dbl[x,site1] & site2==bc_dbl[x,site2],min_dist]))
+```
+
+In the plots below, we can see that plenty of positive epistatic pairs
+are distributed quite far in the structure, suggesting nonspecific
+effects (or noise). But plenty, including some we saw in the tables
+above, are at close 3D contact\!
+
+<img src="structure_function_files/figure-gfm/plot_epistasis_v_residue_pair_distance-1.png" style="display: block; margin: auto;" />
+
+Next, let’s subset the double mutant info for just the RBM residues,
+which are focal for ACE2 interaction and also exhibit the most diversity
+across RBD evolution.
+
+<img src="structure_function_files/figure-gfm/plot_epistasis_v_residue_pair_distance_RBM-1.png" style="display: block; margin: auto;" />
+
+Let’s look at the RBM residue pairs with high positive epistasis scores.
+We can see that many of the positive epistatic interactions surround the
+cysteines at positions 480 and 488 which form a key disulfide that
+stabilizes one of the lateral loops of the RBM. We can see that double
+cysteine mutants are less deleterious than expected by their single
+mutations, as we’d expect (knocking out the second cysteine when the
+other is already gone is not going to incur the same binding cost as the
+initial breaking of this disulfide). Another cool thing to see is that
+positive epistasis also emerges by knockout of one cysteine, followed by
+knock-in of a cysteine at a *different* position in this loop, e.g Q474C
+or S477C.
+
+    ##     avgcount  mut1  mut2   CA_dist mut1_bind mut2_bind delta_log10Ka
+    ##  1:    84.57 R454S P491V  5.903585     -4.32     -1.77         -1.56
+    ##  2:    42.10 N437K F497S 11.986635     -0.78     -4.80         -1.11
+    ##  3:    21.94 C480G C488E  5.792605     -3.44     -3.57         -2.72
+    ##  4:    20.08 R454P P479N 20.032977     -4.80     -0.05         -0.65
+    ##  5:    58.73 C480F C488N  5.792605     -3.84     -3.09         -2.90
+    ##  6:   132.91 C480N C488A  5.792605     -3.47     -2.97         -2.49
+    ##  7:    40.30 Q474C C488W  4.988688     -1.18     -4.61         -2.51
+    ##  8:    62.06 Q474C C488W  4.988688     -1.18     -4.61         -2.63
+    ##  9:   121.86 Q474C C480F  6.205382     -1.18     -3.84         -2.10
+    ## 10:    49.13 N481S G502K 38.468930     -0.04     -4.16         -1.79
+    ## 11:    21.56 E471S C480Y  9.434544     -0.04     -3.55         -1.19
+    ## 12:    18.50 R457P N501V 27.142307     -3.97      0.15         -1.74
+    ## 13:    17.34 N437F L452R 17.047688     -4.24      0.02         -2.29
+    ## 14:    67.82 S443N G485M 30.037069     -2.18     -0.28         -0.57
+    ## 15:    10.13 L452K C488V 18.362515      0.09     -4.55         -2.60
+    ## 16:   102.02 S477C C488E  9.665739     -0.44     -3.57         -2.19
+    ## 17:    29.49 Y449S G496F  5.166731     -1.25     -2.12         -1.62
+    ## 18:    50.91 L452K C488L 18.362515      0.09     -4.34         -2.52
+    ## 19:    55.52 R457W V503A 27.013439     -4.11     -0.06         -2.46
+    ## 20:    58.01 N450P G496E  8.309008     -1.56     -2.33         -2.21
+    ## 21:    39.35 L452R P491I 10.166328      0.02     -3.99         -2.32
+    ## 22:    18.94 G482Y C488H  8.844148     -0.20     -3.61         -2.18
+    ## 23:    12.56 Q493V T500L 20.074323      0.05     -1.52          0.12
+    ## 24:     9.44 Y453V N487S 19.324245     -0.11     -1.51         -0.08
+    ## 25:    46.14 Y449E G496T  5.166731     -1.57     -1.46         -1.54
+    ## 26:    60.64 Q474Y C488T  4.988688     -0.65     -3.34         -2.54
+    ## 27:    11.48 L452K C488L 18.362515      0.09     -4.34         -2.81
+    ## 28:    33.88 S443K G496R  7.875540     -2.12     -1.63         -2.36
+    ## 29:    48.49 Q493V T500L 20.074323      0.05     -1.52         -0.08
+    ## 30:   150.99 S443N G447V  6.378280     -2.18     -1.52         -2.32
+    ## 31:    10.71 G447K I472H 24.739352     -1.54     -0.37         -0.55
+    ## 32:    29.91 T478S C488S  8.565873     -0.01     -2.84         -1.54
+    ## 33:    47.33 S459A Y495G 21.728495     -0.03     -3.93         -2.69
+    ## 34:    84.99 S443C Q498K  4.900981     -1.36     -2.26         -2.37
+    ## 35:    30.58 N437F N501T 12.194206     -4.24      0.10         -2.91
+    ## 36:    33.27 Y453L P491H  8.723932     -0.17     -3.76         -2.72
+    ## 37:   259.79 N437L Q506L  7.262572     -2.15     -1.46         -2.41
+    ## 38:    42.71 Q474N Y505T 28.180539     -0.04     -3.46         -2.33
+    ## 39:   539.12 Y449G P479S 28.577192     -1.28     -0.03         -0.17
+    ## 40:    17.97 I472D Q498W 27.347854     -2.09      0.07         -0.94
+    ## 41:    30.03 Y449S G496N  5.166731     -1.25     -0.35         -0.53
+    ## 42:    61.73 C480E Q493A 17.654930     -3.59      0.13         -2.39
+    ## 43:    49.77 A475P N487E  4.827436     -1.62     -2.06         -2.65
+    ## 44:    49.23 R457E Y505W 22.476851     -2.78      0.13         -1.62
+    ##     avgcount  mut1  mut2   CA_dist mut1_bind mut2_bind delta_log10Ka
+    ##     epistasis_bind mut1_expr mut2_expr delta_ML_meanF
+    ##  1:           4.53     -2.49     -2.34          -2.19
+    ##  2:           4.47     -1.31     -2.05          -1.48
+    ##  3:           4.29     -1.26     -1.19          -0.41
+    ##  4:           4.20     -2.63     -0.23          -3.22
+    ##  5:           4.03     -1.81     -1.01          -1.21
+    ##  6:           3.95     -1.18     -1.30          -0.65
+    ##  7:           3.28     -1.10     -1.51          -0.66
+    ##  8:           3.16     -1.10     -1.51          -1.18
+    ##  9:           2.92     -1.10     -1.81          -0.54
+    ## 10:           2.41     -0.16      0.24          -0.30
+    ## 11:           2.40     -0.22     -1.56          -0.60
+    ## 12:           2.08     -2.48     -0.19          -2.93
+    ## 13:           1.93     -2.45      0.32          -2.47
+    ## 14:           1.89     -0.19     -0.56          -0.78
+    ## 15:           1.86      0.58     -1.72          -0.40
+    ## 16:           1.82     -0.40     -1.19          -0.96
+    ## 17:           1.75      0.12     -0.32           0.08
+    ## 18:           1.73      0.58     -1.63          -0.56
+    ## 19:           1.71     -2.54     -0.10          -2.47
+    ## 20:           1.68     -0.14      0.02          -0.01
+    ## 21:           1.65      0.32     -2.46          -2.63
+    ## 22:           1.63     -0.96     -1.59          -2.50
+    ## 23:           1.59     -0.10     -0.29          -0.01
+    ## 24:           1.54     -1.00     -0.20             NA
+    ## 25:           1.49      0.12      0.12           0.04
+    ## 26:           1.45     -1.50     -1.34          -1.13
+    ## 27:           1.44      0.58     -1.63             NA
+    ## 28:           1.39     -1.42      0.13          -0.72
+    ## 29:           1.39     -0.10     -0.29           0.00
+    ## 30:           1.38     -0.19     -0.44          -0.28
+    ## 31:           1.36     -0.29     -0.91             NA
+    ## 32:           1.31     -0.09     -1.15          -0.88
+    ## 33:           1.27     -0.10     -1.85          -2.18
+    ## 34:           1.25     -0.36      0.05          -0.07
+    ## 35:           1.23     -2.45     -0.25          -2.49
+    ## 36:           1.21     -1.37     -2.33          -2.32
+    ## 37:           1.20     -2.04     -1.81          -2.43
+    ## 38:           1.17     -0.18     -0.02          -0.39
+    ## 39:           1.14      0.06     -0.20          -0.05
+    ## 40:           1.08     -0.90     -0.41          -1.02
+    ## 41:           1.07      0.12      0.04           0.18
+    ## 42:           1.07     -0.99      0.06          -0.51
+    ## 43:           1.03     -1.39     -0.01          -0.86
+    ## 44:           1.03     -2.26     -0.04          -2.92
+    ##     epistasis_bind mut1_expr mut2_expr delta_ML_meanF
+
+These are all just cool little observations – not sure if we want to dig
+in further on any of this…
+
 ## Output for dms-view visualization of mutational effects
 
 Let’s output data in a format for import into `dms-view`. We want to

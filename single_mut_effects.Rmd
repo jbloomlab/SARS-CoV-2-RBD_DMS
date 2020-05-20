@@ -613,8 +613,8 @@ In theory, titration assays should normalize out expression effects of mutations
 
 Below, we generate plots for all barcodes showing the relationship between the barcode's response fit value and the expression phenotype for that barcode.
 
-```{r resposne_v_expression, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
-bc_dt <- merge(bc_bind, bc_expr, sort=F)
+```{r response_v_expression, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+bc_dt <- merge(bc_bind[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response, baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)], bc_expr[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, variant_class, aa_substitutions, n_aa_substitutions)], sort=F)
 
 par(mfrow=c(1,2))
 plot(bc_dt$ML_meanF,bc_dt$response,pch=16,col="#00000010",xlab="barcode expression (ML mean fluorescence)",ylab="barcode titration response parameter",main="all barcodes")

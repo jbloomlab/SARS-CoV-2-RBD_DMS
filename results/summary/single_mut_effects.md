@@ -960,10 +960,6 @@ plot(x,y,pch=19,xlab="delta_ML_meanF, lib1",ylab="delta_ML_meanF, lib2",main=pas
 
 <img src="single_mut_effects_files/figure-gfm/homologs_lib1_lib2_correlation-1.png" style="display: block; margin: auto;" />
 
-Let’s compare these phenotypes as determined in our bulk assays to those
-determined for isogenic experiments on a subset of these homologs.
-(Upcoming)
-
 Output the summarized homolog phenotype scores into a table for
 downstream analysis and sharing.
 
@@ -972,3 +968,47 @@ homologs %>%
   mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$homolog_effects_file, row.names=F)
 ```
+
+## Validation of bulk phenotypes with isogenic experiments
+
+We have conducted two series of isogenic titration assays which can
+validate our bulk phenotypes for binding and expression effects. The
+first panel of genotypes that we validated in isogenic yeast display
+assays are a subset of the homologs panel. The second is a series of
+single mutants to SARS-CoV-2. We fit titration curves to these isogenic
+experiments, and here we correlate these isogenic binding and expression
+phenotypes with those determined in the DMS assays.
+
+First, homolog panel:
+
+Second, single mutants of SARS-CoV-2:
+
+## Relationship between expression and binding fits at a per-barcode level
+
+In theory, titration assays should normalize out expression effects of
+mutations, and therefore be less susceptiible to expression-induced
+artifacts in binding scores than traditional single-concentration yeast
+diisplay assays. We will dig into this a bit more in the
+`structure_function.Rmd` notebook for our single-mutant effect
+parameters, but the general premise is that in single-concentration
+yeast display assays, simple enhancement of surface expression leads to
+higher ligand labeling, even if the underlying *K*<sub>D</sub> is
+unchanged in the mutant variant. This leads to *uninteresting* simple
+correlation between expression and binding in DMS type data. In
+contrast, our binding phenotype is determined from a self-contained
+titration series for each barcode, the response plateau and baseline of
+which can vary as fit parameters. This assay should therefore be less
+susceptible to expression artifacts, because global expression changes
+can be accounted for with variation in the response parameter –
+therefore, any remaining correlation between expression and binding
+should be due to actual biological correlation (i.e. mutations that
+destabilize the protein will also intrinsically decrease the
+thermodynamic affinity). One premise of this argument is that the
+response parameter of the titration curve fits correlates with
+expression effects.
+
+Below, we generate plots for all barcodes showing the relationship
+between the barcode’s response fit value and the expression phenotype
+for that barcode.
+
+<img src="single_mut_effects_files/figure-gfm/response_v_expression-1.png" style="display: block; margin: auto;" />
