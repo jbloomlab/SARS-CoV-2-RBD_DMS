@@ -58,3 +58,8 @@ circulating_variants:
   cpus: 8
   partition: largenode
   mem: 50000
+
+sarbecovirus_diversity:
+  cpus: 8
+  partition: largenode
+  mem: 50000
