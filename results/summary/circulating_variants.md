@@ -189,11 +189,10 @@ for(i in 1:nrow(mutants)){
 
 We see 368 amino acid polymorphisims within the 27827 sequences uploaded
 in GISAID, which represents 89 of our 3819 measured missense mutants. In
-the table below, we can see that most of these mutations are observed
-only one or a few times, so these may still reflect errant sequencinig
-artifacts, which we tried to account for at least minimally with some
-filtering above. Below is table indicating the number of times each
-mutation was observed in the GISAID sequence set.
+the table below, we can see that many of these mutations are observed
+only one or a few times, so there may still be unaccounted for
+sequencinig artifacts, which we tried to account for at least minimally
+with some filtering above.
 
 ``` r
 kable(table(mutants[mutant!=wildtype & mutant!="*",nobs]),col.names=c("mutation count","frequency"))
@@ -218,12 +217,14 @@ kable(table(mutants[mutant!=wildtype & mutant!="*",nobs]),col.names=c("mutation 
 | 44             |         1 |
 | 94             |         1 |
 
-We plot each mutations delta-log<sub>10</sub>(*K*<sub>A,app</sub>)
-versus the number of times it is observed in the circulating Spike
-alignment. We can see that many of the mutations that are observed just
-one or a couple of times are highly deleterious, and anything sampled
-more than a handful of times is neutral or perhaps has slightly enhanced
-binding and/or expression.
+We plot each mutations experimental phenotype versus the number of times
+it is observed in the circulating Spike alignment, for binding (top) and
+expression (bottom), with the righthand plots simply zooming in on the
+region surrounding zero for better visualization. We can see that some
+of the mutations that are observed just one or a couple of times are
+highly deleterious, and anything sampled more than a handful of times
+exhibits \~neutral or perhaps small positive binding and/or expression
+effects.
 
 <img src="circulating_variants_files/figure-gfm/scatter_circulating_variants_nobs-1.png" style="display: block; margin: auto;" />
 
@@ -298,31 +299,30 @@ mutants[,singlemut := mutant %in% get.codon.muts(SARS2_codon),by=mutation]
 Are any of our observed GISAID mutations \>1nt changes? Below, we see
 one mutation with a single observation that would require 2+ nucleotide
 changes from the wildtype SARS-CoV-2 codon (or other synonymous codons
-encoding the SARS-CoV-2 amino acid). We could dig back into the isolates
-containing these variants to see if they have any other red flags. (My
-first-pass analysis here showed four such mutations, three of which had
-obviously suspicious mutation calls which caused me to go back to update
-my filtering protocol. Perhaps this remaining mutation points to
-something additional we could add.)
+encoding the SARS-CoV-2 amino acid). (My first-pass analysis here showed
+four such multi-nt mutations, three of which had obviously suspicious
+mutation calls which caused me to go back to update my filtering
+protocol. Perhaps this remaining mutation points to something additional
+we could add.)
 
-Is there anything suspicious about the isolates bearing these changes?
+Is there anything suspicious about the isolates bearing this mutation?
 This mutation is observed in the sequence
 Spike|hCoV-19/USA/AZ-TG271878/2020|2020-03-20|EPI\_ISL\_426542|Original|hCoV-19^^Arizona|Human|AZ\_SPHL|TGen\_North|Lemmer|USA.
-This sequence is observed to have 2 amino acid variants, D75V, Q84A,
-both of which are unique to this sequence (and one of which has
+This sequence is observed to have 2 amino acid variants (D75V, Q84A),
+both of which are unique to this sequence (and the former of which has
 moderately deleterious effects on binding and expression). There do not
-appear to be tons of ambiguous nts in this sequence, so I’m not sure if
+appear to be any ambiguous nts in this RBD sequence, so I’m not sure if
 there is reason to filter it from our dataset besides ad hoc (we could
-filter out sequences containing \>1 amino acid mutation).
+filter out singleton sequences containing \>1 amino acid mutation if we
+think that is a generally unreliable class?).
 
 ``` r
-mutants[singlemut==F & nobs>0,.(mutation_RBD,mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs,SARS2_codon)]
+kable(mutants[singlemut==F & nobs>0,.(mutation_RBD,mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs,SARS2_codon)])
 ```
 
-    ##    mutation_RBD mutation expr_lib1 expr_lib2 expr_avg bind_lib1 bind_lib2
-    ## 1:         Q84A    Q414A      0.35      0.24      0.3      0.07      0.24
-    ##    bind_avg nobs SARS2_codon
-    ## 1:     0.16    1         caa
+| mutation\_RBD | mutation | expr\_lib1 | expr\_lib2 | expr\_avg | bind\_lib1 | bind\_lib2 | bind\_avg | nobs | SARS2\_codon |
+| :------------ | :------- | ---------: | ---------: | --------: | ---------: | ---------: | --------: | ---: | :----------- |
+| Q84A          | Q414A    |       0.35 |       0.24 |       0.3 |       0.07 |       0.24 |      0.16 |    1 | caa          |
 
 Below is a heatmap of binding effects for all mutations accessible in
 single nucleotide changes from the SARS-CoV-2 WT reference sequence,
@@ -348,24 +348,24 @@ effect of single-nt mutants = -0.22; median mutational effect of all
 amino acid muts = -0.34; P-value 2.3^{-4}, Wilcoxon rank-sum test.)
 
 To illustrate how selection acts on circulating variants, let’s compare
-the functional effects of all circulating variant observed in at least
-one sequence to those observed zero times. The violin plots below show
-the distribution of functional effects on binding (left) and expression
-(right), comparing single-nt amino acid mutations with 0 observed counts
-in GISAID versus increasingly stringent GISAID count cutoffs. We can see
-bias among circulating variants for both binding and expression effects
-that are visually by eye higher than expected by random mutation alone.
-This suggests that purifying selection is removing deleterious RBD
-mutations that affect traits correlated with our measured binding and
-expression phenotypes.
+the functional effects of observed mutations to those observed zero
+times. The violin plots below show the distribution of functional
+effects on binding (left) and expression (right), comparing single-nt
+amino acid mutations with 0 observed counts in GISAID versus
+increasingly stringent GISAID count cutoffs. We can see a bias among
+circulating mutants for both binding and expression effects that are
+visually by eye higher than expected by random mutation alone. This
+suggests that purifying selection is removing deleterious RBD mutations
+that affect traits correlated with our measured binding and expression
+phenotypes.
 
 How do we want to quantify this? The simplest statistical approach would
 be permutations – draw random sets of mutation from the single-nt amino
 acid mutation pool, and compare the observed e.g. median mutational
 effect of mutations actually observed \>X times with the permuted sets.
 This will surely show significant effects of purifying selection (median
-higher in actual mutant set than randomly selected sets), but is there
-something more interesting to be done than simply confirm the
+higher in actual observed mutant set than randomly selected sets), but
+is there something more interesting to be done than simply confirm the
 significant shift in median? And, can we say anything with meat on it
 about whether there is indeed a lack of selection for affinity-enhancing
 mutations? (That is, is there a way to quantitatively compare the
