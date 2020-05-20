@@ -110,31 +110,24 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/mean-bind_v_RSA.p
 
 ```
 
-Next, we want to investigate how mutational tolerance differs between the core alpha+beta RBD fold versus the 'Receptor Binding Motif' (RBM) loops. In particular, I want to test the hypothesis that the core RBD is more constrained with regards to mutational effects on expression, while the RBM is constrained with regards to ACE2-binding. 
+Next, we want to investigate how mutational tolerance differs between the core alpha+beta RBD fold versus the 'Receptor Binding Motif' (RBM) loops. In particular, I want to test the hypothesis that the core RBD is more constrained with regards to mutational effects on expression, while the RBM is constrained with regards to ACE2-binding. We plot distributions of mutational effects within the core RBD versus in the RBM, for binding and expression phenotypes. As we hypothesized, mutations in the RBM tend to have a more detrimental effect on direct binding affinity (P-value `r wilcox.test(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],bind_avg],mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),bind_avg])$p.value`, median mutation effect `r median(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],bind_avg],na.rm=T)` in the RBM, `r median(mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),bind_avg],na.rm=T)` in the core RBD). In contrast, mutations in the core RBD tend to have a more detrimental effect on expression (~stability) (P-value `r wilcox.test(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],expr_avg],mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),expr_avg])$p.value`, median mutation effect `r median(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],expr_avg],na.rm=T)` in the RBM, `r median(mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),expr_avg],na.rm=T)` in the core RBD)
 
-```{r RBM_versus_core_fold_sites, fig.width=12,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
-p1 <- ggplot(RBD_sites, aes(x=RBM,y=mean_bind))+
+```{r RBM_versus_core_fold_mutations, fig.width=8,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE, message=FALSE, warning=FALSE}
+mutants[,RBM := FALSE]
+mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],RBM := TRUE]
+
+p1 <- ggplot(mutants, aes(x=RBM,y=bind_avg))+
   geom_violin(trim=F)+coord_flip()+
-  geom_dotplot(binaxis='y',stackdir='center',dotsize=0.4)+
-  ylab("mean mutational effect on binding")+xlab("Site in RBM?")
+  stat_summary(fun.y=median,geom="point",size=1)+
+  ylab("mutational effect on binding")+xlab("Site in RBM?")
 
-
-p2 <- ggplot(RBD_sites, aes(x=RBM,y=mean_expr))+
+p2 <- ggplot(mutants, aes(x=RBM,y=expr_avg))+
   geom_violin(trim=F)+coord_flip()+
-  geom_dotplot(binaxis='y',stackdir='center',dotsize=0.4)+
-  ylab("mean mutational effect on expression")+xlab("Site in RBM?")
-#wilcox.test(sites[!is.na(sites$SHM) & sites$SHM==T,"mean_bind"],sites[!is.na(sites$SHM) & sites$SHM==F,"mean_bind"]) #SHMs accr
-
+  stat_summary(fun.y=median,geom="point",size=1)+
+  ylab("mutational effect on expression")+xlab("Site in RBM?")
 
 grid.arrange(p1,p2,ncol=2)
 ```
-Visually, sites in the RBM are more sensitive to mutation with respect to binding, while sites in the core RBD are more sensitive to mutation with respect to expression. Below, we test the statistical significance of this obervation with the Wilcoxon rank sum test. The difference for binding is not significant, with a p-value of `r round(wilcox.test(RBD_sites[RBM==T,mean_bind],RBD_sites[RBM==F,mean_bind])$p.value,digits=4)`, while the difference for expression is significant, with a p-value of `r round(wilcox.test(RBD_sites[RBM==T,mean_expr],RBD_sites[RBM==F,mean_expr])$p.value,digits=5)`. I am not surprised by this difference in significance -- since expression defects affect binding (but not vice-versa), it should be harder to pull out the RBM binding specific trend without first normalizing by expression. I should probably devise a better hypothesis testing scheme that accounts for this fact, because visually and from my knowledge about these two phenotypes, it definitely seems like this enrichment holds true.
-
-```{r RBM_stats_summary}
-wilcox.test(RBD_sites[RBM==T,mean_bind],RBD_sites[RBM==F,mean_bind])
-wilcox.test(RBD_sites[RBM==T,mean_expr],RBD_sites[RBM==F,mean_expr])
-```
-
 
 To further visualize site-wise mutational sensitivity on the 3D structure, let's output `.pdb` files for the ACE2-bound RBD structure in which we replace the B factor column with metrics of interest for each site: 1) the mean effect of mutation on binding, 2) the mean effect of mutation on expression, 3) the max effect of any mutation on binding, and 4) the max effect of any mutation on expression. In PyMol, we can then visualize spheres at each Calpha, colored by spectrum from low (yellow) to high (blue) for each metric by manually executing the following commands in a PyMol session in which one of the output `pdb` files is opened:
 ```
@@ -146,7 +139,7 @@ hide cartoon, RBD_CA; show spheres, RBD_CA
 spectrum b, yellow green blue, RBD_CA
 ```
 
-To create a surface representation of the RBD colored by mutational tolerance, execute the following commands in a PyMol session with one of these output `pdb` files loaded:
+To create a surface representation of the RBD colored by mutational tolerance (in this case, white to red, to mimic the heatmaps we produce below), execute the following commands in a PyMol session with one of these output `pdb` files loaded:
 ```
 create RBD, chain E
 hide all; show cartoon, chain A; show surface, RBD
@@ -355,9 +348,17 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_NLGS.pdf
 
 ```
  
-Here are the heat maps, zoomed in on residues in the "Receptor Binding Motif", the section of the RBM that extends out from the core alpha+beta fold and contains the ACE2-contact residues. This motif is contiguous in space, so there's really no point to this heat map beyond the full-RBD map shown above, once I figure out how to add e.g. a line at the top across these positions to incidicate RBM. I have some interpretation of expression/binding tradeoff from this heatmap, but this point is better made in the subsequent figure focusing only on contact positions, so I will elaborate it there. Haven't looked into this RBM map in too much more detail beyond that, so there might be something else interesting, or this figure could definitely get the axe as it probably doesn't add much.
+Here are the heat maps, zoomed in on residues in the "Receptor Binding Motif", the section of the RBM that extends out from the core alpha+beta fold and contains the ACE2-contact residues. This motif is contiguous in space, so there's really no point to this heat map beyond the full-RBD map shown above, once I figure out how to add e.g. a line at the top across these positions to incidicate RBM. I have some interpretation of expression/binding tradeoff from this heatmap, but this point is better made in the subsequent figure focusing only on contact positions, so I will elaborate it there. Haven't looked into this RBM map in too much more detail beyond that, so there might be something else interesting, or this figure could definitely get the axe as it probably doesn't add much. "x" marks the SARS-CoV-2 state, and "o" marks the SARS-CoV-1 wildtype state.
 
 ```{r heatmap_RBM, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#indicator for wildtype SARS-CoV-1 state
+mutants[,SARS1_indicator := ""]
+for(i in 1:nrow(mutants)){
+  SARS1aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_SARS1]
+  if(!is.na(SARS1aa) & mutants$mutant[i] == SARS1aa){mutants$SARS1_indicator[i] <- "o"}
+}
+
+
 muts_temp <- mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
 
 p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
@@ -365,14 +366,16 @@ p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
   scale_x_discrete(expand=c(0,0))+
   labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
 p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
   scale_x_discrete(expand=c(0,0))+
   labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
 grid.arrange(p1,p2,ncol=1)
 
@@ -388,13 +391,6 @@ For four of these residues (449, 455, 486, 505), binding prefers the wildtype hy
 Within this heatmap is specific information about the "key" contact sites that are often discussed in the literature. These sites primarily came from observations about amino acid changes relating civet- and human-adapted SARS-CoV-1 sequences, and other experimental evolution and structural studies in the SARS-CoV-1 side of the tree. These sites are `r RBD_sites[SARS1_key_adaptation==T,site_SARS2]`. May be worth extra glances when looking at these exploratory data, though other positions may be more important here in the SARS-CoV-2 side of the tree.
 
 ```{r heatmap_ACE2_contacts, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
-#indicator for wildtype SARS-CoV-1 state
-mutants[,SARS1_indicator := ""]
-for(i in 1:nrow(mutants)){
-  SARS1aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_SARS1]
-  if(!is.na(SARS1aa) & mutants$mutant[i] == SARS1aa){mutants$SARS1_indicator[i] <- "o"}
-}
-
 muts_temp <- mutants[SARS2_site %in% RBD_sites[SARS2_ACE2_contact==T | SARS1_ACE2_contact==T,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
 
 p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
@@ -449,7 +445,7 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_SARS-2-1
 
 ```
 
-Next, let's look at the differences between RaTG13 and SARS-CoV-2 -- in contrast to SARS-CoV-1, which has just slightly weaker ACE2-binding affinity, RaTG13 has affinity a couple orders of magnitude lower than SARS-CoV-2 -- so, comparing their states might identify some of the key adaptations that occurred from their common ancestor on the SARS-CoV-2 lineage. However, the branch to RaTG13 is relatively long, so many of the differences are more likely to be RaTG13-specific substitutions, rather than a reflection of the ancestral state. This is supported when also mapping the GD-Pangolin state at these positions, which more frequently matches the SARS-CoV-2 identity. A more rigorous analysis will need to do proper ancestral sequence reconstruction to polarize the substitutions that occurred on the focal branch leading to SARS-CoV-2, given the complicated phylogenetic relationships in the RBD in this clade. For the "by-eye" parsimony reconstructions, in the heatmaps below, "o" continues to mark the WT SARS-CoV-2 amino acid, "^" represents RaTG13, and "#" represents GD-Pangolin.
+Next, let's look at the differences between RaTG13 and SARS-CoV-2 -- in contrast to SARS-CoV-1, which has just slightly weaker ACE2-binding affinity, RaTG13 has affinity a couple orders of magnitude lower than SARS-CoV-2 -- so, comparing their states might identify some of the key adaptations that occurred from their common ancestor on the SARS-CoV-2 lineage. However, the branch to RaTG13 is relatively long, so many of the differences are more likely to be RaTG13-specific substitutions, rather than a reflection of the ancestral state. This is supported when also mapping the GD-Pangolin state at these positions, which more frequently matches the SARS-CoV-2 identity. A more rigorous analysis will need to do proper ancestral sequence reconstruction to polarize the substitutions that occurred on the focal branch leading to SARS-CoV-2, given the complicated phylogenetic relationships in the RBD in this clade. For the "by-eye" parsimony reconstructions, in the heatmaps below, "x" continues to mark the WT SARS-CoV-2 amino acid, "^" represents RaTG13, and "#" represents GD-Pangolin.
 
 The main thing to note, is that site 501 seems to explain a large degree of difference between RaTG13 and SARS-CoV-2 affinity -- from the GD-Pangolin sequence, it appears that the difference may be an N501D substitution on the RaTG13 branch (so not part of the adaptation from ancestor to SARS-CoV-2 -- GX-Pangolin is a T here, so perhaps not helpful in the by-eye polarization). Site 501 was a key site of adaptation between civet- and human-adapted strains in SARS-CoV-1, so it's interesting to see it cropping up again here, regardless of the polarization of the change (and different amino acid states than the S/T SARS-CoV-1 stuff). Mutations to the RaTG13 amino acid are also mildly deleterious w.r.t. binding for R403T (GD-Pangolin has R, GX-Pangolin K), Y449F (GD-Pangolin has Y, GX-Pangolin Y), F486L (GD-Pangolin has F, GX-Pangolin L...), and Y505H (GD-Pangolin has Y, GX-Pangolin Y). So, from parsimony, it does seem most of these 'deleterious' amino acids are *derived* substitutions on the RaTG13 lineage, instead of reflecting 'adaptive' changes on the SARS-CoV-2 ancestral lineage.
 
@@ -558,7 +554,7 @@ We see many of these positive epistatic interactions involve prolines and cystei
 bc_dbl[,epistasis_bind := delta_log10Ka - (mut1_bind+mut2_bind),by=c("library","barcode")]
 
 #table sorted by positive epistasis score, for dbl mutant bcs with measured binding no worse than -2 log10Ka units
-bc_dbl[epistasis_bind > 1 & delta_log10Ka > -2,.(avgcount,mut1,mut2,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
+kable(bc_dbl[epistasis_bind > 1 & delta_log10Ka > -2,.(avgcount,mut1,mut2,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),])
 
 ```
 
@@ -606,7 +602,7 @@ bc_dbl$min_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc
 
 In the plots below, we can see that plenty of positive epistatic pairs are distributed quite far in the structure, suggesting nonspecific effects (or noise). But plenty, including some we saw in the tables above, are at close 3D contact!
 
-```{r plot_epistasis_v_residue_pair_distance, fig.width=6, fig.height=6, fig.align="center",dpi=300,dev="png",echo=F}
+```{r plot_epistasis_v_residue_pair_distance, fig.width=6, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
 plot(bc_dbl$CA_dist, bc_dbl$epistasis_bind, pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="all doubles")
 plot(bc_dbl$min_dist, bc_dbl$epistasis_bind, pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="all doubles")
@@ -619,7 +615,7 @@ plot(bc_dbl[delta_log10Ka > -3, min_dist], bc_dbl[delta_log10Ka > -3, epistasis_
 
 Next, let's subset the double mutant info for just the RBM residues, which are focal for ACE2 interaction and also exhibit the most diversity across RBD evolution.
 
-```{r plot_epistasis_v_residue_pair_distance_RBM, fig.width=6, fig.height=9, fig.align="center",dpi=300,dev="png",echo=F}
+```{r plot_epistasis_v_residue_pair_distance_RBM, fig.width=6, fig.height=10, fig.align="center",dpi=300,dev="png",echo=F}
 bc_dbl_RBM <- bc_dbl[site1 %in% RBD_sites[RBM==T,site_SARS2] & site2 %in% RBD_sites[RBM==T,site_SARS2],]
 
 par(mfrow=c(3,2))
@@ -644,7 +640,7 @@ Let's look at the RBM residue pairs with high positive epistasis scores. We can 
 
 ```{r RBM_positive_epistasis, echo=F}
 #table sorted by positive epistasis score, for dbl mutant bcs w/i RBM 
-bc_dbl_RBM[epistasis_bind > 1 & delta_log10Ka > -3, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
+kable(bc_dbl_RBM[epistasis_bind > 1 & delta_log10Ka > -3, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),])
 
 ```
 
