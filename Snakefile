@@ -107,12 +107,13 @@ rule make_summary:
                and [the homologs]({path(input.homolog_effects_file)}).
                
             10. [Structure-function analysis of mutational effects]({path(input.structure_function)}).
+
+            11. [Mutational constraint within RBD antibody epitopes]({path(input.antibody_epitopes)})
+
+            12. [RBD variation across the sarbecovirus clade]({path(input.sarbecovirus_diversity)})
             
-            11. [Characterization of amino acid variants in sequenced SARS-CoV-2 isolates]({path(input.circulating_variants)}).
+            13. [RBD variation in circulating SARS-CoV-2 isolates]({path(input.circulating_variants)}).
             
-            12. [Analysis of mutational tolerance within RBD antibody epitopes]({path(input.antibody_epitopes)})
-            
-            13. [Analysis of amino acid diversity in natural sarbecovirus isolates]({path(input.sarbecovirus_diversity)})
 
             """
             ).strip())

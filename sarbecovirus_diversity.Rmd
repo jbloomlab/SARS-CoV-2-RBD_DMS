@@ -9,7 +9,7 @@ editor_options:
   chunk_output_type: inline
 ---
 
-This notebook analyzes the mutational tolerance of residues within epitopes of different monoclonal antibodies 
+This notebook analyzes DMS meausurements in relation to natural sequence diversity in a broader alignment of sarbecovirus RBDs.
 
 ## Setup
 
@@ -67,13 +67,13 @@ RBD_sites[,max_expr := max(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",expr_avg],na.rm=T),by=site_SARS2]
 ```
 
-## Analysis of sarbecovirus RBD amino acid diversity
+## Relationship between DMS mutational tolerance and natural sequence diversity
 
-Read in an alignment of sarbecovirus RBD sequences. Many of these sequences are so-called "Clade 2" sequences, which have not been shown to bind human or any other ACE2 -- so whether they evolve under constraint for ACE2-binding is unclear (and even if so, bat ACE2 is also under elevated positive selection, so even if binding bat ACE2s, these viruses could have quite odd specificities!). Therefore, we consider the entire sarbecovirus alignment, and one restricted to the SARS-CoV-2 and SARS-CoV-1 clade sequences [this alignment is only 12 sequences :( ]. The full alignment is probably relevant to mutational constraint on expression (since we see that the Clade 2 and 3 sequencs in our homolog panel still have the same expression range as the ACE2-binding variants), while the restricted alignment is probably more relevant to mutational constraint on binding (since the Clade 2 and 3 sequencs in our homolog panel had no detectable binding to huACE2.)
+We load in an alignment of sarbecovirus RBD sequences, whose curation and alignment is described in the `data/alignments` subdirectory. Many of these sequences are so-called "Clade 2" sequences, which have not been shown to bind human or any other ACE2 -- so whether they evolve under constraint for ACE2-binding is unclear. Therefore, we consider the entire sarbecovirus RBD alignment, and one restricted to the SARS-CoV-2 and SARS-CoV-1 clade sequences (which consists of just 12 RBD sequences). The full alignment is probably relevant to mutational constraint on expression (since we see that the Clade 2 and 3 sequencs in our homolog panel still have the same expression range as the ACE2-binding variants), while the restricted alignment is probably more relevant to mutational constraint on ACE2 binding (since the Clade 2 and 3 sequencs in our homolog panel had no detectable binding to huACE2.)
 
-Within each of these alignments, we compute the entropy of the alignment column (and the related value effective amino acids, (N<sub>eff</sub>), and compare this value to the average effect of mutations at the site from our DMS data for binding and expression.
+Within each of these alignments, we compute the entropy of the alignment column (and the related effective number amino acids N<sub>eff</sub>), and compare this value to the average effect of mutations at the site from our DMS data for binding and expression. We can see the sites where we observe considerable mutational constraint exhibit reduced amino acid diversity across the sarbecovirus clade and the ACE2-restricted clades in particular.
 
-```{r natural_diversity_v_mean_effects, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
+```{r natural_diversity_v_mean_effects, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=T}
 alignment <- read.fasta(file='data/alignments/RBDs_aligned.fasta')
 #remove columns that is gap in the SARS-CoV-2 sequence (only one is a single A insertion in the BM48-31 sequence)
 alignment$ali <- alignment$ali[,which(alignment$ali[1,]!="-")]
@@ -92,7 +92,7 @@ clade2 <- which(alignment$id %in% c("As6526_KY417142","Rs4237_KY417147","Rs4081_
 
 clade3 <- which(alignment$id %in% c("BM48-31_NC014470","BtKY72_KY352407"))
 
-#make a second alignment which is only the clade 1 and sars-cov-2 clade sequencs, where ACE2-binding is present
+#make a second alignment which is only the clade 1 and sars-cov-2 clade sequences, where ACE2-binding is present
 alignment_restricted <- alignment;alignment_restricted$ali <- alignment$ali[c(clade1,cladeSARS2),]; alignment_restricted$id <- alignment$id[c(clade1,cladeSARS2)]
 
 entropy <- entropy(alignment)$H
@@ -112,11 +112,13 @@ plot(RBD_sites$Neff_restricted,RBD_sites$mean_expr,pch=16,col="#00000067",ylab="
 
 ```
 
-How do the effects of individual amino acid differences among these homologs compare to the overall DFE? How does this differ among clades? We iterate through our aligned sequences, and compile the amino acid differences observed between SARS-CoV-2 and sequences within each clade. We then look at the distribution of effects of these mutations on binding and expression within each clade, and compare it to the overall DFE for mutational effects on binding and expression.
+## Shifting mutational preferences across sarbecovirus clades
 
-Overall, we see that the amino acid variants that accumulated in each sarbecovirus clade are less deleterious for binding and expression than the overall DFE, suggesting that overall, the amino acid variation sampled in nature is subjected to somoe purifying selection relative to the overall DFE for these phenotypes (or other phenotypes that correlate with these measurements). I am a bit surprised to see that the amino acid variants sampled in Clades 2 and 3 are not skewed toward deleterious amino acids more than we see here! Since these have not been shown to bind ACE2s, it is unclear whether they are operating under the same selective constraint as sequences in Clade 1 and the SARS-CoV-2 clade. It is important to note that this analysis is *not* taking into account two large deletions in the RBM loops that are present in these Clade 2+3 sequences, which may explain their reduced affinity for human ACE2.
+How do the effects of individual amino acid differences among sarbecovirus homologs compare to the overall DFE? And how does this differ among clades? Below, we show the distribution of effects of amino acid differences found among sarbecovirus RBDs in each clade when that state is introduced into SARS-CoV-2. We show these distributions for all RBD sites (top), and for sites in the receptor binding motif (RBM) in particular (bottom).
 
-```{r homolog_amino_acid_variants, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+Overall, we see that the amino acid variants that accumulated in each sarbecovirus clade are less deleterious for binding and expression than the overall DFE, suggesting that overall, the amino acid variation sampled in nature is subjected to some degree of purifying selection for phenotypes that correlate with our measured phenotypes -- this is particularly true for the expression phenotypes, and I imagine that the skewing in Clade2 is primarily a function of shifting amino acid preferences due to the large degree of divergence of these branches (see the relatively longer branch to this clade on our RBD phylogeny). I am actually a bit surprised to see that the amino acid states sampled in Clades 2 and 3 are not skewed toward more deleterious binding effects in the SARS-CoV-2 background. Since these have not been shown to bind ACE2s, it is unclear whether they are operating under the same selective constraint as sequences in Clade 1 and the SARS-CoV-2 clade -- however, we can see more skew in Clade 2 when we focus on the RBM in particular in the lower left plot, which is where the direct determinants of ACE2-binding reside. It is important to note that this analysis is *not* taking into account two large deletions in the RBM loops that are present in these Clade 2+3 sequences, which may also contribute to their reduced affinity for human ACE2.
+
+```{r homolog_amino_acid_variants, fig.width=8, fig.height=8, fig.align="center",dpi=300,dev="png",echo=F}
 #build up a list of amino acid variants observed in sequences from each of the clades
 clade1_subs <- c()
 clade1_subs_variant <- c()
@@ -213,15 +215,6 @@ p2 <- ggplot(mutants_temp[!is.na(expr_avg),],aes(x=clade,y=expr_avg))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   xlab("clade")+ylab("delta_meanF (expression)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
 
-grid.arrange(p1,p2,nrow=1)
-
-```
-
-Let's make the same plots, but focusing only on residues within the RBM. We do have strong expectation that the core RBD is evolving under consistent constraints in all of these viral isolates, because we think the primary constraint on the core RBD is basic thermodynamic stabilitiy (at least as far as is captured in our assay -- we do not take into account quaternary contacts or immune selection). In contrast, the RBM mediates receptor contact, and so if there is variation in receptor usage (or at the very least, variation in bat versus e.g. human ACE2s), differences in selective pressure leading to different amino acid usage across these sarbecovirus clades may be more apparent in the RBM.
-
-Indeed, perhaps more aligned with what I expected to see above, among RBM mutations (excluding indels which we are not incorporating), Clade 2 sequences (unclear for Clade 3?) may appear to fix more amino acid mutations that we predict to be deleterious for binding human ACE2.
-
-```{r homolog_amino_acid_variants_RBM, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
 for(i in 1:nrow(mutants_temp)){
   if(mutants_temp$SARS2_site[i] %in% RBD_sites[RBM==T,site_SARS2]){
     mutants_temp$RBM[i] <- as.logical(TRUE)
@@ -230,37 +223,220 @@ for(i in 1:nrow(mutants_temp)){
   }
 }
 
-p1 <- ggplot(mutants_temp[!is.na(bind_avg) & RBM==T,],aes(x=clade,y=bind_avg))+
+p3 <- ggplot(mutants_temp[!is.na(bind_avg) & RBM==T,],aes(x=clade,y=bind_avg))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   xlab("clade")+ylab("delta_log10Ka,app (binding)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
 
-p2 <- ggplot(mutants_temp[!is.na(expr_avg) & RBM==T,],aes(x=clade,y=expr_avg))+
+p4 <- ggplot(mutants_temp[!is.na(expr_avg) & RBM==T,],aes(x=clade,y=expr_avg))+
   geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
   xlab("clade")+ylab("delta_meanF (expression)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
 
-grid.arrange(p1,p2,nrow=1)
+grid.arrange(p1,p2,p3,p4,nrow=2)
+
 ```
 
-Also, let's output a table of amino acid variant seen in the SARS-CoV-2 clade and Clade 1 that have large effects on binding -- let's look at mutations with < -0.5 binding effect in the SARS-CoV-2 clade, and < -1 in Clade 1. Tables are sorted by homolog (so, the same amino acid can show up multiple times in the table if found in >1 homolog).
+Given that ACE2-binding is restricted to Clade 1 and the SARS-CoV-2 clade, let's first focus on amino acid differences found among Clade 1 sequences (and SARS-CoV-1 in particular) and their effects in the SARS-CoV-2 background. Below are heatmaps illustrating mutational effects on binding and expression at all positions that differ in amino acid identity between SARS-CoV-1 and -2, with the "x" indicator marking the SARS-CoV-2 wildtype state, and the "o" indicator marking SARS-CoV-1 wildtype. The positions of all of the variable amino acids between these virus RBDs is shown in `dms-view` [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=346%2C348%2C354%2C357%2C372%2C373%2C384%2C393%2C402%2C403%2C406%2C417%2C430%2C434%2C438%2C439%2C441%2C443%2C444%2C445%2C446%2C452%2C455%2C456%2C458%2C459%2C460%2C462%2C470%2C471%2C472%2C473%2C474%2C475%2C476%2C477%2C478%2C481%2C482%2C484%2C485%2C486%2C490%2C493%2C494%2C498%2C499%2C501%2C503%2C519%2C529), where you can see that *many* amino acid differences accumulated in the RBM and at ACE2 contact positions between these lineages.
 
-We can see below that within the SARS-Cov-2 clade, two amino acids found in RaTG13 have deleterious effects on binding. RaTG13 is a bat virus and *does* have reduced human ACE2 affinity in our assay, so these amino acid differences may contribute to that difference. 
+Overall, amino acids found in SARS-CoV-1 do not have *huge* negative effects if introduced into the SARS-CoV-2 background -- but there are moderate affinity defects when introducing SARS-CoV-1 wildtype states with mutations K417V, L455V, II472P, A475P, G476D, G482P, F486L, and S494D, along with slight expression defects caused by S438T and N439R. These negative-effect SARS-CoV-1 mutations are highlighted in `dms-view` [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=417%2C455%2C472%2C475%2C476%2C482%2C486%2C494), where we can see that they cluster in two parts of the RBM -- the lateral loop containing the RBM disulfide, and the medial portion of the RBM loop.
 
-```{r table_del_states_SARS2_clade, echo=F}
-kable(mutants_temp[clade %in% c("cladeSARS2") & bind_avg < -0.5,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
+On the other hand, many mutations to SARS-CoV-1 amino acid identities seem to have *positive* effects on binding and expression. Most notably for expression, are mutations N354E, R357K (mild), K417V (discussed above, also in context of binding/expression trade-off), and L452K, and for binding, beneficial effects are also seen for N460K, Q498V (quite substantial positive effect, direct interface residue), N501T (also quite substantial, interface, site of key adaptation in SARS-CoV-1), V503I, and H519N. These positions are highlighted on the structure [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=354%2C357%2C417%2C452%2C460%2C498%2C501%2C503%2C519), where we can see that many are distant from the ACE2 interface (primarily the expression-enhancing mutations). Interestingly, the beneficial *binding* SARS-CoV-1 residues are on the *other* lateral end of the RBM compared to the detrimental swaps highlighted above. Therefore, it seems like, of the interface differences between SARS-CoV-1 and -2, one "edge" of the RBM saddle could be better optimized for ACE2-binding by mutating to the SARS-CoV-1 states, while the middle and the other edge are not able to be swapped. As we will begin to see later on, the SARS-CoV-1 affinity is *not* predicted by the sum of effects of these contact mutations, which would predict a substantially worse affinity. Therefore, this observation about the deleterious SARS-CoV-1 swaps in the SARS-CoV-2 background is likely a reflection of epistasis among the many RBM differences that separate these two molecules (as opposed to drifting determinants of affinity -- i.e. both molecules endow similar affinity, but through different sets of contacts in different regions of the interface). I am, however, a bit surprised to see that there are affinity-enhancing swaps to SARS-CoV-1 identities, in light of the fact that SARS-CoV-2 has repeatedly been demonstrated to have overall tighter ACE2-binding affinity than SARS-CoV-1.
+
+```{r heatmap_SARS_CoV_2_1_diff, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#order mutant as a factor for grouping by rough biochemical grouping
+mutants$mutant <- factor(mutants$mutant, levels=c("*","C","P","G","V","M","L","I","A","F","W","Y","T","S","N","Q","E","D","H","K","R"))
+#add character vector indicating wildtype SARS-CoV-2 aa to use as plotting symbols for wt
+mutants[,wildtype_indicator := ""]
+mutants[mutant==wildtype,wildtype_indicator := "x"]
+
+#indicator for wildtype SARS-CoV-1 state
+mutants[,SARS1_indicator := ""]
+for(i in 1:nrow(mutants)){
+  SARS1aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_SARS1]
+  if(!is.na(SARS1aa) & mutants$mutant[i] == SARS1aa){mutants$SARS1_indicator[i] <- "o"}
+}
+
+muts_temp <- mutants[SARS2_site %in% RBD_sites[amino_acid_SARS1 != amino_acid_SARS2,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,ncol=1)
+
+invisible(dev.print(pdf, paste(config$sarbecovirus_diversity_dir,"/heatmaps_SARS-2-1-differences.pdf",sep="")))
+
 ```
 
-
-As seen in the table below, in Clade 1, sequences including SARS-CoV-1 have some amino acid variants that are deleterious in SARS-CoV-2. We can dig in further to see whether these deleterious SARS-CoV-1 states are truly shifted preferences, versus just offset by other affinity gains at the interface. (And, future DMS in SARS-CoV-1 RBM could address this!) L455 and S494 are "key adaptations" in SARS-CoV-1 (Y442 and D480), according to studies by e.g. Fang Li -- so, should be a lot of prior structural work we can look at to better understand what other RBM/interface residues might be impacting amino acid preferences at these sites between SARS-CoV-1 and 2.
+Let's output a table of all Clade 1 amino acid variants that have moderately large detrimental effects in the SARS-CoV-2 background. This focuses the observations made from the heatmap above, and shows their broader context in Clade 1 isolate sequences. Of note, Y455 and D494 are "key adaptations" in SARS-CoV-1 (Y442 and D480), according to studies by e.g. Fang Li -- so, should be a lot of prior structural work we can look at to better understand what other RBM/interface residues might be impacting amino acid preferences at these sites between SARS-CoV-1 and 2. (And perhaps suggests a future mutational scan in the SARS-CoV RBM would illustrate lots of shifting preferences!)
 
 ```{r table_del_states_clade_1, echo=F}
 kable(mutants_temp[clade %in% c("clade1") & bind_avg < -1,.(mutation,bind_lib1,bind_lib2,bind_avg,expr_avg,clade,homolog)])
 ```
 
+Clade 2 sequences do not bind ACE2, so effects of amino acid variation on binding (and perhaps, more generally, variation within the RBM) is quite confounded in this clade. However, we may be able to identify shifting determinants of stability within the core RBD. [Here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=335%2C339%2C340%2C348%2C349%2C354%2C356%2C357%2C360%2C366%2C372%2C385%2C388%2C394%2C399%2C401%2C404%2C405%2C410%2C414%2C417%2C438%2C439%2C440%2C441%2C443%2C444%2C445%2C452%2C455%2C456%2C459%2C460%2C468%2C470%2C484%2C485%2C486%2C488%2C489%2C490%2C491%2C493%2C494%2C496%2C498%2C500%2C501%2C502%2C504%2C507%2C508%2C519%2C529) is a `dms-view` illustrating *all* amino acid differences between HKU3-1 and SARS-CoV-2 (excluding gap positions in HKU3-1 within the RBM). Below, we output a heatmap for *core RBD* positions only (seen in `dms-view` [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=335%2C339%2C340%2C348%2C349%2C354%2C356%2C357%2C360%2C366%2C372%2C385%2C388%2C394%2C399%2C401%2C404%2C405%2C410%2C414%2C417%2C519%2C529)), that differ in identity between SARS-CoV-2 ("x" indicator) and HKU3-1 ("@" indicator).
+
+The heatmap for expression is probably most interesting. We can see that at mnay positions, HKU3-1 has amino acid states that would enhance RBD stability in the SARS-CoV-2 background, including mutations G339D, A348P, N354E, K356T, R357K, N360D, K417V (seen before), H519N. These positions are visualized [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=339%2C348%2C354%2C356%2C357%2C360%2C417), where we can see that they primarily align along one surface of the core RBD. In contrast, there is a cluster of positions where the HKU3-1 amino acid decreases stability in SARS-CoV-2, including N388I, S399T, V401L, G404S, D405S, and I410V, visualized [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=388%2C399%2C401%2C404%2C405%2C410). These positions are in the 'top-center' of the core RBD, near the internal contact interface with the RBM -- so, given the extreme divergence in RBM structure and function, it makes sense that the core RBD positions that border these divergent RBMs would exhibit shifted amino acid preferences in these two backgrounds.
+
+```{r heatmap_SARS_CoV_2_HKU31_diff, fig.width=10,fig.height=5,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#indicator for wildtype HKU3-1 state
+mutants[,HKU31aa_indicator := ""]
+for(i in 1:nrow(mutants)){
+  HKU31aa <- alignment$ali[grep("HKU3-1_",alignment$id),mutants$RBD_site[i]]
+  if(!is.na(HKU31aa) & mutants$mutant[i] == HKU31aa){mutants$HKU31aa_indicator[i] <- "@"}
+}
+
+mutants[,RBM := FALSE]
+mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],RBM := TRUE]
+
+muts_temp <- mutants[SARS2_site %in% mutants[HKU31aa_indicator=="@" & wildtype_indicator=="" & RBM==F,SARS2_site],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=HKU31aa_indicator),size=2,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=HKU31aa_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,ncol=2)
+
+invisible(dev.print(pdf, paste(config$sarbecovirus_diversity_dir,"/heatmaps_SARS-2-HKU31-differences.pdf",sep="")))
+
+```
+
+At risk of getting exhausting, we might as well look at patterns of mutational differences between SARS-CoV-2 and BM48-31, for completeness. Below are heatmaps illustrating positions that differ between SARS-CoV-2 ("x") and BM48-31 ("~"). What's interesting here to me, is that BM48-31 differs from SARS-CoV-2 at many of the exact same positions as HKU3-1, but with a different pattern -- it has expression-enhancing amino acids at many of the same sites as HKU3-1, but at the positions where HKU3-1 has detrimental amino acids with respsect to SARS-CoV-2 expression, BM48-31 seems to sample less dramatically destabilizing amino acids. To me, this suggests that, although Clades 2 and 3 are simliar at face value (both have RBM deletions, even in overlapping regions, and neither binds human ACE2), there are genetic differences between them that could be meaningful (we see more of this below). The BM48-31 RBD, though not binding to human ACE2, has more of the genetic features in place that could support evolution of ACE2 binding. In contrast, Clade 2 has gone a bit "off the rails" in its lineage-specific evolution, as seen by its long branch separating it from the rest of the sarbecovirus clade, which correspond with dramatically changed amino acid preferences. It would be really interesting to see if "forward" evolution of ACE2 binding is easier to achieve in a background like BM48-31 compared to Clade 2 sequencs -- one result from Letko et al. 2020 in [Figure 4](https://www.nature.com/articles/s41564-020-0688-y/figures/4) suggests this might be the case (at least for SARS-CoV-like mechanisms of ACE2 utilization) -- they made chimeras of the SARS-CoV-1 RBM transplanted onto Clade 2 and 3 core RBD, and saw the Clade 3 core RBD supported higher cellular infectivity. This is highly consistent with what I'm seeing here, that Clade 2 sequences have undergone more dramatic evolutionary shifts in amino acid preferences from the rest of the sarbecovirus clades.
+
+```{r heatmap_SARS_CoV_2_BM4831_diff, fig.width=10,fig.height=5,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#indicator for wildtype BM48-31 state
+mutants[,BM4831aa_indicator := ""]
+for(i in 1:nrow(mutants)){
+  BM4831aa <- alignment$ali[grep("BM48-31_",alignment$id),mutants$RBD_site[i]]
+  if(!is.na(BM4831aa) & mutants$mutant[i] == BM4831aa){mutants$BM4831aa_indicator[i] <- "~"}
+}
+
+muts_temp <- mutants[SARS2_site %in% mutants[BM4831aa_indicator=="~" & wildtype_indicator=="" & RBM==F,SARS2_site],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=BM4831aa_indicator),size=2,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=BM4831aa_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,ncol=2)
+
+invisible(dev.print(pdf, paste(config$sarbecovirus_diversity_dir,"/heatmaps_SARS-2-BM4831-differences.pdf",sep="")))
+
+```
+
+## Sequence and functional variation within the SARS-CoV-2 clade
+
+Although few sequences have been isolated from the SARS-CoV-2 clade, we uncovered functional diversity, with GD-Pangolin exhibiting slightly enhanced ACE2-binding affinity, and RaTG13 exhibiting strongly reduced affinity. Let's take a look at the amino acid variation among these strains and the effects of these mutations in SARS-CoV-2.
+
+First, we illustrate heatmaps for positions that differ between RaTG13 and SARS-CoV-2. The "x" indicator continues to mark the SARS-CoV-2 state, with "^" indicating the RaTG13 state. The main thing to note, is that site 501 seems to explain a large degree of difference between RaTG13 and SARS-CoV-2 affinity. We can do preliminary "by eye" parsimony reconstructions of the ancestral RaTG13+SARS-CoV2 state, which suggests that the N501D substitution is a derived state in the RaTG13 lineage (so, not as I first thought, a pointer toward adaptation on the lineage toward SARS-CoV-2). Site 501 was a key site of adaptation between civet- and human-adapted strains in SARS-CoV-1, so it's interesting to see it cropping up again here, regardless of the polarization of the change (and different amino acid states than the S/T SARS-CoV-1 stuff). Mutations to the RaTG13 amino acid are also mildly deleterious w.r.t. binding for R403T (GD-Pangolin has R, GX-Pangolin K), Y449F (GD-Pangolin has Y, GX-Pangolin Y), F486L (GD-Pangolin has F, GX-Pangolin L...), and Y505H (GD-Pangolin has Y, GX-Pangolin Y). So, from parsimony, it does seem most of these 'deleterious' amino acids are *derived* substitutions on the RaTG13 lineage, instead of reflecting 'adaptive' changes on the SARS-CoV-2 ancestral lineage.
+
+```{r heatmap_SARS_CoV_2_RaTG13_diff, fig.width=10,fig.height=5,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#indicator for wildtype RaTG13 state
+mutants[,RaTG13_indicator := ""]
+for(i in 1:nrow(mutants)){
+  RaTG13aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_RaTG13]
+  if(!is.na(RaTG13aa) & mutants$mutant[i] == RaTG13aa){mutants$RaTG13_indicator[i] <- "^"}
+}
+
+muts_temp <- mutants[SARS2_site %in% RBD_sites[amino_acid_RaTG13 != amino_acid_SARS2,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=RaTG13_indicator),size=3,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=RaTG13_indicator),size=3,color="gray10")
+
+grid.arrange(p1,p2,ncol=2)
+
+invisible(dev.print(pdf, paste(config$sarbecovirus_diversity_dir,"/heatmaps_SARS-2-RaTG13-differences.pdf",sep="")))
+
+```
+
+Last, let's look at heatmaps for positions that differ between the GD-Pangolin and SARS-CoV-2 RBDs. We can see that 3 of the 6 differences are predicted to enhance SARS-CoV-2 affinity (2 of these also enhance expression, and 2 binding-neutral mutations also enhance expression), likely explaining the observed enhanced GD-Pangolin affinity. These six sites are visualized on the structure in `dms-view` [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=346%2C372%2C402%2C417%2C498%2C519).
+
+```{r heatmap_SARS_CoV_2_GDPangolin_diff, fig.width=5,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#indicator for wildtype GD-Pangolin state
+mutants[,GDPangolin_indicator := ""]
+for(i in 1:nrow(mutants)){
+  GDPangolinaa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_GD_Pangolin]
+  if(!is.na(GDPangolinaa) & mutants$mutant[i] == GDPangolinaa){mutants$GDPangolin_indicator[i] <- "#"}
+}
+
+muts_temp <- mutants[SARS2_site %in% RBD_sites[amino_acid_GD_Pangolin != amino_acid_SARS2,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=GDPangolin_indicator),size=2,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=GDPangolin_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,ncol=2)
+
+invisible(dev.print(pdf, paste(config$sarbecovirus_diversity_dir,"/heatmaps_SARS-2-GDPangolin-differences.pdf",sep="")))
+
+```
+
 ## Predicting (or failing to predict) homolog affinities from single mutant effect measurements
 
-How well can we predict homolog affinities for human ACE2 based on our individual mutational measurements? Try it three ways: 1) summing mutational effects across all RBD positions, 2) just RBM positions, 3) just ACE2 contact positions. (Expectation is: predictions of RaTG13 and pangolin affinity might be decent, but clade1 and more distant sequences will be bad). To give at least some semblence of uncertainty in our predictions, I calculate the standard error of each single mutant effect in our dataset as just the SEM from the two replicate measurements -- I then propagate the SEM for the addition of the values.
+One indicator of the extent of epistasis/shifting preferences, is to compare homolog phenotypes to that predicted by the addition of single mutation effects as measured in the focal SARS-CoV-2 background. We try this in three ways: 1) summing mutational effects across all RBD positions, 2) just RBM positions, 3) just ACE2 contact positions. Expectation is: predictions of RaTG13 and pangolin affinity might be decent, but Clade 1 and more distant sequences will be bad. (We can also propagate the n=2 SEM for these additions, in case useful.) The table below gives the number of differences between the sequence and SARS-CoV-2 in each of the query classes. It then compares the experimentally measured binding and expression scores to those predicted by summing the mutational effects of individual differences in these three categories. 
 
-```{r predict_homolog_affinities}
+We can see that the relative predictions for RaTG13 and GD-Pangolin are correct, though the magnitude of affinity decrease in RaTG13 is over-predicted. For Clade 1 sequences, we can see that the overall magnitude of affinity decrease is severely over-predicted -- but among the Clade 1 sequences, the relative affinity order isn't terrible. That is, we do predict that WIV16 has higher affinity than SARS-CoV-1 or LYRa11, though we incorrectly predict that SARS-CoV-1 has the same affinity as LYRa11 (across all three categories, which is surprising. I actually validated these sums are correct because this looked weird to me!). Clade 2 sequences are predicted to have universally terrible binding, as we'd expect. And surprisingly, BM48-31 is not predicted to have terrible binding. I interpret this to mean, as alluded to in a section above, that although neither Clade 2 RBDs nor BM48-31 bind ACE2, BM48-31 is genetically "closer" to ACE2-binding, insofar as, it has fewer amino acid differences that are measured as being highly incompatible with ACE2-binding. (Alternative is that BM48-31 is less distinct from SARS-CoV-2 at the level of shifted amino acid preference, so its fixed states aren't interpreted as being as incompatible as those in Clade 2 -- this is consistent with the observation that BM48-31 is predicted to be better expressing than Clade 2 sequences, as well, reflecting overall less divergent amino acid preferences.) Either of these scenarios are consistent with the result I liinked above from Letko et al. 2020 in [Figure 4](https://www.nature.com/articles/s41564-020-0688-y/figures/4), in which Clade 3 core RBD + Clade 1 RBM chimeras function better than Clade 2 core RBD + Clade 1 RBM chimeras.
+
+```{r predict_homolog_affinities, echo=F}
 mutants[,bind_SEM := sd(c(bind_lib1,bind_lib2))/sqrt(2),by=mutation]
 mutants[,expr_SEM := sd(c(expr_lib1,expr_lib2))/sqrt(2),by=mutation]
 
@@ -309,236 +485,38 @@ for(i in 1:nrow(homolog_measurements)){
   homolog_measurements$SEM_sum_expr_contact[i] <- sqrt(sum(mutants[mutation_RBD %in% subs,expr_SEM]^2))
 }
 
-kable(homolog_measurements[,.(homolog,bind_lib1,bind_lib2,bind_avg,n_diff,sum_bind,sum_expr,n_diff_RBM,sum_bind_RBM,sum_expr_RBM,n_diff_contact,sum_bind_contact,sum_expr_contact)])
+kable(homolog_measurements[,.(homolog,n_diff,n_diff_RBM,n_diff_contact,bind_avg,sum_bind,sum_bind_RBM,sum_bind_contact,expr_avg,sum_expr,sum_expr_RBM,sum_expr_contact)],
+      col.names=c("homolog","# RBD diff","# RBM diff","# contact diff","measured binding","predicted binding, RBD","predicted binding, RBM","predicted binding, contact","measured expression", "predicted expression, all RBD","predicted expression, RBM","predicted expression, contact"))
 
 ```
 
-Below, we plot the sum of binding and expression effects versus the number of mutations present in a genotype for RBM residues. Once again, this does not take into account deletions within RBM loops present in Clade2 and Clade3 sequences. (Rationale for using RBM instead of whole RBD, is that Letko et al. showed RBM is the minimal region whose chimera is sufficient to confer a clade 2 or 3 sequence ACE2-mediated entry -- that is, putting the Clade 1 consensus RBM onto a clade 2 or 3 core RBD is sufficient to allow ACE2-mediated cellular entry)
+To visualize the trends in this table, I plot the sum of binding and expression effects versus the number of mutations present in a genotype for all RBD residues. Once again, this does not take into account additional deleterious effects of deletions within RBM loops present in Clade2 and Clade3 sequences. We then plot the sum of mutational effects on binding versus expression, which could potentially "normalize" out the extent of shifting preferences, because all variants express similarly well. Finally, we plot the actual measured binding versus predicted by summing mutational effects. Points are colored by clade: purple (blue?) is SARS-CoV-2 clade sequences, orange (red?) is Clade 1 (SARS-CoV-1 clade), green is Clade 2 (deletions, have not been seen to use ACE2), magenta is clade 3 (Bulgaria and Kenya isolates). (Sorry my descriptions of colors are probably wrong :/ let me know if the color scheme is hideous, I've been known to pick terrible colors in the past -- these are the colors I included in our phylogeny figure so we should update all of these ASAP if needed.)
 
-As we probably expected, we can see that the number of differences is a primary determinant of how "deleterious" a sequence is predicted to be -- both for binding and expression -- which probably more than anything else reflects epistasis and shifting preferences in the more distant backgrounds. So, it might be that these predictions work ok for within the SARS-CoV-2 clade where the number of differences is small -- for example, within the SARS-CoV-2 clade GD Pangolin is correctly predicted to have high affinity while RaTG13 is correctly predicted to have lower affinity. But in other clades, the number of differences is just too large for the sum to be relevant. However, maybe within other clades, the *relative* binding predicted for one e.g. clade 1 sequence versus another predicted is useful? E.g. in Clade 1, we do predict that WIV16 has higher affinity than SARS-CoV-1 or LYRa11, though we don't also successfully predict that SARS-CoV-1 has higher affinity than LYRa11.
+The first trend this shows is that the number of differences is a primary determinant of how "deleterious" a sequence is predicted to be -- both for binding and expression -- which probably reflects epistasis and shifting preferences in the more distant backgrounds as discussed above. So, it might be that these predictions work ok for within the SARS-CoV-2 clade where the number of differences is relatively small -- but in other clades, the number of differences is just too large for the sum to be relevant because of shifted effects. However, maybe within these other clades, the *relative* binding predicted for one e.g. clade 1 sequence versus another predicted is useful.
 
-Last, the placement of BM48-31 is quite odd! This says that (besides its deletion), the amino acid states its sampling aren't really any less compatible with huACE2 binding than those sampled in Clade 1? Honestly kind of surprising. But, if we internally also normalize by the sum of expression effects, BM48-31 is also predicted to have higher expression-per-mutation than the Clade1 sequences, which perhaps impacts its interpretation. But overall, this perhaps suggests that BM48-31 is "closer" to ACE2 utilization than Clade 2 sequences. (e.g., maybe it uses ACE2 in bats??)
-
-Here are plots relating sum of mutational effects on binding and expression to each other, to number of differences, and actual binding, for all RBM differences. Points are colored by clade: purple (blue?) is SARS-CoV-2 clade sequences, orange (red?) is Clade 1 (SARS-CoV-1 clade), green is Clade 2 (deletions, have not been seen to use ACE2), magenta is clade 3 (Bulgaria and Kenya isolates) (sorry my descriptions of colors are probably wrong :/ let me know if the color scheme is hideous, I've been known to pick terrible colors in the past -- these are the colors I included in our phylogeny figure):
-
-```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
+```{r predicted_versus_actual_homolog_correlations_RBD, fig.width=7, fig.height=7.5, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
-plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of mutational effects on expression",cex=2)
+plot(homolog_measurements$n_diff,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$n_diff,homolog_measurements$sum_expr,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
 
-plot(homolog_measurements$sum_expr_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$sum_expr,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
 
 ```
-And the same plots, for only ACE2-contact residue positions:
 
-```{r predicted_versus_actual_homolog_correlations_contact, fig.width=7, fig.height=7, fig.align="center",dpi=300,dev="png",echo=F}
+And the same plots, for RBM residues. These plots are perhaps more relevant for binding phenotypes only (i.e. the lower-right plot), whereas whole RBD is probably more informative when trying to mentally account for shifting preferences as indicated by shifts in the predicted expression of an RBD.
+
+```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=7, fig.height=7.5, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
-plot(homolog_measurements$n_diff_contact,homolog_measurements$sum_bind_contact,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$n_diff_contact,homolog_measurements$sum_expr_contact,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
+plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on expression",cex=2)
 
-plot(homolog_measurements$sum_expr_contact,homolog_measurements$sum_bind_contact,col=homolog_measurements$clade_color,pch=16,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_contact,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
-
-```
-
-(What does it look like when we add in the other Clade 1/2/3 sequences that we did not measure, but see where they fall on the predicted binding versus expression plots? Particularly GX Pangolin)
-
-Overall, my intpretation from this table/figures, is that our mutational effects are perhaps useful for predictions of things very similiar to our focal background (e.g. GD Pangolin, circulating strains), but that because of epistasis, mutational preferences are quite different in other sarbecovirus clades, which complicates prediction of ability of unseen RBDs to bind ACE2. (This perhaps can mentally be loosely accounted for by taking into account the total number of amino acid differences and also their effect on expression, but that's a lot of weirdness to normalize for so overall definitely not a direction to push.) These are probably not the figures we'll want to use to communicate this, although I do think this is an interestning conclusion to communicate (that preferences have shifted between SARS-CoV-2 and -1)
-
-
-## Epistasis in library double mutants and relation to natural diversity patterns
-
-*Note* though I do see some structurally interesting epistasis when analyzing double mutant barcodes compared to the effects of their component single mutations, I didn't really see anything interesting below as it relates to the goal I intended toward with putting this anlaysis in this script. Therefore, I've moved the "structurally relevant" component of this script to the structure_function notebook, where it might be elaborated in that context. I keep the code here related to what I tried w.r.t. natural diversity in case I decide to come back to it, but this will probably eventually be eliminated. 
-
-Do we see certain positions enriched for epistatic deviations in our (sparse) sampling of double mutants? How do these positions map to the positions we see varying in Clade1 versus SARS-CoV-2 clade sequences? (This analysis might make more sense ported over to structure_function, esp if it doesn't end up linking up with natural diversity patterns)
-
-First, we take our barcode measurements for double mutants, and add to the data table the component single mutation effect scores.
-
-```{r pairwise_deviations}
-#read in per-bc func scores
-bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response, baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)]
-bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, variant_class, aa_substitutions, n_aa_substitutions)]
-
-bc_dbl <- merge(bc_bind[n_aa_substitutions==2 & variant_class == ">1 nonsynonymous",], bc_expr[n_aa_substitutions==2 & variant_class == ">1 nonsynonymous",], sort=F)
-
-#make columns breaking up the two substitutions
-bc_dbl[,mut1 := strsplit(aa_substitutions, split=" ")[[1]][1], by=c("library","barcode")]
-bc_dbl[,mut2 := strsplit(aa_substitutions, split=" ")[[1]][2], by=c("library","barcode")]
-
-#change mutations to be Spike numbering from RBD numbering
-bc_dbl[,mut1 := mutants[mutation_RBD==mut1,mutation],by=c("library","barcode")]
-bc_dbl[,mut2 := mutants[mutation_RBD==mut2,mutation],by=c("library","barcode")]
-
-#pull single mutant effects into table
-bc_dbl[,c("mut1_bind","mut2_bind") := list(mutants[mutation==mut1,bind_avg],mutants[mutation==mut2,bind_avg]),by=c("library","barcode")]
-bc_dbl[,c("mut1_expr","mut2_expr") := list(mutants[mutation==mut1,expr_avg],mutants[mutation==mut2,expr_avg]),by=c("library","barcode")]
+plot(homolog_measurements$sum_expr_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="sum of RBM mutational effects on expression",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of RBM mutational effects on binding",cex=2)
 
 ```
 
-Next, let's take a look at the distribution of these double mutant binding phenotypes, and their relation to the component single mutational effects. We can see that for many double mutant barcodes, the sum of component singles predicts the double mutant phenotype quite nicely, both fo binding and even for expression. Let's focus on the binding phenotypes, as they are better correlated and have less weird shape components (e.g. the censoring is a much tighter/defined boundary, compared to the loose scatter boundary in expression, and we don't have those annoying false-negative observed phenotypes like we do with expression, since these are weeded out by the RBD+ sort). The green lines on the binding plot describe the positive epistasis cutoffs we use in the next section.
-
-```{r pairwise_deviations_plots, fig.width=8.5, fig.height=4.5, fig.align="center",dpi=300,dev="png",echo=F}
-par(mfrow=c(1,2))
-plot(bc_dbl$mut1_bind + bc_dbl$mut2_bind, bc_dbl$delta_log10Ka,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="binding")
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-abline(a=1,b=1,col="green",lty=2,lwd=2)
-abline(h=-2,col="green",lty=2,lwd=2)
-
-plot(bc_dbl$mut1_expr + bc_dbl$mut2_expr, bc_dbl$delta_ML_meanF,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="expression")
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-
-```
-
-We are primarily interested in *positive* epistasis (that is, observed double mutants that bind better than predicted from the component single mutations), and we probably don't care about positive epistasis if the double mutant is still severely deleterious. Therefore, let's check out double mutant combinations whose observed binding phenotype is > -2 that exhibit positive epistasis in which the double mutant binds with delta log<sub>10</sub>(*K*<sub>A,app</sub>) of at least 1 units stronger than predicted from the component singles. (So, the difference in observed - predicted binding is >1). These are points in the plot above in the upper-left quadrant defined by the dashed green lines.
-
-```{r identify_positive_epistasis, echo=F}
-#define epistasis metric from observed - predicted binding phenotype
-bc_dbl[,epistasis_bind := delta_log10Ka - (mut1_bind+mut2_bind),by=c("library","barcode")]
-
-#table sorted by positive epistasis score, for dbl mutant bcs with measured binding no worse than -2 log10Ka units
-bc_dbl[epistasis_bind > 1 & delta_log10Ka > -2,.(avgcount,mut1,mut2,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-
-```
-
-Let's see if there's an enrichment of positive epistasis among close contact positions. We use bio3d to return all pairwise distances between RBD residues, and populate our table with the contact distance for the residue pair mutated in each double mutant. We then look at the relationship between epistasis scores and pairwise distance, for all scores, and for those where the observed double mutant delta log<sub>10</sub>(*K*<sub>A,app</sub>) is > -3 (to avoid weirdness with censored/boundary observations).
-
-```{r epistasis_versus_residue_pair_distance}
-#ouput residue numbers for the mutant pair
-bc_dbl[,c("site1","site2") := list(paste(strsplit(mut1,split="")[[1]][2:4],collapse=""),paste(strsplit(mut2,split="")[[1]][2:4],collapse="")),by=c("library","barcode")]
-
-#read in RBD structure
-pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
-pdb_atoms <- pdb$atom
-
-#make data frame giving pairwise distances -- either Calpha distances, or closest atomic distances
-pdb_dists <- expand.grid(site1=RBD_sites$site_SARS2,site2=RBD_sites$site_SARS2)
-pdb_dists <- pdb_dists[order(pdb_dists$site1, pdb_dists$site2),]
-pdb_dists <- pdb_dists[pdb_dists$site1 < pdb_dists$site2,]
-
-calc.dist <- function(x1,y1,z1,x2,y2,z2){ #function to calculate 3D distance from xyz coordinates
-  return(sqrt((x2-x1)^2+(y2-y1)^2+(z2-z1)^2))
-}
-
-for(i in 1:nrow(pdb_dists)){
-  if(pdb_dists[i,"site1"] %in% unique(pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$type=="ATOM","resno"]) & pdb_dists[i,"site2"] %in% unique(pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$type=="ATOM","resno"])){
-    atoms1 <- pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$resno==pdb_dists[i,"site1"],]
-    atoms2 <- pdb_atoms[pdb_atoms$chain=="E" & pdb_atoms$resno==pdb_dists[i,"site2"],]
-    if(nrow(atoms1)>0 & nrow(atoms2)>0){
-      pdb_dists$CA_dist[i] <- calc.dist(atoms1[atoms1$elety=="CA","x"],atoms1[atoms1$elety=="CA","y"],atoms1[atoms1$elety=="CA","z"],
-                                        atoms2[atoms2$elety=="CA","x"],atoms2[atoms2$elety=="CA","y"],atoms2[atoms2$elety=="CA","z"])
-      all_dists <- c()
-      for(i1 in 1:nrow(atoms1)){for(i2 in 1:nrow(atoms2)){
-        all_dists <- c(all_dists,calc.dist(atoms1[i1,"x"],atoms1[i1,"y"],atoms1[i1,"z"],atoms2[i2,"x"],atoms2[i2,"y"],atoms2[i2,"z"]))}}
-      pdb_dists$min_dist[i] <- min(all_dists)
-    }else{pdb_dists$CA_dist[i] <- NA;pdb_dists$min_dist[i] <- NA}
-  }else{pdb_dists$CA_dist[i] <- NA;pdb_dists$min_dist[i] <- NA}
-}
-pdb_dists <- data.table(pdb_dists)
-
-#add distances to dbl mut dataframe
-bc_dbl$CA_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc_dbl[x,site1] & site2==bc_dbl[x,site2],CA_dist]))
-bc_dbl$min_dist <- sapply(1:nrow(bc_dbl), function(x) return(pdb_dists[site1==bc_dbl[x,site1] & site2==bc_dbl[x,site2],min_dist]))
-
-
-```
-
-We can see that plenty of positive epistatic pairs are distributed quite far in the structure, suggesting nonspecific effects (or noise). But plenty, including some we saw in the tables above, are at close 3D contact!
-
-```{r plot_epistasis_v_residue_pair_distance, fig.width=6, fig.height=6, fig.align="center",dpi=300,dev="png",echo=F}
-par(mfrow=c(2,2))
-plot(bc_dbl$CA_dist, bc_dbl$epistasis_bind, pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="all doubles")
-plot(bc_dbl$min_dist, bc_dbl$epistasis_bind, pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="all doubles")
-
-plot(bc_dbl[delta_log10Ka > -3, CA_dist], bc_dbl[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="doubles with measured bind > -3")
-plot(bc_dbl[delta_log10Ka > -3, min_dist], bc_dbl[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="doubles with measured bind > -3")
-
-
-```
-
-Next, let's subset the double mutant info for just the RBM residues, to touch on the observation above that Clade 1 sequences frequently have wildtype RBM states that are poorly tolerated in the SARS-CoV-2 background.
-
-```{r plot_epistasis_v_residue_pair_distance_RBM, fig.width=6, fig.height=9, fig.align="center",dpi=300,dev="png",echo=F}
-bc_dbl_RBM <- bc_dbl[site1 %in% RBD_sites[RBM==T,site_SARS2] & site2 %in% RBD_sites[RBM==T,site_SARS2],]
-
-par(mfrow=c(3,2))
-plot(bc_dbl_RBM$mut1_bind + bc_dbl_RBM$mut2_bind, bc_dbl_RBM$delta_log10Ka,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="binding, RBM")
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-#abline(a=1,b=1,col="green",lty=2,lwd=2)
-#abline(h=-2,col="green",lty=2,lwd=2)
-
-plot(bc_dbl_RBM$mut1_expr + bc_dbl_RBM$mut2_expr, bc_dbl_RBM$delta_ML_meanF,xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000020",main="expression, RBM")
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-
-plot(bc_dbl_RBM[, CA_dist], bc_dbl_RBM[, epistasis_bind], pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="all RBM doubles")
-plot(bc_dbl_RBM[, min_dist], bc_dbl_RBM[, epistasis_bind], pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="all RBM doubles")
-
-plot(bc_dbl_RBM[delta_log10Ka > -3, CA_dist], bc_dbl_RBM[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair Calpha distance (A)",ylab="epistatic deviation, binding",main="RBM doubles with measured bind > -3")
-plot(bc_dbl_RBM[delta_log10Ka > -3, min_dist], bc_dbl_RBM[delta_log10Ka > -3, epistasis_bind], pch=16, col="#00000020",xlab="residue pair atomic distance (A)",ylab="epistatic deviation, binding",main="RBM doubles with measured bind > -3")
-
-
-```
-
-Let's look at the RBM residue pairs with high positive epistasis scores. We can see that many of the positive epistatic interactions surround the cysteines at positions 480 and 488 which form a key disulfide that stabilizes one of the lateral loops of the RBM. We can see that double cysteine mutants are less deleterious than expected by their single mutations, as we'd expect (knocking out the second cysteine when the other is already gone is not going to incur the same binding cost as the initial breaking of this disulfide). Another cool thing to see is that positive epistasis also emerges by knockout of one cysteine, followed by knock-in of a cysteine at a *different* position in this loop, e.g Q474C or S477C.
-
-```{r RBM_positive_epistasis, echo=F}
-#table sorted by positive epistasis score, for dbl mutant bcs w/i RBM 
-bc_dbl_RBM[epistasis_bind > 1 & delta_log10Ka > -3, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-
-```
-
-Which positions exhibit epistasis with the RBM sites for which we see states fixed in Clade 1 that are deleterious individually in SARS-CoV-2 (mutations L455Y, A475P, S494D, and less interestingly Y449F)? Let's look at plots involving each of these sites, showing measured versus predicted binding phenotypes. In these plots, all double mutants involving a site are shown, and double mutants involving our mutation 'of interest' are shown in green.
-
-```{r positive_epistasis_Clade1_incompatibilities_scatters, fig.width=6, fig.height=6, fig.align="center",dpi=300,dev="png",echo=F}
-par(mfrow=c(2,2))
-
-plot(bc_dbl[(site1 == 455 | site2 == 455),mut1_bind] + bc_dbl[(site1 == 455 | site2 == 455),mut2_bind], bc_dbl[(site1 == 455 | site2 == 455),delta_log10Ka],xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000090",main="site 455 double mutants")
-points(bc_dbl[(mut1 == "L455Y" | mut2 == "L455Y"),mut1_bind] + bc_dbl[(mut1 == "L455Y" | mut2 == "L455Y"),mut2_bind], bc_dbl[(mut1 == "L455Y" | mut2 == "L455Y"),delta_log10Ka],col="green",pch=16,cex=1.3)
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-
-plot(bc_dbl[(site1 == 475 | site2 == 475),mut1_bind] + bc_dbl[(site1 == 475 | site2 == 475),mut2_bind], bc_dbl[(site1 == 475 | site2 == 475),delta_log10Ka],xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000090",main="site 475 double mutants")
-points(bc_dbl[(mut1 == "A475P" | mut2 == "A475P"),mut1_bind] + bc_dbl[(mut1 == "A475P" | mut2 == "A475P"),mut2_bind], bc_dbl[(mut1 == "A475P" | mut2 == "A475P"),delta_log10Ka],col="green",pch=16,cex=1.3)
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-
-plot(bc_dbl[(site1 == 494 | site2 == 494),mut1_bind] + bc_dbl[(site1 == 494 | site2 == 494),mut2_bind], bc_dbl[(site1 == 494 | site2 == 494),delta_log10Ka],xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000090",main="site 494 double mutants")
-points(bc_dbl[(mut1 == "S494D" | mut2 == "S494D"),mut1_bind] + bc_dbl[(mut1 == "S494D" | mut2 == "S494D"),mut2_bind], bc_dbl[(mut1 == "S494D" | mut2 == "S494D"),delta_log10Ka],col="green",pch=16,cex=1.3)
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-
-plot(bc_dbl[(site1 == 449 | site2 == 449),mut1_bind] + bc_dbl[(site1 == 449 | site2 == 449),mut2_bind], bc_dbl[(site1 == 449 | site2 == 449),delta_log10Ka],xlab="sum of component single mutations",ylab="double mutant barcode direct phenotype",pch=16,col="#00000090",main="site 449 double mutants")
-points(bc_dbl[(mut1 == "Y449F" | mut2 == "Y449F"),mut1_bind] + bc_dbl[(mut1 == "Y449F" | mut2 == "Y449F"),mut2_bind], bc_dbl[(mut1 == "Y449F" | mut2 == "Y449F"),delta_log10Ka],col="green",pch=16,cex=1.3)
-abline(a=0,b=1,col="red",lty=2,lwd=2)
-
-```
-We don't really see any epistasis with the mutation L455Y in particular, but we do have a couple potential positive epistatic points involving site 455. The double mutant that sticks out with actual binding near zero with predicted binding near -1, is double mutant `r bc_dbl[(site1 == 455 | site2 == 455) & (mut1_bind+mut2_bind) < -0.5 & delta_log10Ka > -0.1,mut1]` `r bc_dbl[(site1 == 455 | site2 == 455) & (mut1_bind+mut2_bind) < -0.5 & delta_log10Ka > -0.1,mut2]`, which has low titration average count (`r bc_dbl[(site1 == 455 | site2 == 455) & (mut1_bind+mut2_bind) < -0.5 & delta_log10Ka > -0.1,avgcount]`), so not very reliable. Therefore, I don't think our double mutants give us much insight into specific epistatic modulations of this amino acid
-
-For site 475, we seem to have substantial variation involving the focal A475P mutation in particular. Below, we output the double mutant barcodes bearing this mutation. We can see believable positive epistasis between A475P and N487E (close contact) and N501Y (separate lateral edges of the RBM). We also see positive epistasis between other A475 substitutions: A475II/C480C (loss of disulfide), A475L/N487V, A475S/N487Y. N487 does *not* differ between SARS-CoV-2 and SARS-CoV-1, but many positions in this loop do differ -- so, it seems more than likely that large scale contextual differences in loop identities and conformation explain this A475P incompatibility.
-
-
-```{r double_mut_bcs_A475P}
-#table sorted by positive epistasis score for position 475
-bc_dbl[(site1 == 475 | site2 == 475) & delta_log10Ka > -4, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-#table sorted by positive epistasis score for mutation A475P
-bc_dbl[(mut1 == "A475P" | mut2 == "A475P"), .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-
-```
-
-For site 494, we see some specific *negative* epistasis involving the focal S494D mutation. We output below the double barcodes bearing this mutation. None of these secondary mutations are direct contacts or have an obvious link to S494, though some are close to each other? Weird.
-
-```{r double_mut_bcs_S494D}
-#table sorted by positive epistasis score for position 475
-bc_dbl[(site1 == 494 | site2 == 494) & delta_log10Ka > -4, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-#table sorted by positive epistasis score for mutation A475P
-bc_dbl[(mut1 == "S494D" | mut2 == "S494D"), .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-
-```
-
-```{r double_mut_bcs_Y449F}
-#table sorted by positive epistasis score for position 475
-bc_dbl[(site1 == 449 | site2 == 449) & delta_log10Ka > -4, .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-#table sorted by positive epistasis score for mutation A475P
-bc_dbl[(mut1 == "Y449F" | mut2 == "Y449F"), .(avgcount,mut1,mut2,CA_dist,mut1_bind,mut2_bind,delta_log10Ka,epistasis_bind,mut1_expr,mut2_expr,delta_ML_meanF)][order(epistasis_bind,decreasing=T),]
-
-```
+Overall, my intpretation from this table/figures, is that our mutational effects are perhaps useful for predictions of things very similiar to our focal background (e.g. GD Pangolin, circulating strains), but that because of epistasis, mutational preferences are quite different in other sarbecovirus clades, which complicates prediction of ability of unseen RBDs to bind ACE2. (This perhaps can mentally be loosely accounted for by taking into account the total number of amino acid differences and also their effect on expression, but that's a lot of weirdness to normalize for so overall definitely not a direction to push.) These are not the figures we'll want to use to communicate this, although I do think this is an interestning conclusion to communicate (that preferences have shifted between SARS-CoV-2 and -1), so we should think about how to wrap up this preliminary analysis into something that can be effectively communicated.
 
 
 
