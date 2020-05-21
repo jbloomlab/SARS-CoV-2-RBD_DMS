@@ -188,11 +188,13 @@ actually a bit surprised to see that the amino acid states sampled in
 Clades 2 and 3 are not skewed toward more deleterious binding effects in
 the SARS-CoV-2 background. Since these have not been shown to bind
 ACE2s, it is unclear whether they are operating under the same selective
-constraint as sequences in Clade 1 and the SARS-CoV-2 clade. It is
-important to note that this analysis is *not* taking into account two
-large deletions in the RBM loops that are present in these Clade 2+3
-sequences, which may also contribute to their reduced affinity for human
-ACE2.
+constraint as sequences in Clade 1 and the SARS-CoV-2 clade – however,
+we can see more skew in Clade 2 when we focus on the RBM in particular
+in the lower left plot, which is where the direct determinants of
+ACE2-binding reside. It is important to note that this analysis is *not*
+taking into account two large deletions in the RBM loops that are
+present in these Clade 2+3 sequences, which may also contribute to their
+reduced affinity for human ACE2.
 
 <img src="sarbecovirus_diversity_files/figure-gfm/homolog_amino_acid_variants-1.png" style="display: block; margin: auto;" />
 
@@ -210,11 +212,11 @@ where you can see that *many* amino acid differences accumulated in the
 RBM and at ACE2 contact positions between these lineages.
 
 Overall, amino acids found in SARS-CoV-1 do not have *huge* negative
-effects if introduced into the SARS-CoV-2 background – but moderate
-affinity defects when introducing SARS-CoV-1 wildtype states with
-mutations K417V, L455V, II472P, A475P, G476D, G482P, F486L, and S494D,
-along with slight expression defects caused by S438T and N439R. These
-negative-effect SARS-CoV-1 mutations are highlighted in `dms-view`
+effects if introduced into the SARS-CoV-2 background – but there are
+moderate affinity defects when introducing SARS-CoV-1 wildtype states
+with mutations K417V, L455V, II472P, A475P, G476D, G482P, F486L, and
+S494D, along with slight expression defects caused by S438T and N439R.
+These negative-effect SARS-CoV-1 mutations are highlighted in `dms-view`
 [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=417%2C455%2C472%2C475%2C476%2C482%2C486%2C494),
 where we can see that they cluster in two parts of the RBM – the lateral
 loop containing the RBM disulfide, and the medial portion of the RBM
@@ -240,19 +242,22 @@ the middle and the other edge are not able to be swapped. As we will
 begin to see later on, the SARS-CoV-1 affinity is *not* predicted by the
 sum of effects of these contact mutations, which would predict a
 substantially worse affinity. Therefore, this observation about the
-deleterious SARS-CoV-1 swaps in the SARS-CoV-2 background is a
+deleterious SARS-CoV-1 swaps in the SARS-CoV-2 background is likely a
 reflection of epistasis among the many RBM differences that separate
-these two molecules. I am actually surprised to see that there are
-seemingly so many *beneficial* swaps to SARS-CoV-1 identities, in light
-of the fact that SARS-CoV-2 has repeatedly been demonstrated to have
-overall tighter ACE2-binding affinity than SARS-CoV-1.
+these two molecules (as opposed to drifting determinants of affinity –
+i.e. both molecules endow similar affinity, but through different sets
+of contacts in different regions of the interface). I am, however, a bit
+surprised to see that there are affinity-enhancing swaps to SARS-CoV-1
+identities, in light of the fact that SARS-CoV-2 has repeatedly been
+demonstrated to have overall tighter ACE2-binding affinity than
+SARS-CoV-1.
 
 <img src="sarbecovirus_diversity_files/figure-gfm/heatmap_SARS_CoV_2_1_diff-1.png" style="display: block; margin: auto;" />
 
 Let’s output a table of all Clade 1 amino acid variants that have
 moderately large detrimental effects in the SARS-CoV-2 background. This
-focuses the observations made from the heatmap below, and shows their
-broader context in Clade 1 isolate sequences. Of note, L455 and S494 are
+focuses the observations made from the heatmap above, and shows their
+broader context in Clade 1 isolate sequences. Of note, Y455 and D494 are
 “key adaptations” in SARS-CoV-1 (Y442 and D480), according to studies by
 e.g. Fang Li – so, should be a lot of prior structural work we can look
 at to better understand what other RBM/interface residues might be
@@ -277,6 +282,70 @@ would illustrate lots of shifting preferences\!)
 | A475P    |     \-1.52 |     \-1.72 |    \-1.62 |    \-1.39 | clade1 | Rs4231\_KY417146       |
 | A475P    |     \-1.52 |     \-1.72 |    \-1.62 |    \-1.39 | clade1 | RsSHC014\_KC881005     |
 | A475P    |     \-1.52 |     \-1.72 |    \-1.62 |    \-1.39 | clade1 | Rs4084\_KY417144       |
+
+Clade 2 sequences do not bind ACE2, so effects of amino acid variation
+on binding (and perhaps, more generally, variation within the RBM) is
+quite confounded in this clade. However, we may be able to identify
+shifting determinants of stability within the core RBD.
+[Here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=335%2C339%2C340%2C348%2C349%2C354%2C356%2C357%2C360%2C366%2C372%2C385%2C388%2C394%2C399%2C401%2C404%2C405%2C410%2C414%2C417%2C438%2C439%2C440%2C441%2C443%2C444%2C445%2C452%2C455%2C456%2C459%2C460%2C468%2C470%2C484%2C485%2C486%2C488%2C489%2C490%2C491%2C493%2C494%2C496%2C498%2C500%2C501%2C502%2C504%2C507%2C508%2C519%2C529)
+is a `dms-view` illustrating *all* amino acid differences between HKU3-1
+and SARS-CoV-2 (excluding gap positions in HKU3-1 within the RBM).
+Below, we output a heatmap for *core RBD* positions only (seen in
+`dms-view`
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=335%2C339%2C340%2C348%2C349%2C354%2C356%2C357%2C360%2C366%2C372%2C385%2C388%2C394%2C399%2C401%2C404%2C405%2C410%2C414%2C417%2C519%2C529)),
+that differ in identity between SARS-CoV-2 (“x” indicator) and HKU3-1
+(“@” indicator).
+
+The heatmap for expression is probably most interesting. We can see that
+at mnay positions, HKU3-1 has amino acid states that would enhance RBD
+stability in the SARS-CoV-2 background, including mutations G339D,
+A348P, N354E, K356T, R357K, N360D, K417V (seen before), H519N. These
+positions are visualized
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=339%2C348%2C354%2C356%2C357%2C360%2C417),
+where we can see that they primarily align along one surface of the core
+RBD. In contrast, there is a cluster of positions where the HKU3-1 amino
+acid decreases stability in SARS-CoV-2, including N388I, S399T, V401L,
+G404S, D405S, and I410V, visualized
+[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=388%2C399%2C401%2C404%2C405%2C410).
+These positions are in the ‘top-center’ of the core RBD, near the
+internal contact interface with the RBM – so, given the extreme
+divergence in RBM structure and function, it makes sense that the core
+RBD positions that border these divergent RBMs would exhibit shifted
+amino acid preferences in these two backgrounds.
+
+<img src="sarbecovirus_diversity_files/figure-gfm/heatmap_SARS_CoV_2_HKU31_diff-1.png" style="display: block; margin: auto;" />
+
+At risk of getting exhausting, we might as well look at patterns of
+mutational differences between SARS-CoV-2 and BM48-31, for completeness.
+Below are heatmaps illustrating positions that differ between SARS-CoV-2
+(“x”) and BM48-31 (“\~”). What’s interesting here to me, is that BM48-31
+differs from SARS-CoV-2 at many of the exact same positions as HKU3-1,
+but with a different pattern – it has expression-enhancing amino acids
+at many of the same sites as HKU3-1, but at the positions where HKU3-1
+has detrimental amino acids with respsect to SARS-CoV-2 expression,
+BM48-31 seems to sample less dramatically destabilizing amino acids. To
+me, this suggests that, although Clades 2 and 3 are simliar at face
+value (both have RBM deletions, even in overlapping regions, and neither
+binds human ACE2), there are genetic differences between them that could
+be meaningful (we see more of this below). The BM48-31 RBD, though not
+binding to human ACE2, has more of the genetic features in place that
+could support evolution of ACE2 binding. In contrast, Clade 2 has gone a
+bit “off the rails” in its lineage-specific evolution, as seen by its
+long branch separating it from the rest of the sarbecovirus clade, which
+correspond with dramatically changed amino acid preferences. It would be
+really interesting to see if “forward” evolution of ACE2 binding is
+easier to achieve in a background like BM48-31 compared to Clade 2
+sequencs – one result from Letko et al. 2020 in
+[Figure 4](https://www.nature.com/articles/s41564-020-0688-y/figures/4)
+suggests this might be the case (at least for SARS-CoV-like mechanisms
+of ACE2 utilization) – they made chimeras of the SARS-CoV-1 RBM
+transplanted onto Clade 2 and 3 core RBD, and saw the Clade 3 core RBD
+supported higher cellular infectivity. This is highly consistent with
+what I’m seeing here, that Clade 2 sequences have undergone more
+dramatic evolutionary shifts in amino acid preferences from the rest of
+the sarbecovirus clades.
+
+<img src="sarbecovirus_diversity_files/figure-gfm/heatmap_SARS_CoV_2_BM4831_diff-1.png" style="display: block; margin: auto;" />
 
 ## Sequence and functional variation within the SARS-CoV-2 clade
 
@@ -311,7 +380,7 @@ SARS-CoV-2 ancestral lineage.
 Last, let’s look at heatmaps for positions that differ between the
 GD-Pangolin and SARS-CoV-2 RBDs. We can see that 3 of the 6 differences
 are predicted to enhance SARS-CoV-2 affinity (2 of these also enhance
-expression, and 2 binding-neutral mutations also enhance expressoin),
+expression, and 2 binding-neutral mutations also enhance expression),
 likely explaining the observed enhanced GD-Pangolin affinity. These six
 sites are visualized on the structure in `dms-view`
 [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=346%2C372%2C402%2C417%2C498%2C519).
@@ -320,17 +389,19 @@ sites are visualized on the structure in `dms-view`
 
 ## Predicting (or failing to predict) homolog affinities from single mutant effect measurements
 
-How well does the addition of single mutation effects in the SARS-CoV-2
-background predict homolog affinities? We try this in three ways: 1)
-summing mutational effects across all RBD positions, 2) just RBM
-positions, 3) just ACE2 contact positions. Expectation is: predictions
-of RaTG13 and pangolin affinity might be decent, but clade1 and more
-distant sequences will be bad. (We can also propagate the n=2 SEM for
-these additions, in case useful.) The table below gives the number of
-differences between the sequence and SARS-CoV-2 in each of the query
-classes. It then compares the experimental binding and expression scores
-(bind\_ and expr\_avg) to those predicted by summing the mutational
-effects of individual differences in these three categories.
+One indicator of the extent of epistasis/shifting preferences, is to
+compare homolog phenotypes to that predicted by the addition of single
+mutation effects as measured in the focal SARS-CoV-2 background. We try
+this in three ways: 1) summing mutational effects across all RBD
+positions, 2) just RBM positions, 3) just ACE2 contact positions.
+Expectation is: predictions of RaTG13 and pangolin affinity might be
+decent, but Clade 1 and more distant sequences will be bad. (We can also
+propagate the n=2 SEM for these additions, in case useful.) The table
+below gives the number of differences between the sequence and
+SARS-CoV-2 in each of the query classes. It then compares the
+experimentally measured binding and expression scores to those predicted
+by summing the mutational effects of individual differences in these
+three categories.
 
 We can see that the relative predictions for RaTG13 and GD-Pangolin are
 correct, though the magnitude of affinity decrease in RaTG13 is
@@ -338,25 +409,26 @@ over-predicted. For Clade 1 sequences, we can see that the overall
 magnitude of affinity decrease is severely over-predicted – but among
 the Clade 1 sequences, the relative affinity order isn’t terrible. That
 is, we do predict that WIV16 has higher affinity than SARS-CoV-1 or
-LYRa11, though we don’t also successfully predict that SARS-CoV-1 has
-higher affinity than LYRa11. Clade 2 sequences are predicted to have
-universally terrible binding, as we’d expect. And surprisingly, BM48-31
-is not predicted to have terrible binding. I interpret this to mean
-that, although neither Clade 2 or BM48-31 bind ACE2, BM48-31 is
-genetically “closer” to ACE2-binding, insofar as, it has fewer amino
-acid differences that are measured as being highly incompatible with
-ACE2-binding. (Alternative is that BM48-31 is less distinct from
-SARS-CoV-2 at the level of shifted amino acid preference, so its fixed
-states aren’t interpreted as being as incompatible as those in Clade 2 –
-this is consistent with the observation that BM48-31 is predicted to be
-better expressing than Clade 2 sequences, as well, reflecting overall
-less divergent amino acid preferences.) Either of these scenarios are
-perhaps supported by an observation from Letko et al. 2020 in
-[Figure 4](https://www.nature.com/articles/s41564-020-0688-y/figures/4)
-– in this experiment, they made chimeras of Clade 2 and Clade 3 core
-RBDs with the Clade 1 RBM, and they saw that the Clade 3 core RBD
-supported higher cellular infectivity than Clade 2 when grafted with the
-appropriate RBM.
+LYRa11, though we incorrectly predict that SARS-CoV-1 has the same
+affinity as LYRa11 (across all three categories, which is surprising. I
+actually validated these sums are correct because this looked weird to
+me\!). Clade 2 sequences are predicted to have universally terrible
+binding, as we’d expect. And surprisingly, BM48-31 is not predicted to
+have terrible binding. I interpret this to mean, as alluded to in a
+section above, that although neither Clade 2 RBDs nor BM48-31 bind ACE2,
+BM48-31 is genetically “closer” to ACE2-binding, insofar as, it has
+fewer amino acid differences that are measured as being highly
+incompatible with ACE2-binding. (Alternative is that BM48-31 is less
+distinct from SARS-CoV-2 at the level of shifted amino acid preference,
+so its fixed states aren’t interpreted as being as incompatible as those
+in Clade 2 – this is consistent with the observation that BM48-31 is
+predicted to be better expressing than Clade 2 sequences, as well,
+reflecting overall less divergent amino acid preferences.) Either of
+these scenarios are consistent with the result I liinked above from
+Letko et al. 2020 in
+[Figure 4](https://www.nature.com/articles/s41564-020-0688-y/figures/4),
+in which Clade 3 core RBD + Clade 1 RBM chimeras function better than
+Clade 2 core RBD + Clade 1 RBM chimeras.
 
 | homolog     | \# RBD diff | \# RBM diff | \# contact diff | measured binding | predicted binding, RBD | predicted binding, RBM | predicted binding, contact | measured expression | predicted expression, all RBD | predicted expression, RBM | predicted expression, contact |
 | :---------- | ----------: | ----------: | --------------: | ---------------: | ---------------------: | ---------------------: | -------------------------: | ------------------: | ----------------------------: | ------------------------: | ----------------------------: |
@@ -373,42 +445,43 @@ appropriate RBM.
 | Rp3         |          53 |          30 |              11 |         \-4.7818 |                \-24.33 |                \-21.66 |                    \-11.06 |              0.1613 |                       \-12.29 |                    \-8.10 |                        \-0.33 |
 | BM48-31     |          56 |          36 |              11 |         \-4.7908 |                 \-9.18 |                 \-7.72 |                     \-6.32 |              0.1458 |                        \-7.22 |                    \-5.13 |                        \-0.14 |
 
-To visualize the trends in this table, we plot the sum of binding and
+To visualize the trends in this table, I plot the sum of binding and
 expression effects versus the number of mutations present in a genotype
-for RBM residues. Once again, this does not take into account deletions
-within RBM loops present in Clade2 and Clade3 sequences. We then plot
-the sum of mutational effects on binding versus expression, which could
-potentially “normalize” out the extent of shifting preferences, because
-all variants express similarly well. Finally, we plot the actual
-measured binding versus predicted by summing mutational effects. Points
-are colored by clade: purple (blue?) is SARS-CoV-2 clade sequences,
-orange (red?) is Clade 1 (SARS-CoV-1 clade), green is Clade 2
-(deletions, have not been seen to use ACE2), magenta is clade 3
-(Bulgaria and Kenya isolates) (sorry my descriptions of colors are
-probably wrong :/ let me know if the color scheme is hideous, I’ve been
-known to pick terrible colors in the past – these are the colors I
-included in our phylogeny figure so we should update all of these ASAP
-if needed)
+for all RBD residues. Once again, this does not take into account
+additional deleterious effects of deletions within RBM loops present in
+Clade2 and Clade3 sequences. We then plot the sum of mutational effects
+on binding versus expression, which could potentially “normalize” out
+the extent of shifting preferences, because all variants express
+similarly well. Finally, we plot the actual measured binding versus
+predicted by summing mutational effects. Points are colored by clade:
+purple (blue?) is SARS-CoV-2 clade sequences, orange (red?) is Clade 1
+(SARS-CoV-1 clade), green is Clade 2 (deletions, have not been seen to
+use ACE2), magenta is clade 3 (Bulgaria and Kenya isolates). (Sorry my
+descriptions of colors are probably wrong :/ let me know if the color
+scheme is hideous, I’ve been known to pick terrible colors in the past –
+these are the colors I included in our phylogeny figure so we should
+update all of these ASAP if needed.)
 
 The first trend this shows is that the number of differences is a
 primary determinant of how “deleterious” a sequence is predicted to be –
 both for binding and expression – which probably reflects epistasis and
-shifting preferences in the more distant backgrounds as I was starting
-to say above the table. So, it might be that these predictions work ok
-for within the SARS-CoV-2 clade where the number of differences is
-relatively small – but in other clades, the number of differences is
-just too large for the sum to be relevant. However, maybe within these
-other clades, the *relative* binding predicted for one e.g. clade 1
-sequence versus another predicted is useful.
+shifting preferences in the more distant backgrounds as discussed above.
+So, it might be that these predictions work ok for within the SARS-CoV-2
+clade where the number of differences is relatively small – but in other
+clades, the number of differences is just too large for the sum to be
+relevant because of shifted effects. However, maybe within these other
+clades, the *relative* binding predicted for one e.g. clade 1 sequence
+versus another predicted is useful.
+
+<img src="sarbecovirus_diversity_files/figure-gfm/predicted_versus_actual_homolog_correlations_RBD-1.png" style="display: block; margin: auto;" />
+
+And the same plots, for RBM residues. These plots are perhaps more
+relevant for binding phenotypes only (i.e. the lower-right plot),
+whereas whole RBD is probably more informative when trying to mentally
+account for shifting preferences as indicated by shifts in the predicted
+expression of an RBD.
 
 <img src="sarbecovirus_diversity_files/figure-gfm/predicted_versus_actual_homolog_correlations_RBM-1.png" style="display: block; margin: auto;" />
-And the same plots, for only ACE2-contact residue positions:
-
-<img src="sarbecovirus_diversity_files/figure-gfm/predicted_versus_actual_homolog_correlations_contact-1.png" style="display: block; margin: auto;" />
-
-(What does it look like when we add in the other Clade 1/2/3 sequences
-that we did not measure, but see where they fall on the predicted
-binding versus expression plots? Particularly GX Pangolin)
 
 Overall, my intpretation from this table/figures, is that our mutational
 effects are perhaps useful for predictions of things very similiar to
@@ -419,22 +492,8 @@ unseen RBDs to bind ACE2. (This perhaps can mentally be loosely
 accounted for by taking into account the total number of amino acid
 differences and also their effect on expression, but that’s a lot of
 weirdness to normalize for so overall definitely not a direction to
-push.) These are probably not the figures we’ll want to use to
-communicate this, although I do think this is an interestning conclusion
-to communicate (that preferences have shifted between SARS-CoV-2 and -1)
-
-## Epistasis in library double mutants and relation to natural diversity patterns
-
-*Note* though I do see some structurally interesting epistasis when
-analyzing double mutant barcodes compared to the effects of their
-component single mutations, I didn’t really see anything interesting
-below as it relates to the goal I intended toward with putting this
-anlaysis in this script (seeing if I could see pairwise epistatic
-modifiers for the sites/states observed in SARS-CoV-1 that are not well
-tolerated in SARS-CoV-2). Therefore, I’ve moved the “structurally
-relevant” component of this script to the structure\_function notebook,
-where it might be elaborated in that context. I keep some remaining code
-chunkd hidden here related to what I tried w.r.t. natural diversity in
-case I decide to come back to it, but this will probably eventually be
-eliminated (and doesn’t work right now as the upstream analysis before
-making these plots is now removed into a different notebook)
+push.) These are not the figures we’ll want to use to communicate this,
+although I do think this is an interestning conclusion to communicate
+(that preferences have shifted between SARS-CoV-2 and -1), so we should
+think about how to wrap up this preliminary analysis into something that
+can be effectively communicated.
