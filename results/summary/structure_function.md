@@ -45,7 +45,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 14.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -510,108 +510,37 @@ here in the SARS-CoV-2 side of the tree.
 
 <img src="structure_function_files/figure-gfm/heatmap_ACE2_contacts-1.png" style="display: block; margin: auto;" />
 
-Next, are heatmaps for all positions that differ in amino acid identity
-between SARS-CoV-1 and -2, with the same “x” and “o” indicators for the
-SARS-CoV-2 and -1 wildtype state. The positions of all of the variable
-amino acids between these virus RBDs is shown in `dms-view`
-[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=346%2C348%2C354%2C357%2C372%2C373%2C384%2C393%2C402%2C403%2C406%2C417%2C430%2C434%2C438%2C439%2C441%2C443%2C444%2C445%2C446%2C452%2C455%2C456%2C458%2C459%2C460%2C462%2C470%2C471%2C472%2C473%2C474%2C475%2C476%2C477%2C478%2C481%2C482%2C484%2C485%2C486%2C490%2C493%2C494%2C498%2C499%2C501%2C503%2C519%2C529).
+## Validation mutants
 
-Overall, there are not any *major* incompatibilities that emerge – that
-is, no amino acids found in SARS-CoV-1 have huge negative effects if
-introduced into the SARS-CoV-2 background – the only quite minor
-affinity defects that are evident seem to be horizontal swap mutations
-K417V, L455V, II472P, A475P, G476D, G482P, F486L, and S494D, along with
-slight expression defects caused by S438T and N439R. These
-negative-effect SARS-CoV-1 mutations are highlighted in `dms-view`
-[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=417%2C455%2C472%2C475%2C476%2C482%2C486%2C494),
-where we can see that they cluster in two parts of the RBM – the lateral
-loop containing the RBM disulfide, and the medial portion of the RBM
-loop.
-
-On the other hand, many mutations to SARS-CoV-1 amino acid identities
-seem to have *positive* effects on binding and expression. Most notably
-for expression, are mutations N354E, R357K (mild), K417V (discussed
-above, also in context of binding/expression trade-off), and L452K, and
-for binding, beneficial effects are also seen for N460K, Q498V (quite
-substantial positive effect, direct interface residue), N501T (also
-quite substantial, interface, site of key adaptation in SARS-CoV-1),
-V503I, and H519N. These positions are highlighted on the structure
-[here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=354%2C357%2C417%2C452%2C460%2C498%2C501%2C503%2C519),
-where we can see that many are distant from the ACE2 interface
-(primarily the expression observations). Interestingly, the beneficial
-*binding* SARS-CoV-1 residues are on the *other* lateral end of the RBM
-compared to the detrimental swaps highlighted above. Therefore, it seems
-like, of the interface differences between SARS-CoV-1 and -2, one “edge”
-of the RBM saddle is better optimized for ACE2-binding in SARS-CoV-1,
-while the middle and the other edge are more optimized in SARS-CoV-2. I
-am actually surprised to see that there are seemingly so many
-*beneficial* swaps to SARS-CoV-1 identities (should more rigorously
-compare in number and magnitude with the *detrimental* swaps), in light
-of the fact that SARS-CoV-2 has repeatedly been demonstrated to have
-overall tighter ACE2-binding affinity than SARS-CoV-1 – and this
-suggests that the SARS-CoV-2 RBD could bind ACE2 even more tightly if
-there was pressure to do so (although we don’t actually know what the
-impact of tighter affinity is with regards to transmissibility,
-pathogenicity, tropism etc. which is a very important caveat.)
-
-<img src="structure_function_files/figure-gfm/heatmap_SARS_CoV_2_1_diff-1.png" style="display: block; margin: auto;" />
-
-Next, let’s look at the differences between RaTG13 and SARS-CoV-2 – in
-contrast to SARS-CoV-1, which has just slightly weaker ACE2-binding
-affinity, RaTG13 has affinity a couple orders of magnitude lower than
-SARS-CoV-2 – so, comparing their states might identify some of the key
-adaptations that occurred from their common ancestor on the SARS-CoV-2
-lineage. However, the branch to RaTG13 is relatively long, so many of
-the differences are more likely to be RaTG13-specific substitutions,
-rather than a reflection of the ancestral state. This is supported when
-also mapping the GD-Pangolin state at these positions, which more
-frequently matches the SARS-CoV-2 identity. A more rigorous analysis
-will need to do proper ancestral sequence reconstruction to polarize the
-substitutions that occurred on the focal branch leading to SARS-CoV-2,
-given the complicated phylogenetic relationships in the RBD in this
-clade. For the “by-eye” parsimony reconstructions, in the heatmaps
-below, “x” continues to mark the WT SARS-CoV-2 amino acid, “^”
-represents RaTG13, and “\#” represents GD-Pangolin.
-
-The main thing to note, is that site 501 seems to explain a large degree
-of difference between RaTG13 and SARS-CoV-2 affinity – from the
-GD-Pangolin sequence, it appears that the difference may be an N501D
-substitution on the RaTG13 branch (so not part of the adaptation from
-ancestor to SARS-CoV-2 – GX-Pangolin is a T here, so perhaps not helpful
-in the by-eye polarization). Site 501 was a key site of adaptation
-between civet- and human-adapted strains in SARS-CoV-1, so it’s
-interesting to see it cropping up again here, regardless of the
-polarization of the change (and different amino acid states than the S/T
-SARS-CoV-1 stuff). Mutations to the RaTG13 amino acid are also mildly
-deleterious w.r.t. binding for R403T (GD-Pangolin has R, GX-Pangolin K),
-Y449F (GD-Pangolin has Y, GX-Pangolin Y), F486L (GD-Pangolin has F,
-GX-Pangolin L…), and Y505H (GD-Pangolin has Y, GX-Pangolin Y). So, from
-parsimony, it does seem most of these ‘deleterious’ amino acids are
-*derived* substitutions on the RaTG13 lineage, instead of reflecting
-‘adaptive’ changes on the SARS-CoV-2 ancestral lineage.
-
-<img src="structure_function_files/figure-gfm/heatmap_SARS_CoV_2_RaTG13_diff-1.png" style="display: block; margin: auto;" />
-
-Based on heatmap gazing along with structures and prior literature, I
-would propose the following validation mutants. As you can see, several
+Based on gazing at heatmaps (from this notebook and in the
+`sarbecovirus_diversity` notebook), preliminary analysis of circulating
+SARS-CoV-2 RBD mutants, and structures and prior liiterature, I have
+proposed the following validation mutants. As you can see, several
 positions are prioritized in these panels – sites 455, and 501 are
 positions of interest from prior literature on SARS-CoV-1 adaptation;
 site 502 is the second most constrained position w.r.t. to binding in
-our dataset, with the most sensitive position (G431) being more
-constrained by stability/expression affects than binding itself per se.
-Site 498 exhibits lots of differences amongst the relevant strains I’ve
-been looking at (SARS-CoV-2 versus -1, RaTG13, GD-Pangolin) and has
-large variation in functional effects of mutation, and so is clearly a
-position of interest for our data. All of these positions are in the RBM
-and direct or near-direct ACE2 contact positions.
+our dataset and exhibits binding/stability tradeoffs, with the most
+sensitive position (G431) being more constrained by stability/expression
+effects rather than binding itself per se. Site 498 exhibits lots of
+differences amongst the relevant strains I’ve been looking at
+(SARS-CoV-2 versus -1, RaTG13, GD-Pangolin) and has large variation in
+functional effects of mutation, and so is clearly a position of interest
+for our data. All of these positions are in the RBM and direct or
+near-direct ACE2 contact positions. Other mutations were selected
+because they have been sampled at higher rates than other SARS-CoV-2
+mutant variants (N439K, V367F, T478I, V483A), and C432D was selected to
+investigate how core RBD stability effects manifest in pseudovirus
+phenotypes in a full Spike context.
 
-For yeast display validation of beneficial mutation effects and
-expression/binding tradeoff, I would propose to validate the following
-seven mutations:
+Taken together, I would propose to validate the following ten mutations
+in isogenic yeast display experiments:
 
 | mutation | RBD\_site | bind\_lib1 | bind\_lib2 | bind\_avg | expr\_lib1 | expr\_lib2 | expr\_avg | SARS1\_indicator | RaTG13\_indicator | GDPangolin\_indicator |
 | :------- | --------: | ---------: | ---------: | --------: | ---------: | ---------: | --------: | :--------------- | :---------------- | :-------------------- |
+| V367F    |        37 |       0.02 |       0.13 |      0.07 |         NA |       0.74 |      0.74 |                  |                   |                       |
 | N439K    |       109 |       0.11 |     \-0.02 |      0.04 |     \-0.33 |     \-0.36 |    \-0.35 |                  | ^                 |                       |
+| T478I    |       148 |     \-0.05 |     \-0.02 |    \-0.04 |     \-0.14 |     \-0.18 |    \-0.16 |                  |                   |                       |
+| V483A    |       153 |       0.00 |     \-0.05 |    \-0.03 |       0.01 |       0.17 |      0.09 |                  |                   |                       |
 | Q498H    |       168 |       0.30 |       0.31 |      0.30 |       0.15 |       0.16 |      0.16 |                  |                   | \#                    |
 | Q498Y    |       168 |       0.01 |       0.30 |      0.16 |       0.19 |     \-0.07 |      0.06 | o                | ^                 |                       |
 | N501D    |       171 |     \-2.40 |     \-2.44 |    \-2.42 |       0.09 |       0.07 |      0.08 |                  | ^                 |                       |
