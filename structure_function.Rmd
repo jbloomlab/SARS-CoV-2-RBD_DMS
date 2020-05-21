@@ -421,6 +421,20 @@ Based on gazing at heatmaps (from this notebook and in the `sarbecovirus_diversi
 Taken together, I would propose to validate the following ten mutations in isogenic yeast display experiments:
 
 ```{r yeast_display_validation_table, echo=FALSE}
+#indicator for wildtype RaTG13 state
+mutants[,RaTG13_indicator := ""]
+for(i in 1:nrow(mutants)){
+  RaTG13aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_RaTG13]
+  if(!is.na(RaTG13aa) & mutants$mutant[i] == RaTG13aa){mutants$RaTG13_indicator[i] <- "^"}
+}
+
+#indicator for wildtype GD-Pangolin state
+mutants[,GDPangolin_indicator := ""]
+for(i in 1:nrow(mutants)){
+  GDPangolinaa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_GD_Pangolin]
+  if(!is.na(GDPangolinaa) & mutants$mutant[i] == GDPangolinaa){mutants$GDPangolin_indicator[i] <- "#"}
+}
+
 kable(mutants[mutation %in% c("N439K","V367F","T478I","V483A","Q498Y","Q498H","N501D","N501T","N501F","G502D"),.(mutation,RBD_site,bind_lib1,bind_lib2,bind_avg,expr_lib1,expr_lib2,expr_avg,SARS1_indicator,RaTG13_indicator,GDPangolin_indicator)])
 ```
 
