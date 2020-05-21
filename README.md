@@ -92,6 +92,8 @@ Then the large results files were added for tracking with:
     git lfs track results/binding_Kds/binding_Kds_homologs.csv
     git lfs track results/single_mut_effects/single_mut_effects.csv
     git lfs track results/single_mut_effects/homolog_effects.csv
+    git lfs track results/structure_function/6m0j_b-factor-mean-bind.pdb
+    git lfs track results/structure_function/6m0j_b-factor-mean-expr.pdb
 
 ## Updating the conda environment
 The [environment.yml](environment.yml) file contains a fully pinned conda environment.

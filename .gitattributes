@@ -6,3 +6,5 @@ results/binding_Kds/binding_Kds.csv filter=lfs diff=lfs merge=lfs -text
 results/binding_Kds/binding_Kds_homologs.csv filter=lfs diff=lfs merge=lfs -text
 results/single_mut_effects/single_mut_effects.csv filter=lfs diff=lfs merge=lfs -text
 results/single_mut_effects/homolog_effects.csv filter=lfs diff=lfs merge=lfs -text
+results/structure_function/6m0j_b-factor-mean-bind.pdb filter=lfs diff=lfs merge=lfs -text
+results/structure_function/6m0j_b-factor-mean-expr.pdb filter=lfs diff=lfs merge=lfs -text

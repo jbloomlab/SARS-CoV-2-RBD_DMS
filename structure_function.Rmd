@@ -142,8 +142,8 @@ spectrum b, yellow green blue, RBD_CA
 To create a surface representation of the RBD colored by mutational tolerance (in this case, white to red, to mimic the heatmaps we produce below), execute the following commands in a PyMol session with one of these output `pdb` files loaded:
 ```
 create RBD, chain E
-hide all; show cartoon, chain A; show surface, RBD
-spectrum b, red white, RBD
+hide all; show cartoon, chain A; color warmpink, chain A
+show surface, RBD; spectrum b, red white, RBD
 ```
 
 ```{r output_pdbs}

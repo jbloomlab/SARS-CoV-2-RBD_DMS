@@ -1,0 +1,34 @@
+load 6m0j_b-factor-mean-bind.pdb
+load 6m0j_b-factor-mean-expr.pdb
+load ../../data/structures/Ab-bound/80R_2ghw.pdb
+load ../../data/structures/Ab-bound/B38_7bz5.pdb
+load ../../data/structures/Ab-bound/CR3022_6w41.pdb
+load ../../data/structures/Ab-bound/F26G19_3bgf.pdb
+load ../../data/structures/Ab-bound/m396_2dd8.pdb
+load ../../data/structures/Ab-bound/S230_6nb7.pdb
+load ../../data/structures/Ab-bound/VHH-72_6waq.pdb
+
+hide all
+create ACE2, 6m0j_b-factor-mean-bind and chain A
+create RBD_bind, 6m0j_b-factor-mean-bind and chain E; remove RBD_bind and chain A
+create RBD_expr, 6m0j_b-factor-mean-expr and chain E; remove RBD_expr and chain A
+delete 6m0j_b-factor-mean-bind
+delete 6m0j_b-factor-mean-expr
+
+align VHH-72_6waq and chain B, RBD_bind; remove VHH-72_6waq and chain B+C+D; show_as cartoon, VHH-72_6waq
+
+align S230_6nb7 and chain A, RBD_bind; remove S230_6nb7 and chain A+B+C+D+E+I+G; show_as cartoon, S230_6nb7
+
+align m396_2dd8 and chain S, RBD_bind; remove m396_2dd8 and chain S; show_as cartoon, m396_2dd8
+
+align F26G19_3bgf and chain S, RBD_bind; remove F26G19_3bgf and chain A+B+C+S; show_as cartoon, F26G19_3bgf
+
+align CR3022_6w41 and chain C, RBD_bind; remove CR3022_6w41 and chain C; show_as cartoon, CR3022_6w41
+
+align B38_7bz5 and chain A, RBD_bind; remove B38_7bz5 and chain A; show_as cartoon, B38_7bz5
+
+align 80R_2ghw and chain A, RBD_bind; remove 80R_2ghw and chain A+C+D; show_as cartoon, 80R_2ghw
+
+color warmpink, ACE2; show cartoon, ACE2
+show surface, RBD_bind; spectrum b, red white, RBD_bind, minimum=-2, maximum=0; show sticks, RBD_bind and resn NAG
+show surface, RBD_expr; spectrum b, red white, RBD_expr, minimum=-2, maximum=0; show sticks, RBD_expr and resn NAG
