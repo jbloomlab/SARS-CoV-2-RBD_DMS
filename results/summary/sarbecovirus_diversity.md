@@ -43,7 +43,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -90,7 +90,10 @@ mutants <- data.table(read.csv(file=config$single_mut_effects_file,stringsAsFact
 setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2_site")
 
 #add color column to homologs, by clade
-homolog_measurements$clade_color <- as.character(NA); homolog_measurements[clade=="Clade 1",clade_color := "#EF4136"]; homolog_measurements[clade=="Clade 2",clade_color := "#009444"]; homolog_measurements[clade=="Clade 3",clade_color := "#EE2A7B"]; homolog_measurements[clade=="SARS-CoV-2",clade_color := "#2E3192"]
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+homolog_measurements$clade_color <- as.character(NA); homolog_measurements[clade=="Clade 1",clade_color := cbPalette[4]]; homolog_measurements[clade=="Clade 2",clade_color := cbPalette[2]]; homolog_measurements[clade=="Clade 3",clade_color := cbPalette[8]]; homolog_measurements[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
+#add plottiing character to homolog_measurements, by clade
+homolog_measurements$clade_pch <- as.numeric(NA); homolog_measurements[clade=="Clade 1",clade_pch := 15]; homolog_measurements[clade=="Clade 2",clade_pch := 17]; homolog_measurements[clade=="Clade 3",clade_pch := 18]; homolog_measurements[clade=="SARS-CoV-2",clade_pch  := 16]
 
 #add mean, max, min mut effects per site annotations
 RBD_sites[,mean_bind := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]

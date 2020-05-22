@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse","bio3d","gridExtra")
+packages = c("yaml","data.table","tidyverse","bio3d","gridExtra","egg")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -31,7 +31,6 @@ RBD_sites <- data.table(read.csv(file="data/RBD_sites.csv",stringsAsFactors=F))
 if(!file.exists(config$structure_function_dir)){
   dir.create(file.path(config$structure_function_dir))
 }
-#make output directory
 if(!file.exists(config$dms_view_dir)){
   dir.create(file.path(config$dms_view_dir))
 }
@@ -62,11 +61,11 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] gridExtra_2.3     bio3d_2.3-4       forcats_0.4.0    
-    ##  [4] stringr_1.4.0     dplyr_0.8.3       purrr_0.3.2      
-    ##  [7] readr_1.3.1       tidyr_0.8.3       tibble_2.1.3     
-    ## [10] ggplot2_3.2.0     tidyverse_1.2.1   data.table_1.12.2
-    ## [13] yaml_2.2.0        knitr_1.23       
+    ##  [1] egg_0.4.5         gridExtra_2.3     bio3d_2.3-4      
+    ##  [4] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.3      
+    ##  [7] purrr_0.3.2       readr_1.3.1       tidyr_0.8.3      
+    ## [10] tibble_2.1.3      ggplot2_3.2.0     tidyverse_1.2.1  
+    ## [13] data.table_1.12.2 yaml_2.2.0        knitr_1.23       
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_1.0.1       cellranger_1.1.0 pillar_1.4.2     compiler_3.6.1  
@@ -95,7 +94,10 @@ mutants <- data.table(read.csv(file=config$single_mut_effects_file,stringsAsFact
 setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2_site")
 
 #add color column to homologs, by clade
-homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := "#EF4136"]; homologs[clade=="Clade 2",clade_color := "#009444"]; homologs[clade=="Clade 3",clade_color := "#EE2A7B"]; homologs[clade=="SARS-CoV-2",clade_color := "#2E3192"]
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := cbPalette[4]]; homologs[clade=="Clade 2",clade_color := cbPalette[2]]; homologs[clade=="Clade 3",clade_color := cbPalette[8]]; homologs[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
+#add plottiing character to homologs, by clade
+homologs$clade_pch <- as.numeric(NA); homologs[clade=="Clade 1",clade_pch := 15]; homologs[clade=="Clade 2",clade_pch := 17]; homologs[clade=="Clade 3",clade_pch := 18]; homologs[clade=="SARS-CoV-2",clade_pch  := 16]
 ```
 
 ## General structural constraints on RBD affinity and stability
@@ -104,7 +106,17 @@ Let’s investigate how the RBD structure influences mutational effects on
 expression and binding. First, we compute the *mean* effect of mutations
 on binding and expression for each RBD site, as well as the best (max)
 and worst (min) mutational effects on these two measurements (excluding
-nonsense and synonymous mutants).
+nonsense and synonymous mutants). To me, the mean captures overall
+constraint on a position, but min and max can add some extra context –
+in particular the max effect (the “best” mutation that can be
+introduced) can distinguish between two positions with a strong negative
+*average* effect of mutations, though one position might tolerate *some*
+amino acid mutations without defect, while another might not tolerate
+*any* of the possible 19 amino acids. Particularly when thinking about
+antibody epitopes, this max parameter might be a useful indicator of
+extreme constraint on some positions (since “escape” from an antibody
+only requires that at least one amino acid mutation is tolerated, not
+the average of all 19).
 
 ``` r
 RBD_sites[,mean_bind := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
@@ -193,10 +205,10 @@ the RBM is constrained with regards to ACE2-binding. We plot
 distributions of mutational effects within the core RBD versus in the
 RBM, for binding and expression phenotypes. As we hypothesized,
 mutations in the RBM tend to have a more detrimental effect on direct
-binding affinity (P-value 5.8890999^{-11}, median mutation effect -0.45
-in the RBM, -0.21 in the core RBD). In contrast, mutations in the core
+binding affinity (P-value 4.5313778^{-12}, median mutation effect -0.53
+in the RBM, -0.26 in the core RBD). In contrast, mutations in the core
 RBD tend to have a more detrimental effect on expression (\~stability)
-(P-value 6.2815667^{-24}, median mutation effect -0.44 in the RBM, -1.01
+(P-value 2.7778591^{-31}, median mutation effect -0.44 in the RBM, -1.01
 in the core RBD)
 
 <img src="structure_function_files/figure-gfm/RBM_versus_core_fold_mutations-1.png" style="display: block; margin: auto;" />
@@ -225,8 +237,15 @@ below), execute the following commands in a PyMol session with one of
 these output `pdb` files loaded:
 
     create RBD, chain E
-    hide all; show cartoon, chain A; show surface, RBD
-    spectrum b, red white, RBD
+    hide all; show cartoon, chain A; color warmpink, chain A
+    show surface, RBD; spectrum b, red white, RBD
+
+Set of commands to create more elaborate structural alignments and views
+are given in the `~/data/structures/` subdirectory, e.g. the
+`surface_constraint_commands.txt` series of commands which, when
+executed from a PyMol session hosted within that subdirectory loads in
+various RBD structures bound to ACE2, mAbs, and full Spike, and colors
+the RBD surface by mutational constraint.
 
 ``` r
 pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
@@ -319,17 +338,32 @@ course, our isolated RBD-only affinity measurements may have more
 complex constraints in the context of full-Spike trimer.)
 
 For expression, our range set by homologs may be improperly aligned to
-the SARS-CoV-2 range – not least, because all other RBD homologs were
-observed to have very slightly higher expression than SARS-CoV-2, so
-direct interpretaiton of DFE versus homologs is a bit more complicated
-(could be artefactual because the SARS-CoV-2 variants went through the
-mutagenesis protocol, though we eliminated the clear outliers that
-likely bear unseen mutations outside the RBD sequence. SARS-CoV-2 is
-still posited to have lower expression than the other homologs, but this
-elimination of low-expression wildtype/synonymous variants may have
-further distanced it from the true “library-average” wildtype expression
-and thereby make more of the single mutants look deleterious? Tough
-problem to solve…)
+the SARS-CoV-2 range – since the SARS-CoV-2 wildtype sequences went
+through the mutagenesis protocol, they could have acquired mutations
+outside the sequenced region that impact expression. This is evident in
+the fact that some very small fraction of wildtype barcodes are
+non-expressing. We removed these non-expressing wildtype barcodes for
+calculating mean wildtype expression compared to the homologs, which did
+not go through the mutagenesis scheme. So, it is unclear whether this
+should still impact the relationship between our SARS-CoV-2 wt
+expression and the homologs. However, we cannot account for this effect
+in our library mutants, where we cannot easily determine which barcodes
+are nonexpressing due to outside mutatioins versus the amino acid
+variant. Therefore, these artefactually low expression barcodes are
+still present in the SARS-CoV-2 mutant variants, which might supress the
+scale by 0.1 or 0.2 log-MFI units relative to the homologs. I think this
+is all ok since we’re not reading as far into these expression effects,
+but it odes complicate direct comparison of the mutant DFE versus
+homologs. Perhaps we could shift the entire DFE by the same log-MFI
+value by which the wildtype value shifted when we eliminated the
+artefactual low-expression measurements? But I don’t like this either,
+because only a fraction of the mutant genotypes should be affected by
+this. Our expression values all come from the global epistasis model,
+which at least in theory should be able to partially able to deal with
+these outliers while not suffering huge decreases in the mean estimate
+of mutational effects on expression, because the Cauchy likelihood model
+does allow rare errant outliers without large loss in
+likelihoood/shifting of the mean parameter.
 
 <img src="structure_function_files/figure-gfm/DFE_bind-1.png" style="display: block; margin: auto;" />
 
@@ -337,35 +371,56 @@ problem to solve…)
 
 Next, let’s make heatmaps of per-amino acid mutational effects on
 binding and expression. We first make these heatmaps for all mutations
-at all sites, colored by delta log<sub>10</sub>(*K*<sub>A,app</sub>). (I
-would eventually like to flesh out these heatmaps by providing
-additional indicator variables as ‘heatmap’ style rows on the top –
-things could include a color scale for RSA, conservation, an asterisk or
-something to indicate contact residues, indicators for NLGS or
-disulfides, an indicator for strucutral contacts in full length Spike
-trimer, etc. I also want to think about whether there are better color
-scales to use, including the “divergence” in scale between the blue
-(goes from white to bluest in a 0.5-unit scale for binding, 1-unit scale
-for expression), versus red (0 to reddest in a 5-unit scale). Happy for
-additional things to think about to refine these plots):
+at all sites, colored by delta log<sub>10</sub>(*K*<sub>A,app</sub>).
+Above each set of binding values are heatmaps showing relative solvent
+accessibility (RSA) in the bound and unbound RBD states, as well as a
+binary indicator for ACE2 contact residues. The “x” in the heatmap marks
+the wildtype SARS-CoV-2 state, and “o” marks the SARS-CoV-1 state at
+positions where they differ.
 
-<img src="structure_function_files/figure-gfm/heatmap_binding_all-1.png" style="display: block; margin: auto;" />
+(I am more of a, get the figure 90% of the way there via the code, and
+just do the final alignment in Illustrator – so, I would imagine
+“squashing” together the three related heatmaps a bit more to one
+another to make the folding over in sequence from first three rows to
+second three rows more apparent, get rid of the redundant scales, etc.
+But I will wait until we have polished figures and analyses before
+spending time on that since it’s manual\!)
+
+<img src="structure_function_files/figure-gfm/heatmap_binding_all_sites-1.png" style="display: block; margin: auto;" />
+
 And next, the same heat map, colored by delta mean fluorescence
 (expression). I altered the scale such that anything less than -4 gets
 the darkest red color – the lowest missense mutant score is -4.07, only
 nonsense mutants push the scale down to -5, so this helps the relative
 red scale be better calibrated between the binding and expression
 measurements w.r.t. single missense mutations. (once again, happy for
-thoughts.):
+thoughts.). Obviously if these are shown side by side with the binding
+values, we can remove the redundant RSA and contact plots:
 
 <img src="structure_function_files/figure-gfm/heatmap_expression_all-1.png" style="display: block; margin: auto;" />
 
-To make more sense of these heatmaps, we now zoom in and group residues
-in special structural and functional classes. First, let’s visualize
-heatmaps of paired cysteines that form disulfides. The following
-heatmaps reorder sites by cysteine pair. (I would love to add a line at
-the top grouping the paired cysteines, or create a small gap between
-each pair of columns, but I am gg-inept and so this will do for now.)
+Also, next to these single-mutant effect heatmaps in a composite paper
+figure, it might be useful to have heatmaps illustrating the homolog
+phenotype scores. I only am so skilled at managing single-plot layouts,
+so I construct these heatmaps separately below.
+
+    ## Coordinate system already present. Adding new coordinate system, which will replace the existing one.
+
+<img src="structure_function_files/figure-gfm/heatmap_homolog_phenotypes-1.png" style="display: block; margin: auto;" />
+
+Though I think these “overall” heatmap(s) will serve well in the paper,
+I think for some of the sub-observations we want to make, it helps to
+zoom in particular groupings of columns in the heatmap. I do so through
+the following series of interpretative summaries, and I imagine if we
+want to focus on any of these points, we could have a supplementary
+figure which shows these zoomed in heatmaps that highlight the relevant
+points that come out from this overall heatmap.
+
+First, let’s visualize heatmaps of paired cysteines that form
+disulfides. The following heatmaps reorder sites by cysteine pair. (I
+would love to add a line at the top grouping the paired cysteines, or
+create a small gap between each pair of columns, but I am gg-inept and
+so this will do for now.)
 
 We can see that cysteines within a disulfide pair have similiar
 sensitivities to mutation and even similar biochemical preferences, but
@@ -448,22 +503,6 @@ addition of a glycan, or loss of the wildtype amino acid at this i+2
 residue independent of the glycan effect.
 
 <img src="structure_function_files/figure-gfm/heatmap_bind_expr_NLGS-1.png" style="display: block; margin: auto;" />
-
-Here are the heat maps, zoomed in on residues in the “Receptor Binding
-Motif”, the section of the RBM that extends out from the core alpha+beta
-fold and contains the ACE2-contact residues. This motif is contiguous in
-space, so there’s really no point to this heat map beyond the full-RBD
-map shown above, once I figure out how to add e.g. a line at the top
-across these positions to incidicate RBM. I have some interpretation of
-expression/binding tradeoff from this heatmap, but this point is better
-made in the subsequent figure focusing only on contact positions, so I
-will elaborate it there. Haven’t looked into this RBM map in too much
-more detail beyond that, so there might be something else interesting,
-or this figure could definitely get the axe as it probably doesn’t add
-much. “x” marks the SARS-CoV-2 state, and “o” marks the SARS-CoV-1
-wildtype state.
-
-<img src="structure_function_files/figure-gfm/heatmap_RBM-1.png" style="display: block; margin: auto;" />
 
 Next, let’s look at expression and binding effects for annotated contact
 residues. Below, we are looking at the 19 residues that form ACE2
