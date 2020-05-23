@@ -1,0 +1,215 @@
+---
+title: "Isogenic validation experiments"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn=-1) # suppress warnings that clutter output
+```
+
+## Experiment: isogenic validation of yeast-display RBD mutants and homologs
+
+**2020-05-01**
+WT SARS-CoV-2 Spike RBD was validated in triplicate. 
+
+**2020-05-08**
+WT SARS-CoV-2 Spike RBD and 6 homologs were validated in isogenic experiments. 
+
+### Load packages and set working directory
+```{r}
+r_packages <- c(
+  "ggplot2", "data.table", "tidyverse", "dplyr", "broom", "gridExtra"
+)
+invisible(lapply(r_packages, library, character.only=TRUE))
+dir.create(file.path("./results/"))
+```
+
+### Read in data table with mean bin at each concentration
+```{r}
+dt <- read.csv(file="Table-all.csv", stringsAsFactors=F) %>%
+  mutate(conc_nM = conc_M*1e9)
+```
+
+### Duplicate rows that correspond to May01 wild type triplicate experiment so we can fit models to the pooled replicates
+```{r}
+wildtype <- dt %>% 
+  filter(expt=="200501") %>%
+  mutate(replicate = "pooled",
+         titration = "wt_pooled")
+
+dt <- dt %>% rbind(wildtype)
+
+print(nrow(dt))
+```
+
+### Calculate mean `geomean_FITC` and `FITC+` for each titration
+```{r}
+dt <- dt %>% 
+  group_by(titration) %>%
+  mutate(mean_FITCpos = mean(FITCpos),
+         stderr_FITCpos = sd(FITCpos)/sqrt(length(FITCpos)),
+         mean_geomean_FITC = mean(geomean_FITC),
+         stderr_geomean_FITC = sd(geomean_FITC)/sqrt(length(geomean_FITC))
+         ) %>%
+  ungroup()
+
+head(dt, n=5)
+```
+
+### Use `broom` to get the results from fitting `nls` model by group
+```{r}
+nls_broom <- dt %>% 
+  group_by(titration) %>%
+  do(tidy(nls(mean_bin ~ a*(conc_nM/(conc_nM+Kd))+b,
+              data=.,
+              start=list(a=3,b=1,Kd=0.1)
+              )
+          ) 
+  )
+
+dt <- dt %>%
+  merge(nls_broom %>%
+          filter(term=="Kd") %>%
+          select(estimate, std.error) %>%
+          rename(Kd="estimate",
+                 Kd_SE="std.error"), by="titration")
+head(dt, n=5)
+```
+### Write summary table to CSV file
+```{r}
+isogenic_titrations_summary <- dt %>% 
+  select(expt, titration, genotype, replicate, Kd, Kd_SE, mean_FITCpos, mean_geomean_FITC) %>%
+  unique()
+
+isogenic_titrations_summary
+write.csv(isogenic_titrations_summary,"./results/isogenic_titrations_summary.csv", row.names = FALSE)
+```
+
+### Now predict `mean_bin` using the models 
+```{r}
+conc_nM = c(1:20 %o% 10^(-4:1)) # this should only generate 120 estimates per titration (faster!)
+
+nls_predictions <- dt %>%
+  select(titration, expt, genotype, replicate) %>%
+  merge(nls_broom %>%
+          select(-statistic, -p.value, -std.error) %>%
+          spread(term, estimate), 
+        by="titration") %>%
+  unique() %>%
+  merge(dt %>% select(titration, Kd_SE) %>% unique(), by="titration") %>%
+  merge(as.data.frame(conc_nM), all=TRUE) %>%
+  mutate(mean_bin = a*(conc_nM/(conc_nM+Kd))+b)
+
+head(nls_predictions, n=5)
+```
+
+### Make plots for titration curves for May08 homolog experiment
+```{r}
+annotations <- dt %>% 
+  filter(expt != "200501") %>% 
+  select(titration, genotype, expt, replicate, Kd, Kd_SE) %>%
+  unique() %>%
+  remove_rownames()
+
+ggplot(dt %>% filter(expt != "200501"), aes(conc_nM, mean_bin)) +
+  geom_point() +
+  geom_line(data = nls_predictions %>% filter(expt != "200501"),
+            aes(conc_nM, mean_bin),
+            color="red") +
+  scale_x_log10(lim=c(0.00002,200)) +
+  xlab("ACE2 (nM)") +
+  ylab("mean bin") +
+  facet_wrap(~ genotype) +
+  geom_text(
+    data    = annotations,
+    mapping = aes(x = 0.0025, 
+                  y = 3.75, 
+                  label = c(paste(
+                    "Kd=", format(Kd, digits=2),
+                    "+/-", format(Kd_SE, digits=1), "nM"))),
+    size=3) +
+  theme_bw()
+
+ggsave(
+  "./results/homolog_titration.pdf",
+  scale = 1,
+  width = NA,
+  height = NA
+)
+```
+### Make plots just for May01 wildtype triplicate titrations
+```{r}
+annotations <- dt %>% 
+  filter(expt == "200501") %>% 
+  select(titration, genotype, expt, replicate, Kd, Kd_SE) %>%
+  unique() %>%
+  remove_rownames()
+
+ggplot(dt %>% filter(expt == "200501"), aes(conc_nM, mean_bin)) +
+  geom_point() +
+  geom_line(data = nls_predictions %>% filter(expt == "200501"),
+            aes(conc_nM, mean_bin),
+            color="red") +
+  scale_x_log10(lim=c(0.00002,200)) +
+  xlab("ACE2 (nM)") +
+  ylab("mean bin") +
+  facet_wrap(~ replicate) + # this time facet on replicate
+  geom_text(
+    data    = annotations,
+    mapping = aes(x = 0.0025, 
+                  y = 3.75, 
+                  label = c(paste(
+                    "Kd=", format(Kd, digits=2),
+                    "+/-", format(Kd_SE, digits=1), "nM"))),
+    size=3) +
+  ggtitle("Wild Type SARS-CoV-2") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggsave(
+  "./results/wildtype_triplicate_titration.pdf",
+  scale = 1,
+  width = NA,
+  height = NA
+)
+```
+
+### Plot FITC+ and geomean_FITC by genotype
+We will ignore the original WT isogenic titration experiment (May01) because it is not really possible to compare across experiments due to variability with induction, etc. 
+```{r}
+p1 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, FITCpos)) + 
+  geom_boxplot() +
+  geom_point() +
+  scale_y_continuous(lim=c(0, 100)) +
+  ylab("% FITC+") +
+  facet_wrap(~ expt, scales="free_x") +
+  theme_bw() +
+  theme(text = element_text(size=12), 
+        axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+
+p2 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, geomean_FITC)) +
+  geom_boxplot() +
+  geom_point() +
+  ylab("mean FITC+ intensity") +
+  facet_wrap(~ expt, scales="free_x") +
+  theme_bw() +
+  theme(text = element_text(size=12), 
+        axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+
+grid.arrange(p1, p2, ncol=2, widths=c(8,8), heights=c(6))
+
+g <- arrangeGrob(p1, p2, ncol=2, widths=c(8,8), heights=c(6))
+
+ggsave(
+  "./results/homolog_FITC_expression.pdf",
+  g,
+  scale = 1,
+  width = NA,
+  height = NA
+)
+```
+
+
