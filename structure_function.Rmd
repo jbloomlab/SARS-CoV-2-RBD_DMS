@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse","bio3d","gridExtra")
+packages = c("yaml","data.table","tidyverse","bio3d","gridExtra","egg")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -37,7 +37,6 @@ RBD_sites <- data.table(read.csv(file="data/RBD_sites.csv",stringsAsFactors=F))
 if(!file.exists(config$structure_function_dir)){
   dir.create(file.path(config$structure_function_dir))
 }
-#make output directory
 if(!file.exists(config$dms_view_dir)){
   dir.create(file.path(config$dms_view_dir))
 }
@@ -62,12 +61,15 @@ mutants <- data.table(read.csv(file=config$single_mut_effects_file,stringsAsFact
 setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2_site")
 
 #add color column to homologs, by clade
-homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := "#EF4136"]; homologs[clade=="Clade 2",clade_color := "#009444"]; homologs[clade=="Clade 3",clade_color := "#EE2A7B"]; homologs[clade=="SARS-CoV-2",clade_color := "#2E3192"]
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := cbPalette[4]]; homologs[clade=="Clade 2",clade_color := cbPalette[2]]; homologs[clade=="Clade 3",clade_color := cbPalette[8]]; homologs[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
+#add plottiing character to homologs, by clade
+homologs$clade_pch <- as.numeric(NA); homologs[clade=="Clade 1",clade_pch := 15]; homologs[clade=="Clade 2",clade_pch := 17]; homologs[clade=="Clade 3",clade_pch := 18]; homologs[clade=="SARS-CoV-2",clade_pch  := 16]
 ```
 
 ## General structural constraints on RBD affinity and stability
 
-Let's investigate how the RBD structure influences mutational effects on expression and binding. First, we compute the *mean* effect of mutations on binding and expression for each RBD site, as well as the best (max) and worst (min) mutational effects on these two measurements (excluding nonsense and synonymous mutants).
+Let's investigate how the RBD structure influences mutational effects on expression and binding. First, we compute the *mean* effect of mutations on binding and expression for each RBD site, as well as the best (max) and worst (min) mutational effects on these two measurements (excluding nonsense and synonymous mutants). To me, the mean captures overall constraint on a position, but min and max can add some extra context -- in particular the max effect (the "best" mutation that can be introduced) can distinguish between two positions with a strong negative *average* effect of mutations, though one position might tolerate *some* amino acid mutations without defect, while another might not tolerate *any* of the possible 19 amino acids. Particularly when thinking about antibody epitopes, this max parameter might be a useful indicator of extreme constraint on some positions (since "escape" from an antibody only requires that at least one amino acid mutation is tolerated, not the average of all 19).
 
 ```{r mean_max_mut_effect_per_site}
 RBD_sites[,mean_bind := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
@@ -110,18 +112,18 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/mean-bind_v_RSA.p
 
 ```
 
-Next, we want to investigate how mutational tolerance differs between the core alpha+beta RBD fold versus the 'Receptor Binding Motif' (RBM) loops. In particular, I want to test the hypothesis that the core RBD is more constrained with regards to mutational effects on expression, while the RBM is constrained with regards to ACE2-binding. We plot distributions of mutational effects within the core RBD versus in the RBM, for binding and expression phenotypes. As we hypothesized, mutations in the RBM tend to have a more detrimental effect on direct binding affinity (P-value `r wilcox.test(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],bind_avg],mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),bind_avg])$p.value`, median mutation effect `r median(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],bind_avg],na.rm=T)` in the RBM, `r median(mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),bind_avg],na.rm=T)` in the core RBD). In contrast, mutations in the core RBD tend to have a more detrimental effect on expression (~stability) (P-value `r wilcox.test(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],expr_avg],mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),expr_avg])$p.value`, median mutation effect `r median(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],expr_avg],na.rm=T)` in the RBM, `r median(mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]),expr_avg],na.rm=T)` in the core RBD)
+Next, we want to investigate how mutational tolerance differs between the core alpha+beta RBD fold versus the 'Receptor Binding Motif' (RBM) loops. In particular, I want to test the hypothesis that the core RBD is more constrained with regards to mutational effects on expression, while the RBM is constrained with regards to ACE2-binding. We plot distributions of mutational effects within the core RBD versus in the RBM, for binding and expression phenotypes. As we hypothesized, mutations in the RBM tend to have a more detrimental effect on direct binding affinity (P-value `r wilcox.test(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2] & mutant!="*" & mutant!=wildtype,bind_avg],mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]) & mutant!="*" & mutant!=wildtype,bind_avg])$p.value`, median mutation effect `r median(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2] & mutant!="*" & mutant!=wildtype,bind_avg],na.rm=T)` in the RBM, `r median(mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]) & mutant!="*" & mutant!=wildtype,bind_avg],na.rm=T)` in the core RBD). In contrast, mutations in the core RBD tend to have a more detrimental effect on expression (~stability) (P-value `r wilcox.test(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2] & mutant!="*" & mutant!=wildtype,expr_avg],mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]) & mutant!="*" & mutant!=wildtype,expr_avg])$p.value`, median mutation effect `r median(mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2] & mutant!="*" & mutant!=wildtype,expr_avg],na.rm=T)` in the RBM, `r median(mutants[!(SARS2_site %in% RBD_sites[RBM==T,site_SARS2]) & mutant!="*" & mutant!=wildtype,expr_avg],na.rm=T)` in the core RBD)
 
 ```{r RBM_versus_core_fold_mutations, fig.width=8,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE, message=FALSE, warning=FALSE}
 mutants[,RBM := FALSE]
 mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],RBM := TRUE]
 
-p1 <- ggplot(mutants, aes(x=RBM,y=bind_avg))+
+p1 <- ggplot(mutants[mutant!="*" & mutant!=wildtype,], aes(x=RBM,y=bind_avg))+
   geom_violin(trim=F)+coord_flip()+
   stat_summary(fun.y=median,geom="point",size=1)+
   ylab("mutational effect on binding")+xlab("Site in RBM?")
 
-p2 <- ggplot(mutants, aes(x=RBM,y=expr_avg))+
+p2 <- ggplot(mutants[mutant!="*" & mutant!=wildtype,], aes(x=RBM,y=expr_avg))+
   geom_violin(trim=F)+coord_flip()+
   stat_summary(fun.y=median,geom="point",size=1)+
   ylab("mutational effect on expression")+xlab("Site in RBM?")
@@ -145,6 +147,8 @@ create RBD, chain E
 hide all; show cartoon, chain A; color warmpink, chain A
 show surface, RBD; spectrum b, red white, RBD
 ```
+
+Set of commands to create more elaborate structural alignments and views are given in the `~/data/structures/` subdirectory, e.g. the `surface_constraint_commands.txt` series of commands which, when executed from a PyMol session hosted within that subdirectory loads in various RBD structures bound to ACE2, mAbs, and full Spike, and colors the RBD surface by mutational constraint.
 
 ```{r output_pdbs}
 pdb <- read.pdb(file="data/structures/ACE2-bound/6m0j.pdb")
@@ -204,72 +208,170 @@ write.pdb(pdb=pdb_max_expr,file=paste(config$structure_function_dir,"/6m0j_b-fac
 
 Let's look at the distribution of single-mutant effects on our two phenotypes, and compare the fraction of mutations that are within the window defined by known functional RBD homologs for these two phenotypes.
 
-For the binding plot on the left, the intermediate blue point on the x-scale is RaTG13, which *can* promote huACE2-mediated cell entry in an in vitro cellular infection assay (though less efficiently than SARS-CoV-2) according to [Shang et al. 2020](https://www.nature.com/articles/s41586-020-2179-y/figures/3), though whether this is sufficient to enable efficient viral replication in more complex models is uncertain. For the cluster of homologs near 0, the farthest-left point is LYRa11, which according to [Letko et al. 2020](https://www.nature.com/articles/s41564-020-0688-y/figures/1) can also promote huACE2-mediated cellular entry, though less efficiently than SARS-CoV-1 and other bat CoV isolates such as WIV1/16 (identical RBDs). Therefore, these two points define a window of affinites that can at least support in vitro cellular infection -- but in reality, the window of possible "neutrality" with regards to actual human infectivity is perhaps better set by the remaining four points with delta log<sub>10</sub>(*K*<sub>A,app</sub>) values ~ 0 -- these four points are the RBDs from SARS-CoV-1, WIV1/16, SARS-CoV-2, and GD-Pangolin RBDs, in that rank-order. Taken together, we identify `r nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="SARS-CoV-1",bind_avg],])` single mutants (`r round(nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="SARS-CoV-1",bind_avg],])/nrow(mutants[wildtype != mutant & !is.na(bind_avg),])*100,digits=2)`%) whose affinity effects are within a neutral window that potentially enables huACE2-mediated infectivity (SARS-CoV-1 cutoff), and `r nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="RaTG13",bind_avg],])` single mutants (`r round(nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="RaTG13",bind_avg],])/nrow(mutants[wildtype != mutant & !is.na(bind_avg),])*100,digits=2)`%) whose affinity is potentially sufficient to enable huACE2-mediated in vitro cellular infectivity (RaTG13 cutoff). Taken together, this suggests a quite large sequence space of RBD diversity that is consistent with huACE2 binding and entry. (Though, of course, our isolated RBD-only affinity measurements may have more complex constraints in the context of full-Spike trimer.)
+For the binding plot on the left, the intermediate blue point on the x-scale is RaTG13, which *can* promote huACE2-mediated cell entry in an in vitro cellular infection assay (though less efficiently than SARS-CoV-2) according to [Shang et al. 2020](https://www.nature.com/articles/s41586-020-2179-y/figures/3), though whether this is sufficient to enable efficient viral replication in more complex models is uncertain. For the cluster of homologs near 0, the farthest-left point is LYRa11, which according to [Letko et al. 2020](https://www.nature.com/articles/s41564-020-0688-y/figures/1) can also promote huACE2-mediated cellular entry, though less efficiently than SARS-CoV-1 and other bat CoV isolates such as WIV1/16 (identical RBDs). Therefore, these two points define a window of affinites that can at least support in vitro cellular infection -- but in reality, the window of possible "neutrality" with regards to actual human infectivity is perhaps better set by the remaining four points with delta log<sub>10</sub>(*K*<sub>A,app</sub>) values ~ 0 -- these four points are the RBDs from SARS-CoV-1, WIV1/16, SARS-CoV-2, and GD-Pangolin RBDs, in that rank-order. Taken together, we identify `r nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="SARS-CoV-1",bind_avg],])` single mutants (`r round(nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="SARS-CoV-1",bind_avg],])/nrow(mutants[wildtype != mutant & !is.na(bind_avg),])*100,digits=2)`%) whose affinity effects are within a neutral window that potentially enables huACE2-mediated infectivity (SARS-CoV-1 cutoff), and `r nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="RaTG13",bind_avg],])` single mutants (`r round(nrow(mutants[wildtype != mutant & !is.na(bind_avg) & bind_avg >= homologs[homolog=="RaTG13",bind_avg],])/nrow(mutants[wildtype != mutant & !is.na(bind_avg),])*100,digits=2)`%) whose affinity is potentially sufficient to enable huACE2-mediated in vitro cellular infectivity (RaTG13 cutoff). Taken together, this suggests a quite large sequence space of RBD diversity that is consistent with huACE2 binding and entry. (Though, of course, our isolated RBD-only affinity measurements may have more complex constraints in the context of full-Spike trimer.) 
 
-For expression, our range set by homologs may be improperly aligned to the SARS-CoV-2 range -- not least, because all other RBD homologs were observed to have very slightly higher expression than SARS-CoV-2, so direct interpretaiton of DFE versus homologs is a bit more complicated (could be artefactual because the SARS-CoV-2 variants went through the mutagenesis protocol, though we eliminated the clear outliers that likely bear unseen mutations outside the RBD sequence. SARS-CoV-2 is still posited to have lower expression than the other homologs, but this elimination of low-expression wildtype/synonymous variants may have further distanced it from the true "library-average" wildtype expression and thereby make more of the single mutants look deleterious? Tough problem to solve...)
+For expression, our range set by homologs may be improperly aligned to the SARS-CoV-2 range -- since the SARS-CoV-2 wildtype sequences went through the mutagenesis protocol, they could have acquired mutations outside the sequenced region that impact expression. This is evident in the fact that some very small fraction of wildtype barcodes are non-expressing. We removed these non-expressing wildtype barcodes for calculating mean wildtype expression compared to the homologs, which did not go through the mutagenesis scheme. So, it is unclear whether this should still impact the relationship between our SARS-CoV-2 wt expression and the homologs. However, we cannot account for this effect in our library mutants, where we cannot easily determine which barcodes are nonexpressing due to outside mutatioins versus the amino acid variant. Therefore, these artefactually low expression barcodes are still present in the SARS-CoV-2 mutant variants, which might supress the scale by 0.1 or 0.2 log-MFI units relative to the homologs. I think this is all ok since we're not reading as far into these expression effects, but it odes complicate direct comparison of the mutant DFE versus homologs. Perhaps we could shift the entire DFE by the same log-MFI value by which the wildtype value shifted when we eliminated the artefactual low-expression measurements? But I don't like this either, because only a fraction of the mutant genotypes should be affected by this. Our expression values all come from the global epistasis model, which at least in theory should be able to partially able to deal with these outliers while not suffering huge decreases in the mean estimate of mutational effects on expression, because the Cauchy likelihood model does allow rare errant outliers without large loss in likelihoood/shifting of the mean parameter.
 
 ```{r DFE_bind, fig.width=8.5,fig.height=4.25,fig.align="center", dpi=300,dev="png",echo=FALSE}
 par(mfrow=c(1,2))
 plot(density(mutants[wildtype != mutant,bind_avg],na.rm=T,adjust=0.5),main="SARS-CoV-2 mutant log10Ka,app",xlab="delta log10(KA,app)"); polygon(density(mutants[wildtype != mutant,bind_avg],na.rm=T,adjust=0.5),col="gray50",border="black")
-set.seed(100);points(homologs[,bind_avg],sample(seq(1.45,1.55,by=0.005),nrow(homologs)),col=homologs[,clade_color],pch=16,cex=1.1)
+set.seed(100);points(homologs[,bind_avg],sample(seq(1.4,1.6,by=0.01),nrow(homologs)),col=homologs[,clade_color],pch=homologs[,clade_pch],cex=1.3)
 plot(density(mutants[wildtype != mutant & mutant != "*",expr_avg],na.rm=T,adjust=0.5),main="SARS-CoV-2 mutant expression",xlab="delta expression"); polygon(density(mutants[wildtype != mutant & mutant != "*",expr_avg],na.rm=T,adjust=0.5),col="gray50",border="black")
-set.seed(100);points(homologs[,expr_avg],sample(seq(0.63,0.67,by=0.002),nrow(homologs)),col=homologs[,clade_color],pch=16,cex=1.1)
+set.seed(100);points(homologs[,expr_avg],sample(seq(0.62,0.68,by=0.005),nrow(homologs)),col=homologs[,clade_color],pch=homologs[,clade_pch],cex=1.3)
 
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/DFEs.pdf",sep="")))
 ```
 
 ## Exploratory heatmaps
 
-Next, let's make heatmaps of per-amino acid mutational effects on binding and expression. We first make these heatmaps for all mutations at all sites, colored by delta log<sub>10</sub>(*K*<sub>A,app</sub>). (I would eventually like to flesh out these heatmaps by providing additional indicator variables as 'heatmap' style rows on the top -- things could include a color scale for RSA, conservation, an asterisk or something to indicate contact residues, indicators for NLGS or disulfides, an indicator for strucutral contacts in full length Spike trimer, etc. I also want to think about whether there are better color scales to use, including the "divergence" in scale between the blue (goes from white to bluest in a 0.5-unit scale for binding, 1-unit scale for expression), versus red (0 to reddest in a 5-unit scale). Happy for additional things to think about to refine these plots):
+Next, let's make heatmaps of per-amino acid mutational effects on binding and expression. We first make these heatmaps for all mutations at all sites, colored by delta log<sub>10</sub>(*K*<sub>A,app</sub>). Above each set of binding values are heatmaps showing relative solvent accessibility (RSA) in the bound and unbound RBD states, as well as a binary indicator for ACE2 contact residues. The "x" in the heatmap marks the wildtype SARS-CoV-2 state, and "o" marks the SARS-CoV-1 state at positions where they differ.
+
+(I am more of a, get the figure 90% of the way there via the code, and just do the final alignment in Illustrator -- so, I would imagine "squashing" together the three related heatmaps a bit more to one another to make the folding over in sequence from first three rows to second three rows more apparent, get rid of the redundant scales, etc. But I will wait until we have polished figures and analyses before spending time on that since it's manual!)
   
-```{r heatmap_binding_all, fig.width=12,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
+```{r heatmap_binding_all_sites, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
 #order mutant as a factor for grouping by rough biochemical grouping
 mutants$mutant <- factor(mutants$mutant, levels=c("*","C","P","G","V","M","L","I","A","F","W","Y","T","S","N","Q","E","D","H","K","R"))
 #add character vector indicating wildtype to use as plotting symbols for wt
 mutants[,wildtype_indicator := ""]
 mutants[mutant==wildtype,wildtype_indicator := "x"]
+#add character vector indicating SARS-CoV-1 wildtype state, if different than SARS-CoV-2
+mutants[,SARS1_indicator := ""]
+for(i in 1:nrow(mutants)){
+  SARS1aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_SARS1]
+  if(!is.na(SARS1aa) & mutants$mutant[i] == SARS1aa & mutants$wildtype_indicator[i]==""){mutants$SARS1_indicator[i] <- "o"}
+}
 
-p1 <- ggplot(mutants[mutant!="*" & SARS2_site %in% seq(331,431),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+#make data frame for by-site RSA values
+site_RSA_long <- data.table::melt(RBD_sites[,.(site_SARS2,RSA_unbound,RSA_bound)],id.vars=c("site_SARS2"),measure.vars=c("RSA_unbound","RSA_bound"),variable.name="structure",value.name="RSA");site_RSA_long[structure=="RSA_unbound",structure:="unbound"];site_RSA_long[structure=="RSA_bound",structure:="bound"]
+
+#make variable for factor by ACE2 contact for by-site contact T/F values
+RBD_sites[,ACE2_contact := as.factor(0)];RBD_sites[SARS2_ACE2_contact==T,ACE2_contact:=as.factor(1)];RBD_sites[SARS1_ACE2_contact==T,ACE2_contact:=as.factor(1)]
+
+p1 <- ggplot(RBD_sites[site_SARS2 %in% seq(331,431),],aes(site_SARS2,y=1))+geom_tile(aes(fill=ACE2_contact))+
+  scale_fill_manual(values=c("0"="white","1"="black"))+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(335,430,by=5)))+
+  labs(x="",y="ACE2\ncontact")+theme_classic(base_size=9)+
+  coord_equal()+
+  theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),axis.text.x=element_blank(),legend.position="none")
+
+p2 <- ggplot(site_RSA_long[site_SARS2 %in% seq(331,431),],aes(site_SARS2,structure))+geom_tile(aes(fill=RSA))+
+  scale_fill_gradientn(colors=c("#6a0dad","#ffffff"),limits=c(0,1),values=c(0,1),na.value="gray")+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(335,430,by=5)))+
+  labs(x="",y="structure")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x=element_blank())
+
+p3 <- ggplot(mutants[mutant!="*" & SARS2_site %in% seq(331,431),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
-  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(340,430,by=5)))+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(335,430,by=5)))+
   labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
-p2 <- ggplot(mutants[mutant!="*" & SARS2_site %in% seq(432,531),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+
+p4 <- ggplot(RBD_sites[site_SARS2 %in% seq(432,531),],aes(site_SARS2,y=1))+geom_tile(aes(fill=ACE2_contact))+
+  scale_fill_manual(values=c("0"="white","1"="black"))+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(435,530,by=5)))+
+  labs(x="",y="ACE2\ncontact")+theme_classic(base_size=9)+
+  coord_equal()+
+  theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),axis.text.x=element_blank(),legend.position="none")
+
+p5 <- ggplot(site_RSA_long[site_SARS2 %in% seq(432,531),],aes(site_SARS2,structure))+geom_tile(aes(fill=RSA))+
+  scale_fill_gradientn(colors=c("#6a0dad","#ffffff"),limits=c(0,1),values=c(0,1),na.value="gray")+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(435,530,by=5)))+
+  labs(x="",y="structure")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x=element_blank())
+
+p6 <- ggplot(mutants[mutant!="*" & SARS2_site %in% seq(432,531),],aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
-  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(440,530,by=5)))+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(435,530,by=5)))+
   labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
-grid.arrange(p1,p2,ncol=1)
+ggarrange(p1,p2,p3,p4,p5,p6,nrow=6)
 
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmap_all-bind.pdf",sep="")))
 ```
-And next, the same heat map, colored by delta mean fluorescence (expression). I altered the scale such that anything less than -4 gets the darkest red color -- the lowest missense mutant score is -4.07, only nonsense mutants push the scale down to -5, so this helps the relative red scale be better calibrated between the binding and expression measurements w.r.t. single missense mutations. (once again, happy for thoughts.):
 
-```{r heatmap_expression_all, fig.width=12,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
-p1 <- ggplot(mutants[SARS2_site %in% seq(331,431),],aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+And next, the same heat map, colored by delta mean fluorescence (expression). I altered the scale such that anything less than -4 gets the darkest red color -- the lowest missense mutant score is -4.07, only nonsense mutants push the scale down to -5, so this helps the relative red scale be better calibrated between the binding and expression measurements w.r.t. single missense mutations. (once again, happy for thoughts.). Obviously if these are shown side by side with the binding values, we can remove the redundant RSA and contact plots:
+
+```{r heatmap_expression_all, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
+p1 <- ggplot(RBD_sites[site_SARS2 %in% seq(331,431),],aes(site_SARS2,y=1))+geom_tile(aes(fill=ACE2_contact))+
+  scale_fill_manual(values=c("0"="white","1"="black"))+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(335,430,by=5)))+
+  labs(x="",y="ACE2\ncontact")+theme_classic(base_size=9)+
+  coord_equal()+
+  theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),axis.text.x=element_blank(),legend.position="none")
+
+p2 <- ggplot(site_RSA_long[site_SARS2 %in% seq(331,431),],aes(site_SARS2,structure))+geom_tile(aes(fill=RSA))+
+  scale_fill_gradientn(colors=c("#6a0dad","#ffffff"),limits=c(0,1),values=c(0,1),na.value="gray")+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(335,430,by=5)))+
+  labs(x="",y="structure")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x=element_blank())
+
+p3 <- ggplot(mutants[SARS2_site %in% seq(331,431),],aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
-  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(340,430,by=5)))+
+  scale_x_continuous(expand=c(0,0),breaks=c(331,seq(335,430,by=5)))+
   labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
-p2 <- ggplot(mutants[SARS2_site %in% seq(432,531),],aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+p4 <- ggplot(RBD_sites[site_SARS2 %in% seq(432,531),],aes(site_SARS2,y=1))+geom_tile(aes(fill=ACE2_contact))+
+  scale_fill_manual(values=c("0"="white","1"="black"))+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(435,530,by=5)))+
+  labs(x="",y="ACE2\ncontact")+theme_classic(base_size=9)+
+  coord_equal()+
+  theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),axis.text.x=element_blank(),legend.position="none")
+
+p5 <- ggplot(site_RSA_long[site_SARS2 %in% seq(432,531),],aes(site_SARS2,structure))+geom_tile(aes(fill=RSA))+
+  scale_fill_gradientn(colors=c("#6a0dad","#ffffff"),limits=c(0,1),values=c(0,1),na.value="gray")+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(435,530,by=5)))+
+  labs(x="",y="structure")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x=element_blank())
+
+p6 <- ggplot(mutants[SARS2_site %in% seq(432,531),],aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,2.5/6,5/6,5.5/6,6/6),na.value="gray")+
-  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(440,530,by=5)))+
+  scale_x_continuous(expand=c(0,0),breaks=c(432,seq(435,530,by=5)))+
   labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
   coord_equal()+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
+  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
-grid.arrange(p1,p2,ncol=1)
+ggarrange(p1,p2,p3,p4,p5,p6,nrow=6)
 
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmap_all-expr.pdf",sep="")))
 ```
 
-To make more sense of these heatmaps, we now zoom in and group residues in special structural and functional classes. First, let's visualize heatmaps of paired cysteines that form disulfides. The following heatmaps reorder sites by cysteine pair. (I would love to add a line at the top grouping the paired cysteines, or create a small gap between each pair of columns, but I am gg-inept and so this will do for now.)
+Also, next to these single-mutant effect heatmaps in a composite paper figure, it might be useful to have heatmaps illustrating the homolog phenotype scores. I only am so skilled at managing single-plot layouts, so I construct these heatmaps separately below.
+
+```{r heatmap_homolog_phenotypes, fig.width=5,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE,message=F}
+homologs$homolog <- factor(homologs$homolog,levels=homologs$homolog)
+
+p1 <- ggplot(homologs,aes(homolog,y=1))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0),labels=as.character(homologs$homolog))+
+  labs(x="homolog",y="")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),plot.margin=margin(5.5,5.5,5.5,20),
+                      axis.text.x=element_text(angle=45,hjust=1,color=homologs$clade_color,face="bold",size=10))
+
+p2 <- ggplot(homologs,aes(homolog,y=1))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0),labels=as.character(homologs$homolog))+
+  labs(x="homolog",y="")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),plot.margin=margin(5.5,5.5,5.5,20),
+                      axis.text.x=element_text(angle=45,hjust=1,color=homologs$clade_color,face="bold",size=10))
+
+ggarrange(p1,p2,nrow=2)
+
+invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmap_homologs.pdf",sep="")))
+```
+
+Though I think these "overall" heatmap(s) will serve well in the paper, I think for some of the sub-observations we want to make, it helps to zoom in particular groupings of columns in the heatmap. I do so through the following series of interpretative summaries, and I imagine if we want to focus on any of these points, we could have a supplementary figure which shows these zoomed in heatmaps that highlight the relevant points that come out from this overall heatmap.
+
+First, let's visualize heatmaps of paired cysteines that form disulfides. The following heatmaps reorder sites by cysteine pair. (I would love to add a line at the top grouping the paired cysteines, or create a small gap between each pair of columns, but I am gg-inept and so this will do for now.)
 
 We can see that cysteines within a disulfide pair have similiar sensitivities to mutation and even similar biochemical preferences, but there are differing patterns of sensitivity for binding and expression. Disulfide pair 4 is the most sensitive to mutation with respect to binding, whereas it only is moderately important for expression -- this is the disulfide pair within the RBM loop that stabilizes regions of the ACE2 interface, consistent with its exacerbated importance for binding versus expression. The remaining three disulfides are in the core RBD domain, and show similar sensitivities for expression and binding -- pair 3 is tolerant to mutation (and may even support replacement with polar amino acids), pair 1 is moderately sensitive, and pair 2 is most sensitive -- though hydrophobic mutations have noticeably decreased deleterious effect for binding, which is interesting to see.
 
@@ -343,45 +445,11 @@ p4 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
 
 
-grid.arrange(p1,p2,p3,p4,nrow=1,widths=c(1,1,1.8,1.8))
+ggarrange(p1,p2,p3,p4,nrow=1,widths=c(1,1,2.5,2.5))
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_NLGS.pdf",sep="")))
 
 ```
  
-Here are the heat maps, zoomed in on residues in the "Receptor Binding Motif", the section of the RBM that extends out from the core alpha+beta fold and contains the ACE2-contact residues. This motif is contiguous in space, so there's really no point to this heat map beyond the full-RBD map shown above, once I figure out how to add e.g. a line at the top across these positions to incidicate RBM. I have some interpretation of expression/binding tradeoff from this heatmap, but this point is better made in the subsequent figure focusing only on contact positions, so I will elaborate it there. Haven't looked into this RBM map in too much more detail beyond that, so there might be something else interesting, or this figure could definitely get the axe as it probably doesn't add much. "x" marks the SARS-CoV-2 state, and "o" marks the SARS-CoV-1 wildtype state.
-
-```{r heatmap_RBM, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
-#indicator for wildtype SARS-CoV-1 state
-mutants[,SARS1_indicator := ""]
-for(i in 1:nrow(mutants)){
-  SARS1aa <- RBD_sites[site_SARS2==mutants$SARS2_site[i],amino_acid_SARS1]
-  if(!is.na(SARS1aa) & mutants$mutant[i] == SARS1aa){mutants$SARS1_indicator[i] <- "o"}
-}
-
-
-muts_temp <- mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
-
-p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
-  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
-  scale_x_discrete(expand=c(0,0))+
-  labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
-  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
-  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
-
-p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
-  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
-  scale_x_discrete(expand=c(0,0))+
-  labs(x="RBM site",y="mutant")+theme_classic(base_size=9)+
-  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
-  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
-  geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
-
-grid.arrange(p1,p2,ncol=1)
-
-invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_RBM.pdf",sep="")))
-```
-
 Next, let's look at expression and binding effects for annotated contact residues. Below, we are looking at the 19 residues that form ACE2 contacts in the SARS-CoV-2 (6m0j) or SARS-CoV-1 (2ajf) ACE2-bound RBD crystal structures, where we annotated a residue as a contact if it contains non-hydrogen atoms within 4 Angstroms of ACE2. 14 residues were annotated as contacts in both structures, 3 contacts (417, 446, 475) are unique to the SARS-CoV-2 structure, and 2 (439, 503) are unique to SARS-CoV-1. We indicate the wildtype SARS-CoV-2 and -1 amino acids with an "x" and "o", respectively.
 
 Putting this reduced display of binding and expression next to each other is really interesting, as it highlights some potential binding-expression tradeoffs at positions 417, 449, 455, 486, 502, and 505, which are visualized in `dms-view` [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=417%2C449%2C455%2C486%2C502%2C505). 
@@ -390,7 +458,7 @@ For four of these residues (449, 455, 486, 505), binding prefers the wildtype hy
 
 Within this heatmap is specific information about the "key" contact sites that are often discussed in the literature. These sites primarily came from observations about amino acid changes relating civet- and human-adapted SARS-CoV-1 sequences, and other experimental evolution and structural studies in the SARS-CoV-1 side of the tree. These sites are `r RBD_sites[SARS1_key_adaptation==T,site_SARS2]`. May be worth extra glances when looking at these exploratory data, though other positions may be more important here in the SARS-CoV-2 side of the tree.
 
-```{r heatmap_ACE2_contacts, fig.width=12,fig.height=8,fig.align="center", dpi=500,dev="png",echo=FALSE}
+```{r heatmap_ACE2_contacts, fig.width=10,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
 muts_temp <- mutants[SARS2_site %in% RBD_sites[SARS2_ACE2_contact==T | SARS1_ACE2_contact==T,site_SARS2],];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
 
 p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
@@ -409,7 +477,7 @@ p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")+
   geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
-grid.arrange(p1,p2,ncol=1)
+grid.arrange(p1,p2,ncol=2)
 
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_contact-residues.pdf",sep="")))
 ```

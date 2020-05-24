@@ -55,7 +55,10 @@ mutants <- data.table(read.csv(file=config$single_mut_effects_file,stringsAsFact
 setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2_site")
 
 #add color column to homologs, by clade
-homolog_measurements$clade_color <- as.character(NA); homolog_measurements[clade=="Clade 1",clade_color := "#EF4136"]; homolog_measurements[clade=="Clade 2",clade_color := "#009444"]; homolog_measurements[clade=="Clade 3",clade_color := "#EE2A7B"]; homolog_measurements[clade=="SARS-CoV-2",clade_color := "#2E3192"]
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+homolog_measurements$clade_color <- as.character(NA); homolog_measurements[clade=="Clade 1",clade_color := cbPalette[4]]; homolog_measurements[clade=="Clade 2",clade_color := cbPalette[2]]; homolog_measurements[clade=="Clade 3",clade_color := cbPalette[8]]; homolog_measurements[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
+#add plottiing character to homolog_measurements, by clade
+homolog_measurements$clade_pch <- as.numeric(NA); homolog_measurements[clade=="Clade 1",clade_pch := 15]; homolog_measurements[clade=="Clade 2",clade_pch := 17]; homolog_measurements[clade=="Clade 3",clade_pch := 18]; homolog_measurements[clade=="SARS-CoV-2",clade_pch  := 16]
 
 #add mean, max, min mut effects per site annotations
 RBD_sites[,mean_bind := mean(mutants[SARS2_site==site_SARS2 & wildtype != mutant & mutant != "*",bind_avg],na.rm=T),by=site_SARS2]
@@ -496,11 +499,11 @@ The first trend this shows is that the number of differences is a primary determ
 
 ```{r predicted_versus_actual_homolog_correlations_RBD, fig.width=7, fig.height=7.5, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
-plot(homolog_measurements$n_diff,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$n_diff,homolog_measurements$sum_expr,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
+plot(homolog_measurements$n_diff,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$n_diff,homolog_measurements$sum_expr,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
 
-plot(homolog_measurements$sum_expr,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$sum_expr,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
 
 ```
 
@@ -508,11 +511,11 @@ And the same plots, for RBM residues. These plots are perhaps more relevant for 
 
 ```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=7, fig.height=7.5, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
-plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on binding",cex=2)
-plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on expression",cex=2)
+plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on expression",cex=2)
 
-plot(homolog_measurements$sum_expr_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="sum of RBM mutational effects on expression",ylab="sum of RBM mutational effects on binding",cex=2)
-plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$sum_expr_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="sum of RBM mutational effects on expression",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="experimentally determined binding",ylab="sum of RBM mutational effects on binding",cex=2)
 
 ```
 
