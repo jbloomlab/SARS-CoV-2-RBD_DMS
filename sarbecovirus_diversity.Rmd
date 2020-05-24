@@ -499,11 +499,11 @@ The first trend this shows is that the number of differences is a primary determ
 
 ```{r predicted_versus_actual_homolog_correlations_RBD, fig.width=7, fig.height=7.5, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
-plot(homolog_measurements$n_diff,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$n_diff,homolog_measurements$sum_expr,col=homolog_measurements$clade_color,pch=16,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
+plot(homolog_measurements$n_diff,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (contact residues)",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$n_diff,homolog_measurements$sum_expr,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (contact residues)",ylab="sum of mutational effects on expression",cex=2)
 
-plot(homolog_measurements$sum_expr,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
-plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$sum_expr,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="sum of mutational effects on expression",ylab="sum of mutational effects on binding",cex=2)
+plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="experimentally determined binding",ylab="sum of mutational effects on binding",cex=2)
 
 ```
 
@@ -511,11 +511,11 @@ And the same plots, for RBM residues. These plots are perhaps more relevant for 
 
 ```{r predicted_versus_actual_homolog_correlations_RBM, fig.width=7, fig.height=7.5, fig.align="center",dpi=300,dev="png",echo=F}
 par(mfrow=c(2,2))
-plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on binding",cex=2)
-plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=16,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on expression",cex=2)
+plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$n_diff_RBM,homolog_measurements$sum_expr_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="number differences (RBM residues)",ylab="sum of RBM mutational effects on expression",cex=2)
 
-plot(homolog_measurements$sum_expr_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="sum of RBM mutational effects on expression",ylab="sum of RBM mutational effects on binding",cex=2)
-plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=16,xlab="experimentally determined binding",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$sum_expr_RBM,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="sum of RBM mutational effects on expression",ylab="sum of RBM mutational effects on binding",cex=2)
+plot(homolog_measurements$bind_avg,homolog_measurements$sum_bind_RBM,col=homolog_measurements$clade_color,pch=homolog_measurements$clade_pch,xlab="experimentally determined binding",ylab="sum of RBM mutational effects on binding",cex=2)
 
 ```
 
