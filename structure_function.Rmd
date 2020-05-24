@@ -347,22 +347,24 @@ invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmap_all-expr.
 
 Also, next to these single-mutant effect heatmaps in a composite paper figure, it might be useful to have heatmaps illustrating the homolog phenotype scores. I only am so skilled at managing single-plot layouts, so I construct these heatmaps separately below.
 
-```{r heatmap_homolog_phenotypes, fig.width=5,fig.height=5,fig.align="center", dpi=500,dev="png",echo=FALSE}
+```{r heatmap_homolog_phenotypes, fig.width=5,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE,message=F}
 homologs$homolog <- factor(homologs$homolog,levels=homologs$homolog)
 
 p1 <- ggplot(homologs,aes(homolog,y=1))+geom_tile(aes(fill=bind_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
   scale_x_discrete(expand=c(0,0),labels=as.character(homologs$homolog))+
   labs(x="homolog",y="")+theme_classic(base_size=9)+
-  coord_equal()+theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),axis.text.x=element_text(angle=45,hjust=1))
+  coord_equal()+theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),plot.margin=margin(5.5,5.5,5.5,20),
+                      axis.text.x=element_text(angle=45,hjust=1,color=homologs$clade_color,face="bold",size=10))
 
 p2 <- ggplot(homologs,aes(homolog,y=1))+geom_tile(aes(fill=expr_avg))+
   scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
   scale_x_discrete(expand=c(0,0),labels=as.character(homologs$homolog))+
   labs(x="homolog",y="")+theme_classic(base_size=9)+
-  coord_equal()+coord_equal()+theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),axis.text.x=element_text(angle=45,hjust=1))
+  coord_equal()+theme(axis.ticks.y = element_blank(),axis.text.y=element_blank(),plot.margin=margin(5.5,5.5,5.5,20),
+                      axis.text.x=element_text(angle=45,hjust=1,color=homologs$clade_color,face="bold",size=10))
 
-ggarrange(p1,p2,nrow=2,heights=c(2,1.5))
+ggarrange(p1,p2,nrow=2)
 
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmap_homologs.pdf",sep="")))
 ```

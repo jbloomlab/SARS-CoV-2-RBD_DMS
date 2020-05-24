@@ -148,12 +148,15 @@ the PyMol session file I point to at the beginning of this notebook,
 these mAbs all clue into a couple “patches” of constrained residues in
 the RBM. 80R and B38 both bind to two patches at the direct ACE2 contact
 interface that are mutationally constrained, centered around residues
-\~Y489 and \~Y505. S230 engages just the \~Y489 patch. F26G19 and m396,
-on the other hand, focus on this \~Y505 lobe, and continue to follow two
-channels of mutational constraint down the “side” of the RBD, toward
-\~N437 and \~G404, respectively. These two “modes” of RBM recognition do
-seem to occupy the major patches of mutational constraint in this
-region, suggesting refining the approaches of these two types of
+\~Y489 and \~Y505. (These two mAbs also seem to have the most contact
+residues, suggesting they achieve the most “engagement” compared to
+other mAbs, apparently without sacrificing by engaging lots of
+mutationally tolerant sites.) S230 engages just the \~Y489 patch. F26G19
+and m396, on the other hand, focus on this \~Y505 lobe, and continue to
+follow two channels of mutational constraint down the “side” of the RBD,
+toward \~N437 and \~G404, respectively. These two “modes” of RBM
+recognition do seem to occupy the major patches of mutational constraint
+in this region, suggesting refining the approaches of these two types of
 RBM-directed mAbs might be fruitful.
 
 The other two antibodies, VHH72 and CR3022, bind epiitopes within the
