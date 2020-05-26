@@ -152,7 +152,7 @@ betas_expr_nonepistatic_Gaussian <- merge(betas_expr_nonepistatic_Gaussian,
 ## Assessing global epistasis models for binding data
 
 Next, for the global epistasis models built on the binding measurements, let's look at the correlation between model coefficients inferred from lib1 and lib2 binding measurements. We look at the model coefficients both on the "observed" log<sub>10</sub>(*K*<sub>A,app</sub>) and underlying "latent" scales, as well as without any global epistasiis nonlinearity.
-```{r betas_bind_lib1_v_lib2, fig.width=8,fig.height=13,fig.align="center", dpi=300,dev="png"}
+```{r betas_bind_lib1_v_lib2, fig.width=8,fig.height=12.5,fig.align="center", dpi=300,dev="png"}
 par(mfrow=c(3,2))
 #observed "log10Ka" scale
 #Cauchy
@@ -247,7 +247,7 @@ abline(v=median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 == 
 plot(ecdf(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0, n_bc_1mut_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 > 0, n_bc_1mut_bind_lib2])), xlim=c(0,25), verticals=T,pch=NA, col.01line=NA, main=paste("single-lib, 1mut bc for directly sampled muts\nmedian =",median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0, n_bc_1mut_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 > 0, n_bc_1mut_bind_lib2]))),xlab="number of barcodes",ylab="fraction mutations found < X times")
 abline(v=median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0, n_bc_1mut_bind_lib1],betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib2 > 0, n_bc_1mut_bind_lib2])),lty=2);abline(h=0.5,lty=2)
 
-
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/coverage-ecdf_bind.pdf",sep="")))
 ```
 
 In lib1, we directly measured the effects of `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*","bind_lib1_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations *as sole mutations* on at least one barcode background (a higher percentage of mutations are sampled more extensively on multiple mutant backgrounds). In lib2, we directly measured `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*","bind_lib2_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations as singles. Taken together, we directly measured `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*", "bind_lib1_direct"]) | !is.na(betas[wildtype!=mutant & mutant!="*", "bind_lib2_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations as singles in at least one of the two libraries, and we directly measured `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*","bind_lib1_direct"]) & !is.na(betas[wildtype!=mutant & mutant!="*","bind_lib2_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations as single mutations in both libraries.
@@ -257,6 +257,8 @@ First, let's look at the correlation between these directly measured single-muta
 ```{r bind_effects_direct_singles_plot, fig.width=5,fig.height=5,fig.align="center", dpi=300,dev="png"}
 x <- betas$bind_lib1_direct; y <- betas$bind_lib2_direct; fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect from single mut bcs",ylab="lib2 mutational effect from single mut bcs",main=paste("binding, single mut direct measurements\nR-squared:",round(summary(fit)$r.squared,digits=3)))
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_direct-measured-single-mut_bind.pdf",sep="")))
 ```
 Let's look at the sites with directly measured beneficial mutations (output below). As you can see [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=367%2C453%2C484%2C498%2C501%2C505%2C528), five of the seven sites with the strongest directly-measured beneficial effect are at the ACE2 interface, suggesting these might be valid affinity-enhancing mutations. This is in contrast to the beneficial latent-effect measurements we looked at above, which were at a combination of ACE2-proximal and ACE2-distal sites, seemingly including both stabiltiy- and affinity-mediated effects. This observation is consistent with the model that stability-enhancing mutations, by and large, don't further improve affinity in the stable wildtype background, though they may improve affinity in destabilized secondary mutant backgrounds and therefore acquire positive latent-scale coefficients.
 
@@ -286,6 +288,8 @@ plot(x,y,pch=16,col="#00000067",xlab="average lib1&lib2 beta, Cauchy latent",yla
 #Gaussian, latent
 x <- rowMeans(betas_bind_latent_Gaussian[,c("effect_lib1","effect_lib2")]);y <- NULL; for(i in 1:nrow(betas_bind_latent_Gaussian)){y <- c(y, betas[mutation_RBD==betas_bind_latent_Gaussian$mutation[i],mean(c(bind_lib1_direct,bind_lib2_direct))])};fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="average lib1&lib2 beta",ylab="direct single mut measurement",main=paste("Directly measured vs Gaussian, latent scale.\n R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis_v_direct-observed-singles_bind.pdf",sep="")))
 ```
 
 In comparing model coefficients to the directly sampled single mutants, it *does* seem like the latent-scale beneficial mutations are not necessarily observed to enhance affinity when measured directly as single mutations on the wildtype background (see the "bend" near [0,0] in the lower plots). This lends further support to the idea that the *observed* scale effects are our model coefficients of interest, and could explain why the global epistasis models fit a threshold at the wildtype in the nonlinearity, disallowing beneficial latent scale mutations (which, I hypothesize, are largely stabilizing mutations) from exhibiting beneficial affinity effects on the stable WT background, as by and large, the direct measurements of these mutations were ~neutral on the wildtype background.
@@ -317,6 +321,7 @@ plot(x,y,pch=16,col="#00000067",xlab="lib2 beta coefficient, Cauchy observed",yl
 x <- c(lib1_coef_lib2_direct$bind_lib1_beta,lib2_coef_lib1_direct$bind_lib2_beta);y<-c(lib1_coef_lib2_direct$bind_lib2_direct, lib2_coef_lib1_direct$bind_lib1_direct);fit<-lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="libX beta coefficient, Cauchy observed",ylab="libY direct single mut measurement",main=paste("Directly measured vs Cauchy observed, single-lib-NA\n R-squared:",round(summary(fit)$r.squared,digits=3)))
 
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis_v_direct-observed-singles_bind_one-lib-only.pdf",sep="")))
 ```
 
 For mutations that are not sampled as single mutants in either library, we cannot of course compare to any direct measurements, but we can simply see how well correlated the two replicate model beta coefficients are. This is shown below, once again with the Cauchy observed scale coefficients. These are likely to be the worst beta coefficients, and yet they still correlate quite well.
@@ -336,6 +341,8 @@ for(i in 1:nrow(lib1_coef_lib2_coef)){
 }
 x<-lib1_coef_lib2_coef$bind_lib1_beta; y<-lib1_coef_lib2_coef$bind_lib2_beta; fit<-lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="lib1 beta coefficient, Cauchy observed",ylab="lib2 beta coefficient, Cauchy observed",main=paste("Model coefs, muts with no direct obs\n R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis-coefs_no-direct-measure-values_bind.pdf",sep="")))
 ```
 
 Overall, my intuition from looking at the mutations with positive latent-scale versus directly measured beneficial effects, along with the shapes of correlations between latent-scale and direct measurements, leads me to believe that stability is a large contributor to the latent-scale effects of mutations. Because of this, and the fact that stabilizing mutations don't enhance affinity in the stabilized WT background, the observed scale nonlinearity censors the beneficial latent-effect mutations to have no effect (beta = 0) on the WT background observed-scale. However, this complete censoring of positive observed-scale coefficients contrasts with our observation from directly sampled measurements, that there do appear to be *some* true affinity-enhancing single mutants in the wildtype background.
@@ -442,6 +449,8 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 be
 #Gaussian
 x <- betas_expr_nonepistatic_Gaussian$effect_lib1; y <- betas_expr_nonepistatic_Gaussian$effect_lib2; fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 beta (no nonlinearity)",main=paste("expression, Gaussian nonepistatic, R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epiistasis-coefs_expr.pdf",sep="")))
 ```
 We can see once again that the correlation in estimates of single mutation effects is better when accounting for nonlinearity in the mean fluorescence expression metric -- this shows that the global epistasis transform improves this single mutation deconvolution from the multi-mutants in the library. The steep slope in the nonlinearity fit between latent and observed scale in the global_epistasis_expression notebook creates a "shrinking" of the scale of latent effects for the majority of mutations -- this probably comes from the fact that the global epistasis model is set so that the average latent-effect coefficient is 1, but when there are some mutations (primarily nonsense mutants) with extremely negative latent-scale effects, it shrinks the range for the rest of mutations and creates this sharp slope.
 
@@ -474,6 +483,7 @@ abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_expr_lib1+n_bc_expr_li
 plot(ecdf(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2]),verticals=T,pch=NA,col.01line=NA,main=paste("pooled expression scores, 1mut barcodes,\nmedian =",median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2])),xlab="number of single-mutant barcodes",ylab="fraction mutations found < X times",xlim=c(0,25))
 abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2]),lty=2);abline(h=0.5,lty=2)
 
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/coverage-ecdf_expr.pdf",sep="")))
 ```
 
 In lib1, we directly measured the effects of `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*","expr_lib1_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations *as sole mutations* on at least one barcode background (a higher percentage of mutations are sampled more extensively on multiple mutant backgrounds). In lib2, we directly measured `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*","expr_lib2_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations as singles. Taken together, we directly measured `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*", "expr_lib1_direct"]) | !is.na(betas[wildtype!=mutant & mutant!="*", "expr_lib2_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations as singles in at least one of the two libraries, and we directly measured `r round(sum(!is.na(betas[wildtype!=mutant & mutant!="*","expr_lib1_direct"]) & !is.na(betas[wildtype!=mutant & mutant!="*","expr_lib2_direct"]))/nrow(betas[wildtype!=mutant & mutant!="*",])*100,digits=2)`% of mutations as single mutations in both libraries.
@@ -483,6 +493,8 @@ First, let's look at the correlation between these directly measured single-muta
 ```{r expr_effects_direct_singles_plot, fig.width=5,fig.height=5,fig.align="center", dpi=300,dev="png"}
 x <- betas$expr_lib1_direct; y <- betas$expr_lib2_direct; fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect from single mut bcs",ylab="lib2 mutational effect from single mut bcs",main=paste("expression, single mut direct measurements\nR-squared:",round(summary(fit)$r.squared,digits=3)))
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_direct-measured-single-mut_expr.pdf",sep="")))
 ```
 In this case, in contrast to the binding measurements, we do *not* see better correlation between direct single measurements compared to the correlation in the model-predicted observed-scale effects. This isn't surprising -- the expression measurements are conducted without pre-selecting for properly expressing variants, and we know there are a small number of barcodes that we ascribe as representing wildtype/synonymous variants with very low expression (which are evidently weeded out by the RBD+ pre-sort prior to the binding measurements). These are presumably plasmids with deleterious mutations outside of the PacBio sequencing window, or contain some other artifact -- we are able to identify and discard these in the case of wildtype observations, but for any mutant variant, we cannot distinguish when this is happening at face value. Therefore, direct single measurements of expression effects of mutation are likely conflated wiith these types of additional factors that we cannot identify, whereas the global epistasis decomposition averages across all backgrounds containing a mutation, generating improved estimates of mutational effects. We also believe our binding measurements are inherently higher quality than the expression measurements for multiple reasons. Taken together, it seems that for the expression measurements, there may be more justification to use all model coefficients, instead of the combination of direct and estimated effects as done with binding.
 
@@ -552,9 +564,16 @@ bc_homologs_expr <- data.table(read.csv(file=config$expression_sortseq_homologs_
 
 bc_homologs_expr[target=="SARS-CoV",target:="SARS-CoV-1"]
 
-homologs <- data.frame(homolog=factor(c("SARS-CoV-2","GD-Pangolin","RaTG13","SARS-CoV-1","WIV16","LYRa11","ZC45","ZXC21","HKU3-1","Rf1","Rp3","BM48-31"),
+homologs <- data.table(homolog=factor(c("SARS-CoV-2","GD-Pangolin","RaTG13","SARS-CoV-1","WIV16","LYRa11","ZC45","ZXC21","HKU3-1","Rf1","Rp3","BM48-31"),
                                       levels=c("SARS-CoV-2","GD-Pangolin","RaTG13","SARS-CoV-1","WIV16","LYRa11","ZC45","ZXC21","HKU3-1","Rf1","Rp3","BM48-31")),
                        clade=c("SARS-CoV-2","SARS-CoV-2","SARS-CoV-2","Clade 1","Clade 1","Clade 1","Clade 2", "Clade 2","Clade 2","Clade 2","Clade 2","Clade 3"))
+
+#add color column to homologs, by clade
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := cbPalette[4]]; homologs[clade=="Clade 2",clade_color := cbPalette[2]]; homologs[clade=="Clade 3",clade_color := cbPalette[8]]; homologs[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
+#add plottiing character to homologs, by clade
+homologs$clade_pch <- as.numeric(NA); homologs[clade=="Clade 1",clade_pch := 15]; homologs[clade=="Clade 2",clade_pch := 17]; homologs[clade=="Clade 3",clade_pch := 18]; homologs[clade=="SARS-CoV-2",clade_pch  := 16]
+
 
 for(i in 1:nrow(homologs)){
   bind_lib1 <- bc_homologs_bind[library=="lib1" & target==as.character(homologs$homolog[i]),delta_log10Ka]
@@ -579,34 +598,114 @@ Next, we plot the correlation in homolog phenotypes between the two replicates. 
 ```{r homologs_lib1_lib2_correlation, fig.width=8,fig.height=4.25,fig.align="center", dpi=300,dev="png"}
 par(mfrow=c(1,2))
 x <- homologs$bind_lib1; y <- homologs$bind_lib2; fit <- lm(y~x)
-plot(x,y,pch=19,xlab="delta_log10Ka, lib1",ylab="delta_log10Ka, lib2",main=paste("homolog binding, R-squared:",round(summary(fit)$r.squared,digits=4)))
+plot(x,y,pch=homologs$clade_pch,col=homologs$clade_color,xlab="delta_log10Ka, lib1",ylab="delta_log10Ka, lib2",main=paste("homolog binding, R-squared:",round(summary(fit)$r.squared,digits=4)),cex=1.4)
 
 x <- homologs$expr_lib1; y <- homologs$expr_lib2; fit <- lm(y~x)
-plot(x,y,pch=19,xlab="delta_ML_meanF, lib1",ylab="delta_ML_meanF, lib2",main=paste("homolog expression, R-squared:",round(summary(fit)$r.squared,digits=3)))
+plot(x,y,,pch=homologs$clade_pch,col=homologs$clade_color,xlab="delta_ML_meanF, lib1",ylab="delta_ML_meanF, lib2",main=paste("homolog expression, R-squared:",round(summary(fit)$r.squared,digits=3)),cex=1.4)
 
-
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-replicate-libraries_bind-expr.pdf",sep="")))
 ```
 
 Output the summarized homolog phenotype scores into a table for downstream analysis and sharing.
 
 ```{r homologs_output}
-
-homologs %>%
+homologs[,-c("clade_color","clade_pch")] %>%
   mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$homolog_effects_file, row.names=F)
 ```
 
-## Validation of bulk phenotypes with isogenic experiments
+## Validation of bulk phenotypes with additional experiments
 
 We have conducted two series of isogenic titration assays which can validate our bulk phenotypes for binding and expression effects. The first panel of genotypes that we validated in isogenic yeast display assays are a subset of the homologs panel. The second is a series of single mutants to SARS-CoV-2. We fit titration curves to these isogenic experiments, and here we correlate these isogenic binding and expression phenotypes with those determined in the DMS assays.
 
-First, homolog panel:
+First, let's read in the summary data from homolog titrations reported in `data/isogenic_titrations`. We convert the *K*<sub>D,app</sub> measurements into our log<sub>10</sub>(*K*<sub>A,app</sub>) scale, censoring the nonbinders to the same value censored in the bulk experiments (and removing the nonsensical SE estimates on these values since they were the bounded Kd fit, anyway), and propagating the titration curve fit estimate of standard error in the Kd measurement. We then plot isogenic versus bulk delta_log10Ka versus SARS-CoV-2 wildtype. We can see on the left, below, that our isogenic titrations of these homologs correlate extremely well with the measurements we made in the bulk DMS assay.
+
+We repeat this plotting for the bulk DMS expression data, which does not validate as well in the isogenic measurements -- this is more or less expected. The expression measurements are not as quality to begin with, and they're even worse in the isogenic context (as evidenced by the large standard error bars). One major complication, is that in the bulk Sort-seq measurements, we are not interefered in our measurement by the FITC- mode that is always present in a population due to presumable plasmid loss (reported in other papers, too) -- because only FITC- cells that are there because of low expression per se (rather than plasmid loss) grow out in the post-sort growth prior to PCR and sequencing, we effectively "see" the true negatives and therefore the entire FITC distribution. In the isogenic data, we filter out the FITC- observations, because we are simply measuring fluorescence without sorting and therefore cannot deconvolve the large negative mode due to plasmid loss. Furthermore, because the homologs all have such a tight distribution of expression relative to the effect of single mutants, this is a very small window of phenotypic variability in which we are trying to assess correlation using a measurement with high experimental variability. This may improve when we add some single mutant validations with larger measured expression defecits.
+
+```{r homolog_isogenic_validations, fig.width=8, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+homologs_validation <- data.table(read.csv(file="data/isogenic_titrations/results/isogenic_titrations_summary.csv"));homologs_validation <- homologs_validation[expt==200508,]; homologs_validation[genotype=="Pangolin-GD",genotype:="GD-Pangolin"]
+homologs_validation[,log10Ka := log10(1/Kd),by=titration]
+homologs_validation[,log10SE := 0.434*Kd_SE/Kd,by=titration]
+homologs_validation[genotype %in% c("HKU3-1","BM48-31"),log10Ka:=6]
+homologs_validation[genotype %in% c("HKU3-1","BM48-31"),log10SE:=NA]
+homologs_validation[,delta_log10Ka:=log10Ka - homologs_validation[genotype=="SARS-CoV-2",log10Ka],by=titration]
+homologs_validation[,delta_logMFI_FITC := mean_logMFI_FITC - homologs_validation[genotype=="SARS-CoV-2",mean_logMFI_FITC],by=titration]
+homologs_validation[,SE_delta_logMFI_FITC := sqrt(stderr_logMFI_FITC^2 + homologs_validation[genotype=="SARS-CoV-2",stderr_logMFI_FITC]^2),by=titration]
+
+for(i in 1:nrow(homologs)){
+  if(homologs$homolog[i] %in% homologs_validation$genotype){
+    homologs$isogenic_delta_log10Ka[i] <- homologs_validation[genotype==homologs$homolog[i],delta_log10Ka]
+    homologs$isogenic_SE_log10Ka[i] <- homologs_validation[genotype==homologs$homolog[i],log10SE]
+    homologs$isogenic_log_MFI_FITC[i] <- homologs_validation[genotype==homologs$homolog[i],delta_logMFI_FITC]
+    homologs$isogenic_SE_log_MFI_FITC[i] <- homologs_validation[genotype==homologs$homolog[i],SE_delta_logMFI_FITC]
+    homologs$isogenic_percentFITCpos[i] <- homologs_validation[genotype==homologs$homolog[i],mean_FITCpos]
+    homologs$isogenic_SE_percentFITCpos[i] <- homologs_validation[genotype==homologs$homolog[i],stderr_FITCpos]
+    homologs$bind_SEM[i] <- sd(c(homologs$bind_lib1[i],homologs$bind_lib2[i]))/sqrt(2)
+    homologs$expr_SEM[i] <- sd(c(homologs$expr_lib1[i],homologs$expr_lib2[i]))/sqrt(2)
+  }else{
+    homologs$isogenic_delta_log10Ka[i] <- as.numeric(NA)
+    homologs$isogenic_SE_log10Ka[i] <- as.numeric(NA)
+    homologs$isogenic_log_MFI_FITC[i] <- as.numeric(NA)
+    homologs$isogenic_SE_log_MFI_FITC[i] <- as.numeric(NA)
+    homologs$isogenic_percentFITCpos[i] <- as.numeric(NA)
+    homologs$isogenic_SE_percentFITCpos[i] <- as.numeric(NA)
+    homologs$bind_SEM[i] <- sd(c(homologs$bind_lib1[i],homologs$bind_lib2[i]))/sqrt(2)
+    homologs$expr_SEM[i] <- sd(c(homologs$expr_lib1[i],homologs$expr_lib2[i]))/sqrt(2)
+  }
+}
+
+par(mfrow=c(1,2))
+plot(homologs$isogenic_delta_log10Ka,homologs$bind_avg,pch=homologs$clade_pch,col=homologs$clade_color,cex=1.4,xlab="delta log10Ka,app (isogenic validation)",ylab="delta log10Ka,app (bulk DMS)",main=paste("R-squared:",format(summary(lm(homologs$bind_avg~homologs$isogenic_delta_log10Ka))$r.squared,digits=3)))
+#SE error bars on isogenic
+arrows(x0=homologs$isogenic_delta_log10Ka-homologs$isogenic_SE_log10Ka, y0=homologs$bind_avg,x1=homologs$isogenic_delta_log10Ka+homologs$isogenic_SE_log10Ka, y1=homologs$bind_avg,code=3,col=homologs$clade_color,angle=90,length=0.02)
+#SE error bars on bulk
+arrows(x0=homologs$isogenic_delta_log10Ka, y0=homologs$bind_avg-homologs$bind_SEM, x1=homologs$isogenic_delta_log10Ka, y1=homologs$bind_avg+homologs$bind_SEM,code=3,col=homologs$clade_color,angle=90,length=0.02)
+
+plot(homologs$isogenic_log_MFI_FITC,homologs$expr_avg,pch=homologs$clade_pch,col=homologs$clade_color,cex=1.4,xlab="delta logMFI (isogenic validation)",ylab="delta logMFI (bulk DMS)",main=paste("R-squared:",format(summary(lm(homologs$expr_avg~homologs$isogenic_log_MFI_FITC))$r.squared,digits=3)))
+#SE error bars on isogenic
+arrows(x0=homologs$isogenic_log_MFI_FITC-homologs$isogenic_SE_log_MFI_FITC, y0=homologs$expr_avg, x1=homologs$isogenic_log_MFI_FITC+homologs$isogenic_SE_log_MFI_FITC, y1=homologs$expr_avg, code=3,col=homologs$clade_color,angle=90,length=0.02)
+#SE bars on bulk
+arrows(x0=homologs$isogenic_log_MFI_FITC, y0=homologs$expr_avg-homologs$expr_SEM, x1=homologs$isogenic_log_MFI_FITC, y1=homologs$expr_avg+homologs$expr_SEM, code=3,col=homologs$clade_color,angle=90,length=0.02)
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-bulk-v-isogeniic_bind-expr.pdf",sep="")))
+```
 
 Second, single mutants of SARS-CoV-2:
 
+Furthermore, we can turn to other assays to validate the context of our yeast-based DMS measurements. First, we look at the functional measurements from [Letko et al. 2020](https://www.nature.com/articles/s41564-020-0688-y), who determined the ability of all RBD variants known at that time (so, no RaTG13 or Pangolin RBD) to enter cells as chimeras with SARS-CoV-1 Spike in VSV-G pseudotyped viruses and a luciferase reporter of cellular entry. We integrated measurements across several of their experimental panels, including Figs. 1e, 2a and 3b, and 3d. For 1e, 2a, and 3d, entry was measured in ACE2-expressing BHK cells, so the experiments should be more directly comparable -- in 3b, they measured entry into Vero cells. For each experiment, we calculate the mean entry from triplicate measurements, and calculate the variant fold-entry relative to the mean SARS-CoV-1 entry (which is present in each panel). We then calculate the mean and SEM across each of the experiments for which a genotype was measured. We present comparisons of our measurements to the average fold-entry relative to SARS-CoV-1 across all four experiments on the left, and just the BHK experiments on the right. Error bars are SEM from between 2 and 4 measurements; the SARS-CoV-1 point does not have error bars as it is defined as 1 across each experiment, and SARS-CoV-2 does not have error bars because it was only included in one of the experiments. As we can see below, the variants for which we measure no binding also do not support cellular entry. Among the genotypes for which we measure quantitative differences in binding affinity, we can see these differences correlate with the extent of cellular entry, though the functional entry measurements show some variability depending whether or not we include the additional Vero cells measurements. (Should we "break" the y-axis to more clearly present these data?)
 
+```{r homologs_DMS_v_functional_pvirus_entry, fig.width=8, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+Letko <- read.csv(file="data/lit-measurements/Letko_2020_data.csv",stringsAsFactors=F); Letko <- Letko[Letko$Figure %in% c("combined_BHK_Vero", "combined_BHK"),c("RBD","Figure","avg","SEM","n_measure")]
 
+for(i in 1:nrow(homologs)){
+  if(homologs$homolog[i] %in% Letko$RBD){
+    homologs$Letko_mean_entry_all[i] <- Letko[Letko$RBD==homologs$homolog[i] & Letko$Figure=="combined_BHK_Vero","avg"]
+    homologs$Letko_SEM_entry_all[i] <- as.numeric(Letko[Letko$RBD==homologs$homolog[i] & Letko$Figure=="combined_BHK_Vero","SEM"])
+    homologs$Letko_mean_entry_BHK[i] <- Letko[Letko$RBD==homologs$homolog[i] & Letko$Figure=="combined_BHK","avg"]
+    homologs$Letko_SEM_entry_BHK[i] <- as.numeric(Letko[Letko$RBD==homologs$homolog[i] & Letko$Figure=="combined_BHK","SEM"])
+  }else{
+    homologs$Letko_mean_entry_all[i] <- as.numeric(NA)
+    homologs$Letko_SEM_entry_all[i] <- as.numeric(NA)
+    homologs$Letko_mean_entry_BHK[i] <- as.numeric(NA)
+    homologs$Letko_SEM_entry_BHK[i] <- as.numeric(NA)
+  }
+}
 
+par(mfrow=c(1,2))
+plot(homologs$Letko_mean_entry_all,homologs$bind_avg,pch=homologs$clade_pch,col=homologs$clade_col,xlab="Cellular entry (a.u.), Letko et al. (all panels)",ylab="delta log10Ka,app (bulk DMS)",cex=1.4)
+#SE error bars on Letko values
+arrows(x0=homologs$Letko_mean_entry_all-homologs$Letko_SEM_entry_all, y0=homologs$bind_avg,x1=homologs$Letko_mean_entry_all+homologs$Letko_SEM_entry_all, y1=homologs$bind_avg,code=3,col=homologs$clade_color,angle=90,length=0.02)
+#SE error bars on bulk avg measurement
+arrows(x0=homologs$Letko_mean_entry_all, y0=homologs$bind_avg-homologs$bind_SEM, x1=homologs$Letko_mean_entry_all, y1=homologs$bind_avg+homologs$bind_SEM,code=3,col=homologs$clade_color,angle=90,length=0.02)
+
+plot(homologs$Letko_mean_entry_BHK,homologs$bind_avg,pch=homologs$clade_pch,col=homologs$clade_col,xlab="Cellular entry (a.u.), Letko et al. (BHK panels only)",ylab="delta log10Ka,app (bulk DMS)",cex=1.4)
+#SE error bars on Letko values
+arrows(x0=homologs$Letko_mean_entry_BHK-homologs$Letko_SEM_entry_BHK, y0=homologs$bind_avg,x1=homologs$Letko_mean_entry_BHK+homologs$Letko_SEM_entry_BHK, y1=homologs$bind_avg,code=3,col=homologs$clade_color,angle=90,length=0.02)
+#SE error bars on bulk avg measurement
+arrows(x0=homologs$Letko_mean_entry_BHK, y0=homologs$bind_avg-homologs$bind_SEM, x1=homologs$Letko_mean_entry_BHK, y1=homologs$bind_avg+homologs$bind_SEM,code=3,col=homologs$clade_color,angle=90,length=0.02)
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-bulk-v-Letko-entry.pdf",sep="")))
+```
 ## Relationship between expression and binding fits at a per-barcode level
 
 In theory, titration assays should normalize out expression effects of mutations, and therefore be less susceptiible to expression-induced artifacts in binding scores than traditional single-concentration yeast diisplay assays. We will dig into this a bit more in the `structure_function.Rmd` notebook for our single-mutant effect parameters, but the general premise is that in single-concentration yeast display assays, simple enhancement of surface expression leads to higher ligand labeling, even if the underlying *K*<sub>D</sub> is unchanged in the mutant variant. This leads to *uninteresting* simple correlation between expression and binding in DMS type data. In contrast, our binding phenotype is determined from a self-contained titration series for each barcode, the response plateau and baseline of which can vary as fit parameters. This assay should therefore be less susceptible to expression artifacts, because global expression changes can be accounted for with variation in the response parameter -- therefore, any remaining correlation between expression and binding should be due to actual biological correlation (i.e. mutations that destabilize the protein will also intrinsically decrease the thermodynamic affinity). One premise of this argument is that the response parameter of the titration curve fits correlates with expression effects. 
