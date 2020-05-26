@@ -1,13 +1,33 @@
 ---
 title: "Isogenic validation experiments"
 output:
-  html_document: default
-  pdf_document: default
+  github_document:
+    html_preview: false
+editor_options: 
+  chunk_output_type: inline
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-options(warn=-1) # suppress warnings that clutter output
+```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+
+#list of packages to install/load
+packages = c("ggplot2", "data.table", "tidyverse", "dplyr", "broom", "gridExtra")
+#install any packages not already installed
+installed_packages <- packages %in% rownames(installed.packages())
+if(any(installed_packages == F)){
+  install.packages(packages[!installed_packages])
+}
+#load packages
+invisible(lapply(packages, library, character.only=T))
+
+#make results directory
+if(!file.exists("results")){
+ dir.create(file.path("results"))
+}
+
+
 ```
 
 ## Experiment: isogenic validation of yeast-display RBD mutants and homologs
@@ -18,23 +38,13 @@ WT SARS-CoV-2 Spike RBD was validated in triplicate.
 **2020-05-08**
 WT SARS-CoV-2 Spike RBD and 6 homologs were validated in isogenic experiments. 
 
-### Load packages and set working directory
-```{r}
-r_packages <- c(
-  "ggplot2", "data.table", "tidyverse", "dplyr", "broom", "gridExtra"
-)
-invisible(lapply(r_packages, library, character.only=TRUE))
-dir.create(file.path("./results/"))
-```
-
 ### Read in data table with mean bin at each concentration
-```{r}
-dt <- read.csv(file="Table-all.csv", stringsAsFactors=F) %>%
-  mutate(conc_nM = conc_M*1e9)
+```{r read_input}
+dt <- read.csv(file="Table-all.csv", stringsAsFactors=F)
 ```
 
 ### Duplicate rows that correspond to May01 wild type triplicate experiment so we can fit models to the pooled replicates
-```{r}
+```{r prep_triplicate_WT}
 wildtype <- dt %>% 
   filter(expt=="200501") %>%
   mutate(replicate = "pooled",
@@ -45,14 +55,15 @@ dt <- dt %>% rbind(wildtype)
 print(nrow(dt))
 ```
 
-### Calculate mean `geomean_FITC` and `FITC+` for each titration
-```{r}
+### Calculate log-mean `geomean_FITC` and `FITC+` for each titration
+```{r calculate_expression_values}
 dt <- dt %>% 
   group_by(titration) %>%
   mutate(mean_FITCpos = mean(FITCpos),
          stderr_FITCpos = sd(FITCpos)/sqrt(length(FITCpos)),
-         mean_geomean_FITC = mean(geomean_FITC),
-         stderr_geomean_FITC = sd(geomean_FITC)/sqrt(length(geomean_FITC))
+         log_geomean_FITC = log(geomean_FITC),
+         mean_logMFI_FITC = mean(log(geomean_FITC)),
+         stderr_logMFI_FITC = sd(log(geomean_FITC))/sqrt(length(geomean_FITC))
          ) %>%
   ungroup()
 
@@ -60,12 +71,15 @@ head(dt, n=5)
 ```
 
 ### Use `broom` to get the results from fitting `nls` model by group
-```{r}
+```{r fit_titrations}
 nls_broom <- dt %>% 
   group_by(titration) %>%
-  do(tidy(nls(mean_bin ~ a*(conc_nM/(conc_nM+Kd))+b,
+  do(tidy(nls(mean_bin ~ a*(conc_M/(conc_M+Kd))+b,
               data=.,
-              start=list(a=3,b=1,Kd=0.1)
+              start=list(a=3,b=1,Kd=1e-10),
+              lower=list(a=2,b=1,Kd=1e-15),
+              upper=list(a=3,b=1.5,Kd=1e-5),
+              algorithm="port"
               )
           ) 
   )
@@ -79,9 +93,9 @@ dt <- dt %>%
 head(dt, n=5)
 ```
 ### Write summary table to CSV file
-```{r}
+```{r write_output_table}
 isogenic_titrations_summary <- dt %>% 
-  select(expt, titration, genotype, replicate, Kd, Kd_SE, mean_FITCpos, mean_geomean_FITC) %>%
+  select(expt, titration, genotype, replicate, Kd, Kd_SE, mean_FITCpos, stderr_FITCpos, mean_logMFI_FITC, stderr_logMFI_FITC) %>%
   unique()
 
 isogenic_titrations_summary
@@ -89,8 +103,8 @@ write.csv(isogenic_titrations_summary,"./results/isogenic_titrations_summary.csv
 ```
 
 ### Now predict `mean_bin` using the models 
-```{r}
-conc_nM = c(1:20 %o% 10^(-4:1)) # this should only generate 120 estimates per titration (faster!)
+```{r predict_y}
+conc_M = c(1:20 %o% 10^(-13:-7)) # this should only generate 120 estimates per titration (faster!)
 
 nls_predictions <- dt %>%
   select(titration, expt, genotype, replicate) %>%
@@ -100,36 +114,36 @@ nls_predictions <- dt %>%
         by="titration") %>%
   unique() %>%
   merge(dt %>% select(titration, Kd_SE) %>% unique(), by="titration") %>%
-  merge(as.data.frame(conc_nM), all=TRUE) %>%
-  mutate(mean_bin = a*(conc_nM/(conc_nM+Kd))+b)
+  merge(as.data.frame(conc_M), all=TRUE) %>%
+  mutate(mean_bin = a*(conc_M/(conc_M+Kd))+b)
 
 head(nls_predictions, n=5)
 ```
 
 ### Make plots for titration curves for May08 homolog experiment
-```{r}
+```{r titrations_plot_homolog_panel, fig.width=8,fig.height=8,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
 annotations <- dt %>% 
   filter(expt != "200501") %>% 
   select(titration, genotype, expt, replicate, Kd, Kd_SE) %>%
   unique() %>%
   remove_rownames()
 
-ggplot(dt %>% filter(expt != "200501"), aes(conc_nM, mean_bin)) +
+ggplot(dt %>% filter(expt != "200501"), aes(conc_M, mean_bin)) +
   geom_point() +
   geom_line(data = nls_predictions %>% filter(expt != "200501"),
-            aes(conc_nM, mean_bin),
+            aes(conc_M, mean_bin),
             color="red") +
-  scale_x_log10(lim=c(0.00002,200)) +
-  xlab("ACE2 (nM)") +
+  scale_x_log10(lim=c(2e-14,2e-07)) +
+  xlab("ACE2 (M)") +
   ylab("mean bin") +
   facet_wrap(~ genotype) +
   geom_text(
     data    = annotations,
-    mapping = aes(x = 0.0025, 
+    mapping = aes(x = 2.5e-12, 
                   y = 3.75, 
                   label = c(paste(
                     "Kd=", format(Kd, digits=2),
-                    "+/-", format(Kd_SE, digits=1), "nM"))),
+                    "+/-", format(Kd_SE, digits=1), "M"))),
     size=3) +
   theme_bw()
 
@@ -141,29 +155,29 @@ ggsave(
 )
 ```
 ### Make plots just for May01 wildtype triplicate titrations
-```{r}
+```{r wildtype_triplicate_titrations_plot, fig.width=5,fig.height=5,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
 annotations <- dt %>% 
   filter(expt == "200501") %>% 
   select(titration, genotype, expt, replicate, Kd, Kd_SE) %>%
   unique() %>%
   remove_rownames()
 
-ggplot(dt %>% filter(expt == "200501"), aes(conc_nM, mean_bin)) +
+ggplot(dt %>% filter(expt == "200501"), aes(conc_M, mean_bin)) +
   geom_point() +
   geom_line(data = nls_predictions %>% filter(expt == "200501"),
-            aes(conc_nM, mean_bin),
+            aes(conc_M, mean_bin),
             color="red") +
-  scale_x_log10(lim=c(0.00002,200)) +
-  xlab("ACE2 (nM)") +
+  scale_x_log10(lim=c(2e-14,2e-07)) +
+  xlab("ACE2 (M)") +
   ylab("mean bin") +
   facet_wrap(~ replicate) + # this time facet on replicate
   geom_text(
     data    = annotations,
-    mapping = aes(x = 0.0025, 
+    mapping = aes(x = 2.5e-12, 
                   y = 3.75, 
                   label = c(paste(
                     "Kd=", format(Kd, digits=2),
-                    "+/-", format(Kd_SE, digits=1), "nM"))),
+                    "+/-", format(Kd_SE, digits=1), "M"))),
     size=3) +
   ggtitle("Wild Type SARS-CoV-2") +
   theme_bw() +
@@ -179,7 +193,7 @@ ggsave(
 
 ### Plot FITC+ and geomean_FITC by genotype
 We will ignore the original WT isogenic titration experiment (May01) because it is not really possible to compare across experiments due to variability with induction, etc. 
-```{r}
+```{r expression_plots, fig.width=8,fig.height=5,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
 p1 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, FITCpos)) + 
   geom_boxplot() +
   geom_point() +
@@ -190,10 +204,10 @@ p1 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, FITCpos)) +
   theme(text = element_text(size=12), 
         axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
-p2 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, geomean_FITC)) +
+p2 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, log_geomean_FITC)) +
   geom_boxplot() +
   geom_point() +
-  ylab("mean FITC+ intensity") +
+  ylab("mean FITC+ log-intensity") +
   facet_wrap(~ expt, scales="free_x") +
   theme_bw() +
   theme(text = element_text(size=12), 
