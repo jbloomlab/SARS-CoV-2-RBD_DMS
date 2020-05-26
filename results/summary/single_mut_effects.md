@@ -375,6 +375,10 @@ abline(v=median(c(betas[mutant!="*" & wildtype!=mutant & n_bc_1mut_bind_lib1 > 0
 
 <img src="single_mut_effects_files/figure-gfm/bind_effects_direct_singles-1.png" style="display: block; margin: auto;" />
 
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/coverage-ecdf_bind.pdf",sep="")))
+```
+
 In lib1, we directly measured the effects of 85.73% of mutations *as
 sole mutations* on at least one barcode background (a higher percentage
 of mutations are sampled more extensively on multiple mutant
@@ -392,6 +396,11 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect from single mut bcs
 ```
 
 <img src="single_mut_effects_files/figure-gfm/bind_effects_direct_singles_plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_direct-measured-single-mut_bind.pdf",sep="")))
+```
+
 Let’s look at the sites with directly measured beneficial mutations
 (output below). As you can see
 [here](https://dms-view.github.io/?pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2F6m0j.pdb&markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2FBloomLab_rbd.md&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fdms-view%2FSARS-CoV-2%2Fmaster%2Fdata%2FSpike%2FBloomLab2020%2Fresults%2FBloomLab2020_rbd.csv&condition=natural+frequencies&site_metric=site_entropy&mutation_metric=mut_frequency&selected_sites=367%2C453%2C484%2C498%2C501%2C505%2C528),
@@ -464,6 +473,10 @@ plot(x,y,pch=16,col="#00000067",xlab="average lib1&lib2 beta",ylab="direct singl
 
 <img src="single_mut_effects_files/figure-gfm/bind_avg_coefs_v_direct_singles-1.png" style="display: block; margin: auto;" />
 
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis_v_direct-observed-singles_bind.pdf",sep="")))
+```
+
 In comparing model coefficients to the directly sampled single mutants,
 it *does* seem like the latent-scale beneficial mutations are not
 necessarily observed to enhance affinity when measured directly as
@@ -525,6 +538,10 @@ plot(x,y,pch=16,col="#00000067",xlab="libX beta coefficient, Cauchy observed",yl
 
 <img src="single_mut_effects_files/figure-gfm/bind_lib1_coef_v_lib2_direct-1.png" style="display: block; margin: auto;" />
 
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis_v_direct-observed-singles_bind_one-lib-only.pdf",sep="")))
+```
+
 For mutations that are not sampled as single mutants in either library,
 we cannot of course compare to any direct measurements, but we can
 simply see how well correlated the two replicate model beta coefficients
@@ -550,6 +567,10 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta coefficient, Cauchy observed",yl
 ```
 
 <img src="single_mut_effects_files/figure-gfm/bind_coef_no_direct-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis-coefs_no-direct-measure-values_bind.pdf",sep="")))
+```
 
 Overall, my intuition from looking at the mutations with positive
 latent-scale versus directly measured beneficial effects, along with the
@@ -708,6 +729,11 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 be
 ```
 
 <img src="single_mut_effects_files/figure-gfm/betas_expr_lib1_v_lib2_filtered-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epiistasis-coefs_expr.pdf",sep="")))
+```
+
 We can see once again that the correlation in estimates of single
 mutation effects is better when accounting for nonlinearity in the mean
 fluorescence expression metric – this shows that the global epistasis
@@ -761,6 +787,10 @@ abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1m
 
 ![](single_mut_effects_files/figure-gfm/expr_effects_direct_singles-1.png)<!-- -->
 
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/coverage-ecdf_expr.pdf",sep="")))
+```
+
 In lib1, we directly measured the effects of 86.12% of mutations *as
 sole mutations* on at least one barcode background (a higher percentage
 of mutations are sampled more extensively on multiple mutant
@@ -778,6 +808,11 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect from single mut bcs
 ```
 
 <img src="single_mut_effects_files/figure-gfm/expr_effects_direct_singles_plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_direct-measured-single-mut_expr.pdf",sep="")))
+```
+
 In this case, in contrast to the binding measurements, we do *not* see
 better correlation between direct single measurements compared to the
 correlation in the model-predicted observed-scale effects. This isn’t
@@ -916,9 +951,16 @@ bc_homologs_expr <- data.table(read.csv(file=config$expression_sortseq_homologs_
 
 bc_homologs_expr[target=="SARS-CoV",target:="SARS-CoV-1"]
 
-homologs <- data.frame(homolog=factor(c("SARS-CoV-2","GD-Pangolin","RaTG13","SARS-CoV-1","WIV16","LYRa11","ZC45","ZXC21","HKU3-1","Rf1","Rp3","BM48-31"),
+homologs <- data.table(homolog=factor(c("SARS-CoV-2","GD-Pangolin","RaTG13","SARS-CoV-1","WIV16","LYRa11","ZC45","ZXC21","HKU3-1","Rf1","Rp3","BM48-31"),
                                       levels=c("SARS-CoV-2","GD-Pangolin","RaTG13","SARS-CoV-1","WIV16","LYRa11","ZC45","ZXC21","HKU3-1","Rf1","Rp3","BM48-31")),
                        clade=c("SARS-CoV-2","SARS-CoV-2","SARS-CoV-2","Clade 1","Clade 1","Clade 1","Clade 2", "Clade 2","Clade 2","Clade 2","Clade 2","Clade 3"))
+
+#add color column to homologs, by clade
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := cbPalette[4]]; homologs[clade=="Clade 2",clade_color := cbPalette[2]]; homologs[clade=="Clade 3",clade_color := cbPalette[8]]; homologs[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
+#add plottiing character to homologs, by clade
+homologs$clade_pch <- as.numeric(NA); homologs[clade=="Clade 1",clade_pch := 15]; homologs[clade=="Clade 2",clade_pch := 17]; homologs[clade=="Clade 3",clade_pch := 18]; homologs[clade=="SARS-CoV-2",clade_pch  := 16]
+
 
 for(i in 1:nrow(homologs)){
   bind_lib1 <- bc_homologs_bind[library=="lib1" & target==as.character(homologs$homolog[i]),delta_log10Ka]
@@ -952,24 +994,28 @@ RBDs were completely non-expressing.
 ``` r
 par(mfrow=c(1,2))
 x <- homologs$bind_lib1; y <- homologs$bind_lib2; fit <- lm(y~x)
-plot(x,y,pch=19,xlab="delta_log10Ka, lib1",ylab="delta_log10Ka, lib2",main=paste("homolog binding, R-squared:",round(summary(fit)$r.squared,digits=4)))
+plot(x,y,pch=homologs$clade_pch,col=homologs$clade_color,xlab="delta_log10Ka, lib1",ylab="delta_log10Ka, lib2",main=paste("homolog binding, R-squared:",round(summary(fit)$r.squared,digits=4)),cex=1.4)
 
 x <- homologs$expr_lib1; y <- homologs$expr_lib2; fit <- lm(y~x)
-plot(x,y,pch=19,xlab="delta_ML_meanF, lib1",ylab="delta_ML_meanF, lib2",main=paste("homolog expression, R-squared:",round(summary(fit)$r.squared,digits=3)))
+plot(x,y,,pch=homologs$clade_pch,col=homologs$clade_color,xlab="delta_ML_meanF, lib1",ylab="delta_ML_meanF, lib2",main=paste("homolog expression, R-squared:",round(summary(fit)$r.squared,digits=3)),cex=1.4)
 ```
 
 <img src="single_mut_effects_files/figure-gfm/homologs_lib1_lib2_correlation-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-replicate-libraries_bind-expr.pdf",sep="")))
+```
 
 Output the summarized homolog phenotype scores into a table for
 downstream analysis and sharing.
 
 ``` r
-homologs %>%
+homologs[,-c("clade_color","clade_pch")] %>%
   mutate_if(is.numeric, round, digits=4) %>%
   write.csv(file=config$homolog_effects_file, row.names=F)
 ```
 
-## Validation of bulk phenotypes with isogenic experiments
+## Validation of bulk phenotypes with additional experiments
 
 We have conducted two series of isogenic titration assays which can
 validate our bulk phenotypes for binding and expression effects. The
@@ -979,11 +1025,75 @@ single mutants to SARS-CoV-2. We fit titration curves to these isogenic
 experiments, and here we correlate these isogenic binding and expression
 phenotypes with those determined in the DMS assays.
 
-First, homolog panel:
+First, let’s read in the summary data from homolog titrations reported
+in `data/isogenic_titrations`. We convert the *K*<sub>D,app</sub>
+measurements into our log<sub>10</sub>(*K*<sub>A,app</sub>) scale,
+censoring the nonbinders to the same value censored in the bulk
+experiments (and removing the nonsensical SE estimates on these values
+since they were the bounded Kd fit, anyway), and propagating the
+titration curve fit estimate of standard error in the Kd measurement. We
+then plot isogenic versus bulk delta\_log10Ka versus SARS-CoV-2
+wildtype. We can see on the left, below, that our isogenic titrations of
+these homologs correlate extremely well with the measurements we made in
+the bulk DMS assay.
+
+We repeat this plotting for the bulk DMS expression data, which does not
+validate as well in the isogenic measurements – this is more or less
+expected. The expression measurements are not as quality to begin with,
+and they’re even worse in the isogenic context (as evidenced by the
+large standard error bars). One major complication, is that in the bulk
+Sort-seq measurements, we are not interefered in our measurement by the
+FITC- mode that is always present in a population due to presumable
+plasmid loss (reported in other papers, too) – because only FITC- cells
+that are there because of low expression per se (rather than plasmid
+loss) grow out in the post-sort growth prior to PCR and sequencing, we
+effectively “see” the true negatives and therefore the entire FITC
+distribution. In the isogenic data, we filter out the FITC-
+observations, because we are simply measuring fluorescence without
+sorting and therefore cannot deconvolve the large negative mode due to
+plasmid loss. Furthermore, because the homologs all have such a tight
+distribution of expression relative to the effect of single mutants,
+this is a very small window of phenotypic variability in which we are
+trying to assess correlation using a measurement with high experimental
+variability. This may improve when we add some single mutant validations
+with larger measured expression defecits.
+
+<img src="single_mut_effects_files/figure-gfm/homolog_isogenic_validations-1.png" style="display: block; margin: auto;" />
 
 Second, single mutants of SARS-CoV-2:
 
-## Relationship between expression and binding fits at a per-barcode level
+Furthermore, we can turn to other assays to validate the context of our
+yeast-based DMS measurements. First, we look at the functional
+measurements from [Letko et
+al. 2020](https://www.nature.com/articles/s41564-020-0688-y), who
+determined the ability of all RBD variants known at that time (so, no
+RaTG13 or Pangolin RBD) to enter cells as chimeras with SARS-CoV-1 Spike
+in VSV-G pseudotyped viruses and a luciferase reporter of cellular
+entry. We integrated measurements across several of their experimental
+panels, including Figs. 1e, 2a and 3b, and 3d. For 1e, 2a, and 3d, entry
+was measured in ACE2-expressing BHK cells, so the experiments should be
+more directly comparable – in 3b, they measured entry into Vero cells.
+For each experiment, we calculate the mean entry from triplicate
+measurements, and calculate the variant fold-entry relative to the mean
+SARS-CoV-1 entry (which is present in each panel). We then calculate the
+mean and SEM across each of the experiments for which a genotype was
+measured. We present comparisons of our measurements to the average
+fold-entry relative to SARS-CoV-1 across all four experiments on the
+left, and just the BHK experiments on the right. Error bars are SEM from
+between 2 and 4 measurements; the SARS-CoV-1 point does not have error
+bars as it is defined as 1 across each experiment, and SARS-CoV-2 does
+not have error bars because it was only included in one of the
+experiments. As we can see below, the variants for which we measure no
+binding also do not support cellular entry. Among the genotypes for
+which we measure quantitative differences in binding affinity, we can
+see these differences correlate with the extent of cellular entry,
+though the functional entry measurements show some variability depending
+whether or not we include the additional Vero cells measurements.
+(Should we “break” the y-axis to more clearly present these data?)
+
+<img src="single_mut_effects_files/figure-gfm/homologs_DMS_v_functional_pvirus_entry-1.png" style="display: block; margin: auto;" />
+\#\# Relationship between expression and binding fits at a per-barcode
+level
 
 In theory, titration assays should normalize out expression effects of
 mutations, and therefore be less susceptiible to expression-induced
