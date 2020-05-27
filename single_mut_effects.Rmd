@@ -623,7 +623,7 @@ First, let's read in the summary data from homolog titrations reported in `data/
 
 We repeat this plotting for the bulk DMS expression data, which does not validate as well in the isogenic measurements -- this is more or less expected. The expression measurements are not as quality to begin with, and they're even worse in the isogenic context (as evidenced by the large standard error bars). One major complication, is that in the bulk Sort-seq measurements, we are not interefered in our measurement by the FITC- mode that is always present in a population due to presumable plasmid loss (reported in other papers, too) -- because only FITC- cells that are there because of low expression per se (rather than plasmid loss) grow out in the post-sort growth prior to PCR and sequencing, we effectively "see" the true negatives and therefore the entire FITC distribution. In the isogenic data, we filter out the FITC- observations, because we are simply measuring fluorescence without sorting and therefore cannot deconvolve the large negative mode due to plasmid loss. Furthermore, because the homologs all have such a tight distribution of expression relative to the effect of single mutants, this is a very small window of phenotypic variability in which we are trying to assess correlation using a measurement with high experimental variability. This may improve when we add some single mutant validations with larger measured expression defecits.
 
-```{r homolog_isogenic_validations, fig.width=8, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homolog_isogenic_validations, fig.width=8, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 homologs_validation <- data.table(read.csv(file="data/isogenic_titrations/results/isogenic_titrations_summary.csv"));homologs_validation <- homologs_validation[expt==200508,]; homologs_validation[genotype=="Pangolin-GD",genotype:="GD-Pangolin"]
 homologs_validation[,log10Ka := log10(1/Kd),by=titration]
 homologs_validation[,log10SE := 0.434*Kd_SE/Kd,by=titration]
@@ -675,7 +675,7 @@ Second, single mutants of SARS-CoV-2:
 
 Furthermore, we can turn to other assays to validate the context of our yeast-based DMS measurements. First, we look at the functional measurements from [Letko et al. 2020](https://www.nature.com/articles/s41564-020-0688-y), who determined the ability of all RBD variants known at that time (so, no RaTG13 or Pangolin RBD) to enter cells as chimeras with SARS-CoV-1 Spike in VSV-G pseudotyped viruses and a luciferase reporter of cellular entry. We integrated measurements across several of their experimental panels, including Figs. 1e, 2a and 3b, and 3d. For 1e, 2a, and 3d, entry was measured in ACE2-expressing BHK cells, so the experiments should be more directly comparable -- in 3b, they measured entry into Vero cells. For each experiment, we calculate the mean entry from triplicate measurements, and calculate the variant fold-entry relative to the mean SARS-CoV-1 entry (which is present in each panel). We then calculate the mean and SEM across each of the experiments for which a genotype was measured. We present comparisons of our measurements to the average fold-entry relative to SARS-CoV-1 across all four experiments on the left, and just the BHK experiments on the right. Error bars are SEM from between 2 and 4 measurements; the SARS-CoV-1 point does not have error bars as it is defined as 1 across each experiment, and SARS-CoV-2 does not have error bars because it was only included in one of the experiments. As we can see below, the variants for which we measure no binding also do not support cellular entry. Among the genotypes for which we measure quantitative differences in binding affinity, we can see these differences correlate with the extent of cellular entry, though the functional entry measurements show some variability depending whether or not we include the additional Vero cells measurements. (Should we "break" the y-axis to more clearly present these data?)
 
-```{r homologs_DMS_v_functional_pvirus_entry, fig.width=9, fig.height=4.5, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homologs_DMS_v_functional_pvirus_entry, fig.width=9, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 Letko <- read.csv(file="data/lit-measurements/Letko_2020_data.csv",stringsAsFactors=F); Letko <- Letko[Letko$Figure %in% c("combined_BHK_Vero", "combined_BHK"),c("RBD","Figure","avg","SEM","n_measure")]
 
 for(i in 1:nrow(homologs)){
@@ -713,13 +713,13 @@ We'll also output these comparisons in tabular form
 kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(bind_avg),.(homolog, clade, bind_avg, bind_SEM,
                                                                                Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
                                                                                Letko_SEM_entry_BHK)],
-      col.names=c("Homolog","Clade","DMS delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"))
+      col.names=c("Homolog","Clade","DMS delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"), digits=3)
 ```
 
 
 We can also validate our *isogenic* measurements against the Letko et al. phenotypes.
 
-```{r homologs_isogenic_v_functional_pvirus_entry, fig.width=9, fig.height=4.5, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homologs_isogenic_v_functional_pvirus_entry, fig.width=9, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 
 par(mfrow=c(1,2))
 plot(homologs$Letko_mean_entry_all,homologs$isogenic_delta_log10Ka,pch=homologs$clade_pch,col=homologs$clade_col,xlab="Cellular entry (a.u.), Letko et al. (all panels)",ylab="delta log10Ka,app (isogenic titration)",cex=1.4)
@@ -743,7 +743,7 @@ Table of isogenic measurements vs Letko phenotype:
 kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(isogenic_delta_log10Ka),.(homolog, clade, isogenic_delta_log10Ka, isogenic_SE_log10Ka,
                                                                                Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
                                                                                Letko_SEM_entry_BHK)],
-      col.names=c("Homolog","Clade","Isogenic delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"))
+      col.names=c("Homolog","Clade","Isogenic delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"), digits=3)
 ```
 
 ## Relationship between expression and binding fits at a per-barcode level
@@ -752,7 +752,7 @@ In theory, titration assays should normalize out expression effects of mutations
 
 Below, we generate plots for all barcodes showing the relationship between the barcode's response fit value and the expression phenotype for that barcode.
 
-```{r response_v_expression, fig.width=9, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+```{r response_v_expression, fig.width=9, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 bc_dt <- merge(bc_bind[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response, baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)], bc_expr[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, variant_class, aa_substitutions, n_aa_substitutions)], sort=F)
 
 par(mfrow=c(1,2))

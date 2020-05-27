@@ -1095,21 +1095,21 @@ We’ll also output these comparisons in tabular form
 kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(bind_avg),.(homolog, clade, bind_avg, bind_SEM,
                                                                                Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
                                                                                Letko_SEM_entry_BHK)],
-      col.names=c("Homolog","Clade","DMS delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"))
+      col.names=c("Homolog","Clade","DMS delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"), digits=3)
 ```
 
-| Homolog    | Clade      | DMS delta-log10Ka |        SE | Letko entry, all (a.u.) |        SE | Letko entry, BHK (a.u.) |        SE |
-| :--------- | :--------- | ----------------: | --------: | ----------------------: | --------: | ----------------------: | --------: |
-| SARS-CoV-2 | SARS-CoV-2 |       \-0.0078865 | 0.0011539 |               1.2364874 |        NA |               1.2364874 |        NA |
-| SARS-CoV-1 | Clade 1    |       \-0.2498259 | 0.0399424 |               1.0000000 |        NA |               1.0000000 |        NA |
-| WIV16      | Clade 1    |       \-0.0358512 | 0.0184988 |               1.0089470 | 0.1433465 |               0.9273106 | 0.1193789 |
-| LYRa11     | Clade 1    |       \-0.5129461 | 0.0405689 |               0.4749058 | 0.3453226 |               0.1358062 | 0.1130384 |
-| ZC45       | Clade 2    |       \-4.7885586 | 0.0378735 |               0.0183205 | 0.0094127 |               0.0251704 | 0.0111820 |
-| ZXC21      | Clade 2    |       \-4.7842203 | 0.0503678 |               0.0175247 | 0.0093394 |               0.0241882 | 0.0113342 |
-| HKU3-1     | Clade 2    |       \-4.7527143 | 0.0438999 |               0.0882798 | 0.0667876 |               0.0215171 | 0.0031632 |
-| Rf1        | Clade 2    |       \-4.7714134 | 0.0356232 |               0.0235121 | 0.0063857 |               0.0172600 | 0.0022503 |
-| Rp3        | Clade 2    |       \-4.7818337 | 0.0462476 |               0.0578225 | 0.0350887 |               0.0228068 | 0.0039194 |
-| BM48-31    | Clade 3    |       \-4.7907591 | 0.0382781 |               0.0246539 | 0.0116363 |               0.0186769 | 0.0172927 |
+| Homolog    | Clade      | DMS delta-log10Ka |    SE | Letko entry, all (a.u.) |    SE | Letko entry, BHK (a.u.) |    SE |
+| :--------- | :--------- | ----------------: | ----: | ----------------------: | ----: | ----------------------: | ----: |
+| SARS-CoV-2 | SARS-CoV-2 |           \-0.008 | 0.001 |                   1.236 |    NA |                   1.236 |    NA |
+| SARS-CoV-1 | Clade 1    |           \-0.250 | 0.040 |                   1.000 |    NA |                   1.000 |    NA |
+| WIV16      | Clade 1    |           \-0.036 | 0.018 |                   1.009 | 0.143 |                   0.927 | 0.119 |
+| LYRa11     | Clade 1    |           \-0.513 | 0.041 |                   0.475 | 0.345 |                   0.136 | 0.113 |
+| ZC45       | Clade 2    |           \-4.789 | 0.038 |                   0.018 | 0.009 |                   0.025 | 0.011 |
+| ZXC21      | Clade 2    |           \-4.784 | 0.050 |                   0.018 | 0.009 |                   0.024 | 0.011 |
+| HKU3-1     | Clade 2    |           \-4.753 | 0.044 |                   0.088 | 0.067 |                   0.022 | 0.003 |
+| Rf1        | Clade 2    |           \-4.771 | 0.036 |                   0.024 | 0.006 |                   0.017 | 0.002 |
+| Rp3        | Clade 2    |           \-4.782 | 0.046 |                   0.058 | 0.035 |                   0.023 | 0.004 |
+| BM48-31    | Clade 3    |           \-4.791 | 0.038 |                   0.025 | 0.012 |                   0.019 | 0.017 |
 
 We can also validate our *isogenic* measurements against the Letko et
 al. phenotypes.
@@ -1122,16 +1122,16 @@ Table of isogenic measurements vs Letko phenotype:
 kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(isogenic_delta_log10Ka),.(homolog, clade, isogenic_delta_log10Ka, isogenic_SE_log10Ka,
                                                                                Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
                                                                                Letko_SEM_entry_BHK)],
-      col.names=c("Homolog","Clade","Isogenic delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"))
+      col.names=c("Homolog","Clade","Isogenic delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"), digits=3)
 ```
 
-| Homolog    | Clade      | Isogenic delta-log10Ka |        SE | Letko entry, all (a.u.) |        SE | Letko entry, BHK (a.u.) |        SE |
-| :--------- | :--------- | ---------------------: | --------: | ----------------------: | --------: | ----------------------: | --------: |
-| SARS-CoV-2 | SARS-CoV-2 |              0.0000000 | 0.0266395 |               1.2364874 |        NA |               1.2364874 |        NA |
-| SARS-CoV-1 | Clade 1    |            \-0.4811298 | 0.0226053 |               1.0000000 |        NA |               1.0000000 |        NA |
-| LYRa11     | Clade 1    |            \-0.6570148 | 0.0183569 |               0.4749058 | 0.3453226 |               0.1358062 | 0.1130384 |
-| HKU3-1     | Clade 2    |            \-4.4127033 |        NA |               0.0882798 | 0.0667876 |               0.0215171 | 0.0031632 |
-| BM48-31    | Clade 3    |            \-4.4127033 |        NA |               0.0246539 | 0.0116363 |               0.0186769 | 0.0172927 |
+| Homolog    | Clade      | Isogenic delta-log10Ka |    SE | Letko entry, all (a.u.) |    SE | Letko entry, BHK (a.u.) |    SE |
+| :--------- | :--------- | ---------------------: | ----: | ----------------------: | ----: | ----------------------: | ----: |
+| SARS-CoV-2 | SARS-CoV-2 |                  0.000 | 0.027 |                   1.236 |    NA |                   1.236 |    NA |
+| SARS-CoV-1 | Clade 1    |                \-0.481 | 0.023 |                   1.000 |    NA |                   1.000 |    NA |
+| LYRa11     | Clade 1    |                \-0.657 | 0.018 |                   0.475 | 0.345 |                   0.136 | 0.113 |
+| HKU3-1     | Clade 2    |                \-4.413 |    NA |                   0.088 | 0.067 |                   0.022 | 0.003 |
+| BM48-31    | Clade 3    |                \-4.413 |    NA |                   0.025 | 0.012 |                   0.019 | 0.017 |
 
 ## Relationship between expression and binding fits at a per-barcode level
 
