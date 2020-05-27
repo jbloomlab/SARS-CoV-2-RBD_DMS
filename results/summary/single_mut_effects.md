@@ -8,12 +8,8 @@ This notebook reads in the coefficients from the global epistasis fits
 for binding and expression. We assess correlations between models and
 directly measured single mutants to decide on which models to use moving
 forward. We then consolidate our final mutant function scores data
-table. (Finally, it generates some basic summary figures, including
-distributions of mutational effects and summaries of the phenotypes of
-the sarbecovirus homolog RBDs, and validates these measurements with
-comparisons to isogenic and literature reported functional
-measurements.) (Parentheticla stuff still work in progress, so you won’t
-see all of this completed here, yet\!)
+table. Finally, we validate our DMS measurements via comparison to
+isogenic and literature reported functional measurements.
 
 ``` r
 require("knitr")
@@ -202,7 +198,7 @@ Next, for the global epistasis models built on the binding measurements,
 let’s look at the correlation between model coefficients inferred from
 lib1 and lib2 binding measurements. We look at the model coefficients
 both on the “observed” log<sub>10</sub>(*K*<sub>A,app</sub>) and
-underlying “latent” scales, as well as without any global epistasiis
+underlying “latent” scales, as well as without any global epistasis
 nonlinearity.
 
 ``` r
@@ -678,6 +674,7 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 be
 ```
 
 <img src="single_mut_effects_files/figure-gfm/betas_expr_lib1_v_lib2-1.png" style="display: block; margin: auto;" />
+
 The observed-scale plots show some obvious errant fit points with large
 positive predicted effects. Let’s filter these points to be NA in the
 library in which they were assigned these large values, and look at
@@ -785,7 +782,7 @@ plot(ecdf(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_exp
 abline(v=median(betas[mutant!="*" & wildtype!=mutant,n_bc_1mut_expr_lib1+n_bc_1mut_expr_lib2]),lty=2);abline(h=0.5,lty=2)
 ```
 
-![](single_mut_effects_files/figure-gfm/expr_effects_direct_singles-1.png)<!-- -->
+<img src="single_mut_effects_files/figure-gfm/expr_effects_direct_singles-1.png" style="display: block; margin: auto;" />
 
 ``` r
 invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/coverage-ecdf_expr.pdf",sep="")))
@@ -826,7 +823,7 @@ outside of the PacBio sequencing window, or contain some other artifact
 – we are able to identify and discard these in the case of wildtype
 observations, but for any mutant variant, we cannot distinguish when
 this is happening at face value. Therefore, direct single measurements
-of expression effects of mutation are likely conflated wiith these types
+of expression effects of mutation are likely conflated with these types
 of additional factors that we cannot identify, whereas the global
 epistasis decomposition averages across all backgrounds containing a
 mutation, generating improved estimates of mutational effects. We also
@@ -958,7 +955,7 @@ homologs <- data.table(homolog=factor(c("SARS-CoV-2","GD-Pangolin","RaTG13","SAR
 #add color column to homologs, by clade
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := cbPalette[4]]; homologs[clade=="Clade 2",clade_color := cbPalette[2]]; homologs[clade=="Clade 3",clade_color := cbPalette[8]]; homologs[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
-#add plottiing character to homologs, by clade
+#add plotting character to homologs, by clade
 homologs$clade_pch <- as.numeric(NA); homologs[clade=="Clade 1",clade_pch := 15]; homologs[clade=="Clade 2",clade_pch := 17]; homologs[clade=="Clade 3",clade_pch := 18]; homologs[clade=="SARS-CoV-2",clade_pch  := 16]
 
 
@@ -1030,12 +1027,12 @@ in `data/isogenic_titrations`. We convert the *K*<sub>D,app</sub>
 measurements into our log<sub>10</sub>(*K*<sub>A,app</sub>) scale,
 censoring the nonbinders to the same value censored in the bulk
 experiments (and removing the nonsensical SE estimates on these values
-since they were the bounded Kd fit, anyway), and propagating the
-titration curve fit estimate of standard error in the Kd measurement. We
-then plot isogenic versus bulk delta\_log10Ka versus SARS-CoV-2
-wildtype. We can see on the left, below, that our isogenic titrations of
-these homologs correlate extremely well with the measurements we made in
-the bulk DMS assay.
+since they were the bounded *K*<sub>D,app</sub> fit, anyway), and
+propagating the titration curve fit estimate of standard error in the
+*K*<sub>D,app</sub> measurement. We then plot isogenic versus bulk
+log<sub>10</sub>(*K*<sub>A,app</sub>) measurements. We can see on the
+left, below, that our isogenic titrations of these homologs correlate
+extremely well with the measurements we made in the bulk DMS assay.
 
 We repeat this plotting for the bulk DMS expression data, which does not
 validate as well in the isogenic measurements – this is more or less
@@ -1092,27 +1089,70 @@ whether or not we include the additional Vero cells measurements.
 (Should we “break” the y-axis to more clearly present these data?)
 
 <img src="single_mut_effects_files/figure-gfm/homologs_DMS_v_functional_pvirus_entry-1.png" style="display: block; margin: auto;" />
-\#\# Relationship between expression and binding fits at a per-barcode
-level
+We’ll also output these comparisons in tabular form
+
+``` r
+kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(bind_avg),.(homolog, clade, bind_avg, bind_SEM,
+                                                                               Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
+                                                                               Letko_SEM_entry_BHK)],
+      col.names=c("Homolog","Clade","DMS delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"))
+```
+
+| Homolog    | Clade      | DMS delta-log10Ka |        SE | Letko entry, all (a.u.) |        SE | Letko entry, BHK (a.u.) |        SE |
+| :--------- | :--------- | ----------------: | --------: | ----------------------: | --------: | ----------------------: | --------: |
+| SARS-CoV-2 | SARS-CoV-2 |       \-0.0078865 | 0.0011539 |               1.2364874 |        NA |               1.2364874 |        NA |
+| SARS-CoV-1 | Clade 1    |       \-0.2498259 | 0.0399424 |               1.0000000 |        NA |               1.0000000 |        NA |
+| WIV16      | Clade 1    |       \-0.0358512 | 0.0184988 |               1.0089470 | 0.1433465 |               0.9273106 | 0.1193789 |
+| LYRa11     | Clade 1    |       \-0.5129461 | 0.0405689 |               0.4749058 | 0.3453226 |               0.1358062 | 0.1130384 |
+| ZC45       | Clade 2    |       \-4.7885586 | 0.0378735 |               0.0183205 | 0.0094127 |               0.0251704 | 0.0111820 |
+| ZXC21      | Clade 2    |       \-4.7842203 | 0.0503678 |               0.0175247 | 0.0093394 |               0.0241882 | 0.0113342 |
+| HKU3-1     | Clade 2    |       \-4.7527143 | 0.0438999 |               0.0882798 | 0.0667876 |               0.0215171 | 0.0031632 |
+| Rf1        | Clade 2    |       \-4.7714134 | 0.0356232 |               0.0235121 | 0.0063857 |               0.0172600 | 0.0022503 |
+| Rp3        | Clade 2    |       \-4.7818337 | 0.0462476 |               0.0578225 | 0.0350887 |               0.0228068 | 0.0039194 |
+| BM48-31    | Clade 3    |       \-4.7907591 | 0.0382781 |               0.0246539 | 0.0116363 |               0.0186769 | 0.0172927 |
+
+We can also validate our *isogenic* measurements against the Letko et
+al. phenotypes.
+
+<img src="single_mut_effects_files/figure-gfm/homologs_isogenic_v_functional_pvirus_entry-1.png" style="display: block; margin: auto;" />
+
+Table of isogenic measurements vs Letko phenotype:
+
+``` r
+kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(isogenic_delta_log10Ka),.(homolog, clade, isogenic_delta_log10Ka, isogenic_SE_log10Ka,
+                                                                               Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
+                                                                               Letko_SEM_entry_BHK)],
+      col.names=c("Homolog","Clade","Isogenic delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"))
+```
+
+| Homolog    | Clade      | Isogenic delta-log10Ka |        SE | Letko entry, all (a.u.) |        SE | Letko entry, BHK (a.u.) |        SE |
+| :--------- | :--------- | ---------------------: | --------: | ----------------------: | --------: | ----------------------: | --------: |
+| SARS-CoV-2 | SARS-CoV-2 |              0.0000000 | 0.0266395 |               1.2364874 |        NA |               1.2364874 |        NA |
+| SARS-CoV-1 | Clade 1    |            \-0.4811298 | 0.0226053 |               1.0000000 |        NA |               1.0000000 |        NA |
+| LYRa11     | Clade 1    |            \-0.6570148 | 0.0183569 |               0.4749058 | 0.3453226 |               0.1358062 | 0.1130384 |
+| HKU3-1     | Clade 2    |            \-4.4127033 |        NA |               0.0882798 | 0.0667876 |               0.0215171 | 0.0031632 |
+| BM48-31    | Clade 3    |            \-4.4127033 |        NA |               0.0246539 | 0.0116363 |               0.0186769 | 0.0172927 |
+
+## Relationship between expression and binding fits at a per-barcode level
 
 In theory, titration assays should normalize out expression effects of
-mutations, and therefore be less susceptiible to expression-induced
+mutations, and therefore be less susceptible to expression-induced
 artifacts in binding scores than traditional single-concentration yeast
-diisplay assays. We will dig into this a bit more in the
+display assays. We will dig into this a bit more in the
 `structure_function.Rmd` notebook for our single-mutant effect
-parameters, but the general premise is that in single-concentration
-yeast display assays, simple enhancement of surface expression leads to
-higher ligand labeling, even if the underlying *K*<sub>D</sub> is
-unchanged in the mutant variant. This leads to *uninteresting* simple
-correlation between expression and binding in DMS type data. In
-contrast, our binding phenotype is determined from a self-contained
-titration series for each barcode, the response plateau and baseline of
-which can vary as fit parameters. This assay should therefore be less
-susceptible to expression artifacts, because global expression changes
-can be accounted for with variation in the response parameter –
-therefore, any remaining correlation between expression and binding
-should be due to actual biological correlation (i.e. mutations that
-destabilize the protein will also intrinsically decrease the
+parameters, but the general premise is that in classic
+single-concentration yeast display assays, simple enhancement of surface
+expression leads to higher ligand labeling, even if the underlying
+*K*<sub>D</sub> is unchanged in the mutant variant. This leads to
+*uninteresting* simple correlation between expression and binding in DMS
+type data. In contrast, our binding phenotype is determined from a
+self-contained titration series for each barcode, for which the response
+plateau and baseline can vary as fit parameters. This assay should
+therefore be less susceptible to expression artifacts, because global
+expression changes can be accounted for with variation in the response
+parameter – therefore, any remaining correlation between expression and
+binding should be due to actual biological correlation (i.e. mutations
+that destabilize the protein will also intrinsically decrease the
 thermodynamic affinity). One premise of this argument is that the
 response parameter of the titration curve fits correlates with
 expression effects.
