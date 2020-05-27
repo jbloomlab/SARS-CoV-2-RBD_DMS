@@ -9,7 +9,7 @@ editor_options:
   chunk_output_type: inline
 ---
 
-This notebook reads in the coefficients from the global epistasis fits for binding and expression. We assess correlations between models and directly measured single mutants to decide on which models to use moving forward. We then consolidate our final mutant function scores data table. (Finally, it generates some basic summary figures, including distributions of mutational effects and summaries of the phenotypes of the sarbecovirus homolog RBDs, and validates these measurements with comparisons to isogenic and literature reported functional measurements.) (Parentheticla stuff still work in progress, so you won't see all of this completed here, yet!)
+This notebook reads in the coefficients from the global epistasis fits for binding and expression. We assess correlations between models and directly measured single mutants to decide on which models to use moving forward. We then consolidate our final mutant function scores data table. Finally, we validate our DMS measurements via comparison to isogenic and literature reported functional measurements.
 
 ```{r setup, message=FALSE, warning=FALSE, error=FALSE}
 require("knitr")
@@ -151,7 +151,7 @@ betas_expr_nonepistatic_Gaussian <- merge(betas_expr_nonepistatic_Gaussian,
 
 ## Assessing global epistasis models for binding data
 
-Next, for the global epistasis models built on the binding measurements, let's look at the correlation between model coefficients inferred from lib1 and lib2 binding measurements. We look at the model coefficients both on the "observed" log<sub>10</sub>(*K*<sub>A,app</sub>) and underlying "latent" scales, as well as without any global epistasiis nonlinearity.
+Next, for the global epistasis models built on the binding measurements, let's look at the correlation between model coefficients inferred from lib1 and lib2 binding measurements. We look at the model coefficients both on the "observed" log<sub>10</sub>(*K*<sub>A,app</sub>) and underlying "latent" scales, as well as without any global epistasis nonlinearity.
 ```{r betas_bind_lib1_v_lib2, fig.width=8,fig.height=12.5,fig.align="center", dpi=300,dev="png"}
 par(mfrow=c(3,2))
 #observed "log10Ka" scale
@@ -409,6 +409,7 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 be
 
 
 ```
+
 The observed-scale plots show some obvious errant fit points with large positive predicted effects. Let's filter these points to be NA in the library in which they were assigned these large values, and look at these plots with the filtered data. Also, for better comparison to the latent-scale phenotypes, we zoom in on the range of the latent scale excluding the highly deleterious cluster of STOP variants near [-15, -15]. We are *not* removing these points from the correlation computation, however, but simply want to investigate the correlation by eye in the region closer to wildtype.
 
 ```{r betas_expr_lib1_v_lib2_filtered, fig.width=8,fig.height=13,fig.align="center", dpi=300,dev="png"}
@@ -458,7 +459,7 @@ In any case, the observed-scale measurements look very well-correlated between r
 
 Next, let's look at directly sampled single-mutant effects on expression from barcodes carrying just single mutations. We calculate the number of barcodes each mutation is found on, including single-mutant barcodes and all barcodes for which expression measurements were fit and kept post-filtering. We also make cdf plots of the number of barcodes on which a mutation is sampled.
 
-```{r expr_effects_direct_singles}
+```{r expr_effects_direct_singles, fig.width=9,fig.height=4.5,fig.align="center", dpi=300,dev="png"}
 #add to master "betas" data table that lists *all* mutations, including those that are undetermined in the model outputs
 bc_expr[,aa_subs_list := list(strsplit(aa_substitutions,split=" ")),by=.(library,barcode)]
 
@@ -496,7 +497,7 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect from single mut bcs
 
 invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_direct-measured-single-mut_expr.pdf",sep="")))
 ```
-In this case, in contrast to the binding measurements, we do *not* see better correlation between direct single measurements compared to the correlation in the model-predicted observed-scale effects. This isn't surprising -- the expression measurements are conducted without pre-selecting for properly expressing variants, and we know there are a small number of barcodes that we ascribe as representing wildtype/synonymous variants with very low expression (which are evidently weeded out by the RBD+ pre-sort prior to the binding measurements). These are presumably plasmids with deleterious mutations outside of the PacBio sequencing window, or contain some other artifact -- we are able to identify and discard these in the case of wildtype observations, but for any mutant variant, we cannot distinguish when this is happening at face value. Therefore, direct single measurements of expression effects of mutation are likely conflated wiith these types of additional factors that we cannot identify, whereas the global epistasis decomposition averages across all backgrounds containing a mutation, generating improved estimates of mutational effects. We also believe our binding measurements are inherently higher quality than the expression measurements for multiple reasons. Taken together, it seems that for the expression measurements, there may be more justification to use all model coefficients, instead of the combination of direct and estimated effects as done with binding.
+In this case, in contrast to the binding measurements, we do *not* see better correlation between direct single measurements compared to the correlation in the model-predicted observed-scale effects. This isn't surprising -- the expression measurements are conducted without pre-selecting for properly expressing variants, and we know there are a small number of barcodes that we ascribe as representing wildtype/synonymous variants with very low expression (which are evidently weeded out by the RBD+ pre-sort prior to the binding measurements). These are presumably plasmids with deleterious mutations outside of the PacBio sequencing window, or contain some other artifact -- we are able to identify and discard these in the case of wildtype observations, but for any mutant variant, we cannot distinguish when this is happening at face value. Therefore, direct single measurements of expression effects of mutation are likely conflated with these types of additional factors that we cannot identify, whereas the global epistasis decomposition averages across all backgrounds containing a mutation, generating improved estimates of mutational effects. We also believe our binding measurements are inherently higher quality than the expression measurements for multiple reasons. Taken together, it seems that for the expression measurements, there may be more justification to use all model coefficients, instead of the combination of direct and estimated effects as done with binding.
 
 
 Next, let's look at how the global epistasis model coefficients correlate with these directly measured single-mutant effects. The plots below show the average directly measured phenotype for single mutant barcodes in the two libraries (only showing mutations that were sampled as singles in *both* libraries), versus the average of the beta coefficients for the mutation from the lib1 and lib2 model fits (once again, only showing mutations that were determined in *both* libraries). For the latent scale, we also zoom in the plot view to get better insight into the relationship between observed and latent effects within the non-censored window.
@@ -571,7 +572,7 @@ homologs <- data.table(homolog=factor(c("SARS-CoV-2","GD-Pangolin","RaTG13","SAR
 #add color column to homologs, by clade
 cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 homologs$clade_color <- as.character(NA); homologs[clade=="Clade 1",clade_color := cbPalette[4]]; homologs[clade=="Clade 2",clade_color := cbPalette[2]]; homologs[clade=="Clade 3",clade_color := cbPalette[8]]; homologs[clade=="SARS-CoV-2",clade_color := cbPalette[6]]
-#add plottiing character to homologs, by clade
+#add plotting character to homologs, by clade
 homologs$clade_pch <- as.numeric(NA); homologs[clade=="Clade 1",clade_pch := 15]; homologs[clade=="Clade 2",clade_pch := 17]; homologs[clade=="Clade 3",clade_pch := 18]; homologs[clade=="SARS-CoV-2",clade_pch  := 16]
 
 
@@ -618,11 +619,11 @@ homologs[,-c("clade_color","clade_pch")] %>%
 
 We have conducted two series of isogenic titration assays which can validate our bulk phenotypes for binding and expression effects. The first panel of genotypes that we validated in isogenic yeast display assays are a subset of the homologs panel. The second is a series of single mutants to SARS-CoV-2. We fit titration curves to these isogenic experiments, and here we correlate these isogenic binding and expression phenotypes with those determined in the DMS assays.
 
-First, let's read in the summary data from homolog titrations reported in `data/isogenic_titrations`. We convert the *K*<sub>D,app</sub> measurements into our log<sub>10</sub>(*K*<sub>A,app</sub>) scale, censoring the nonbinders to the same value censored in the bulk experiments (and removing the nonsensical SE estimates on these values since they were the bounded Kd fit, anyway), and propagating the titration curve fit estimate of standard error in the Kd measurement. We then plot isogenic versus bulk delta_log10Ka versus SARS-CoV-2 wildtype. We can see on the left, below, that our isogenic titrations of these homologs correlate extremely well with the measurements we made in the bulk DMS assay.
+First, let's read in the summary data from homolog titrations reported in `data/isogenic_titrations`. We convert the *K*<sub>D,app</sub> measurements into our log<sub>10</sub>(*K*<sub>A,app</sub>) scale, censoring the nonbinders to the same value censored in the bulk experiments (and removing the nonsensical SE estimates on these values since they were the bounded *K*<sub>D,app</sub> fit, anyway), and propagating the titration curve fit estimate of standard error in the *K*<sub>D,app</sub> measurement. We then plot isogenic versus bulk log<sub>10</sub>(*K*<sub>A,app</sub>) measurements. We can see on the left, below, that our isogenic titrations of these homologs correlate extremely well with the measurements we made in the bulk DMS assay.
 
 We repeat this plotting for the bulk DMS expression data, which does not validate as well in the isogenic measurements -- this is more or less expected. The expression measurements are not as quality to begin with, and they're even worse in the isogenic context (as evidenced by the large standard error bars). One major complication, is that in the bulk Sort-seq measurements, we are not interefered in our measurement by the FITC- mode that is always present in a population due to presumable plasmid loss (reported in other papers, too) -- because only FITC- cells that are there because of low expression per se (rather than plasmid loss) grow out in the post-sort growth prior to PCR and sequencing, we effectively "see" the true negatives and therefore the entire FITC distribution. In the isogenic data, we filter out the FITC- observations, because we are simply measuring fluorescence without sorting and therefore cannot deconvolve the large negative mode due to plasmid loss. Furthermore, because the homologs all have such a tight distribution of expression relative to the effect of single mutants, this is a very small window of phenotypic variability in which we are trying to assess correlation using a measurement with high experimental variability. This may improve when we add some single mutant validations with larger measured expression defecits.
 
-```{r homolog_isogenic_validations, fig.width=8, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homolog_isogenic_validations, fig.width=8, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 homologs_validation <- data.table(read.csv(file="data/isogenic_titrations/results/isogenic_titrations_summary.csv"));homologs_validation <- homologs_validation[expt==200508,]; homologs_validation[genotype=="Pangolin-GD",genotype:="GD-Pangolin"]
 homologs_validation[,log10Ka := log10(1/Kd),by=titration]
 homologs_validation[,log10SE := 0.434*Kd_SE/Kd,by=titration]
@@ -674,7 +675,7 @@ Second, single mutants of SARS-CoV-2:
 
 Furthermore, we can turn to other assays to validate the context of our yeast-based DMS measurements. First, we look at the functional measurements from [Letko et al. 2020](https://www.nature.com/articles/s41564-020-0688-y), who determined the ability of all RBD variants known at that time (so, no RaTG13 or Pangolin RBD) to enter cells as chimeras with SARS-CoV-1 Spike in VSV-G pseudotyped viruses and a luciferase reporter of cellular entry. We integrated measurements across several of their experimental panels, including Figs. 1e, 2a and 3b, and 3d. For 1e, 2a, and 3d, entry was measured in ACE2-expressing BHK cells, so the experiments should be more directly comparable -- in 3b, they measured entry into Vero cells. For each experiment, we calculate the mean entry from triplicate measurements, and calculate the variant fold-entry relative to the mean SARS-CoV-1 entry (which is present in each panel). We then calculate the mean and SEM across each of the experiments for which a genotype was measured. We present comparisons of our measurements to the average fold-entry relative to SARS-CoV-1 across all four experiments on the left, and just the BHK experiments on the right. Error bars are SEM from between 2 and 4 measurements; the SARS-CoV-1 point does not have error bars as it is defined as 1 across each experiment, and SARS-CoV-2 does not have error bars because it was only included in one of the experiments. As we can see below, the variants for which we measure no binding also do not support cellular entry. Among the genotypes for which we measure quantitative differences in binding affinity, we can see these differences correlate with the extent of cellular entry, though the functional entry measurements show some variability depending whether or not we include the additional Vero cells measurements. (Should we "break" the y-axis to more clearly present these data?)
 
-```{r homologs_DMS_v_functional_pvirus_entry, fig.width=8, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+```{r homologs_DMS_v_functional_pvirus_entry, fig.width=9, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 Letko <- read.csv(file="data/lit-measurements/Letko_2020_data.csv",stringsAsFactors=F); Letko <- Letko[Letko$Figure %in% c("combined_BHK_Vero", "combined_BHK"),c("RBD","Figure","avg","SEM","n_measure")]
 
 for(i in 1:nrow(homologs)){
@@ -706,13 +707,52 @@ arrows(x0=homologs$Letko_mean_entry_BHK, y0=homologs$bind_avg-homologs$bind_SEM,
 
 invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-bulk-v-Letko-entry.pdf",sep="")))
 ```
+We'll also output these comparisons in tabular form
+
+```{r homologs_bulk_v_functional_pvirus_entry_table}
+kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(bind_avg),.(homolog, clade, bind_avg, bind_SEM,
+                                                                               Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
+                                                                               Letko_SEM_entry_BHK)],
+      col.names=c("Homolog","Clade","DMS delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"), digits=3)
+```
+
+
+We can also validate our *isogenic* measurements against the Letko et al. phenotypes.
+
+```{r homologs_isogenic_v_functional_pvirus_entry, fig.width=9, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
+
+par(mfrow=c(1,2))
+plot(homologs$Letko_mean_entry_all,homologs$isogenic_delta_log10Ka,pch=homologs$clade_pch,col=homologs$clade_col,xlab="Cellular entry (a.u.), Letko et al. (all panels)",ylab="delta log10Ka,app (isogenic titration)",cex=1.4)
+#SE error bars on Letko values
+arrows(x0=homologs$Letko_mean_entry_all-homologs$Letko_SEM_entry_all, y0=homologs$isogenic_delta_log10Ka,x1=homologs$Letko_mean_entry_all+homologs$Letko_SEM_entry_all, y1=homologs$isogenic_delta_log10Ka,code=3,col=homologs$clade_color,angle=90,length=0.02)
+#SE error bars on isogenic Kd measurement
+arrows(x0=homologs$Letko_mean_entry_all, y0=homologs$isogenic_delta_log10Ka-homologs$isogenic_SE_log10Ka, x1=homologs$Letko_mean_entry_all, y1=homologs$isogenic_delta_log10Ka+homologs$isogenic_SE_log10Ka,code=3,col=homologs$clade_color,angle=90,length=0.02)
+
+plot(homologs$Letko_mean_entry_BHK,homologs$isogenic_delta_log10Ka,pch=homologs$clade_pch,col=homologs$clade_col,xlab="Cellular entry (a.u.), Letko et al. (BHK panels only)",ylab="delta log10Ka,app (isogenic titration)",cex=1.4)
+#SE error bars on Letko values
+arrows(x0=homologs$Letko_mean_entry_BHK-homologs$Letko_SEM_entry_BHK, y0=homologs$isogenic_delta_log10Ka,x1=homologs$Letko_mean_entry_BHK+homologs$Letko_SEM_entry_BHK, y1=homologs$isogenic_delta_log10Ka,code=3,col=homologs$clade_color,angle=90,length=0.02)
+#SE error bars on bulk avg measurement
+arrows(x0=homologs$Letko_mean_entry_BHK, y0=homologs$isogenic_delta_log10Ka-homologs$isogenic_SE_log10Ka, x1=homologs$Letko_mean_entry_BHK, y1=homologs$isogenic_delta_log10Ka+homologs$isogenic_SE_log10Ka,code=3,col=homologs$clade_color,angle=90,length=0.02)
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-isogenic-v-Letko-entry.pdf",sep="")))
+```
+
+Table of isogenic measurements vs Letko phenotype:
+
+```{r homologs_isogenic_v_functional_pvirus_entry_table}
+kable(homologs[!is.na(Letko_mean_entry_all) & !is.na(isogenic_delta_log10Ka),.(homolog, clade, isogenic_delta_log10Ka, isogenic_SE_log10Ka,
+                                                                               Letko_mean_entry_all, Letko_SEM_entry_all, Letko_mean_entry_BHK,
+                                                                               Letko_SEM_entry_BHK)],
+      col.names=c("Homolog","Clade","Isogenic delta-log10Ka","SE","Letko entry, all (a.u.)","SE","Letko entry, BHK (a.u.)","SE"), digits=3)
+```
+
 ## Relationship between expression and binding fits at a per-barcode level
 
-In theory, titration assays should normalize out expression effects of mutations, and therefore be less susceptiible to expression-induced artifacts in binding scores than traditional single-concentration yeast diisplay assays. We will dig into this a bit more in the `structure_function.Rmd` notebook for our single-mutant effect parameters, but the general premise is that in single-concentration yeast display assays, simple enhancement of surface expression leads to higher ligand labeling, even if the underlying *K*<sub>D</sub> is unchanged in the mutant variant. This leads to *uninteresting* simple correlation between expression and binding in DMS type data. In contrast, our binding phenotype is determined from a self-contained titration series for each barcode, the response plateau and baseline of which can vary as fit parameters. This assay should therefore be less susceptible to expression artifacts, because global expression changes can be accounted for with variation in the response parameter -- therefore, any remaining correlation between expression and binding should be due to actual biological correlation (i.e. mutations that destabilize the protein will also intrinsically decrease the thermodynamic affinity). One premise of this argument is that the response parameter of the titration curve fits correlates with expression effects. 
+In theory, titration assays should normalize out expression effects of mutations, and therefore be less susceptible to expression-induced artifacts in binding scores than traditional single-concentration yeast display assays. We will dig into this a bit more in the `structure_function.Rmd` notebook for our single-mutant effect parameters, but the general premise is that in classic single-concentration yeast display assays, simple enhancement of surface expression leads to higher ligand labeling, even if the underlying *K*<sub>D</sub> is unchanged in the mutant variant. This leads to *uninteresting* simple correlation between expression and binding in DMS type data. In contrast, our binding phenotype is determined from a self-contained titration series for each barcode, for which the response plateau and baseline can vary as fit parameters. This assay should therefore be less susceptible to expression artifacts, because global expression changes can be accounted for with variation in the response parameter -- therefore, any remaining correlation between expression and binding should be due to actual biological correlation (i.e. mutations that destabilize the protein will also intrinsically decrease the thermodynamic affinity). One premise of this argument is that the response parameter of the titration curve fits correlates with expression effects. 
 
 Below, we generate plots for all barcodes showing the relationship between the barcode's response fit value and the expression phenotype for that barcode.
 
-```{r response_v_expression, fig.width=8, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+```{r response_v_expression, fig.width=9, fig.height=4.75, fig.align="center",dpi=300,dev="png",echo=F}
 bc_dt <- merge(bc_bind[,.(library, target, barcode, variant_call_support, avgcount, log10Ka, delta_log10Ka, log10SE, response, baseline, nMSR, variant_class, aa_substitutions, n_aa_substitutions)], bc_expr[,.(library, target, barcode, variant_call_support, total_count, ML_meanF, delta_ML_meanF, var_ML_meanF, variant_class, aa_substitutions, n_aa_substitutions)], sort=F)
 
 par(mfrow=c(1,2))
