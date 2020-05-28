@@ -43,7 +43,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -92,23 +92,24 @@ setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2
 
 ## Analyzing amino acid diversity in GISAID Spike sequences
 
-We constructed an alignment of all Spike sequences available on GISAID.
-On the EpiCoV page, under downloads, one of the pre-made options is a
-fasta of all Spike sequences isolated thus far, which is updated each
-day. I have downloaded this file, unzipped, replaced spaces in fasta
-headers with underscores, and aligned sequences. We load in this
-alignment using the `read.fasta` function of the `bio3d` package, and
-trim the alignment to RBD residues. We remove sequecnes from non-human
-isolates (e.g. bat, pangolin, “environment”, mink, cat, TIGER), and then
+We constructed an alignment of all Spike sequences available on GISAID
+as of 27 May, 2020. On the EpiCoV page, under downloads, one of the
+pre-made options is a fasta of all Spike sequences isolated thus far,
+which is updated each day. I have downloaded this file, unzipped,
+replaced spaces in fasta headers with underscores, and aligned
+sequences. We load in this alignment using the `read.fasta` function of
+the `bio3d` package, and trim the alignment to RBD residues. We remove
+sequecnes from non-human isolates (e.g. bat, pangolin, “environment”,
+mink, cat, TIGER) and sequences with gap `-` characters, and then
 iterate through the alignment and save any observed mutations. We then
 filter mutations based on rationale below, and add counts of filtered
 observations for each mutation as an ‘nobs’ colum in our overall mutants
 data table.
 
 We filter out any mutations that were *only* observed on sequences with
-large numbers of missing characters – from my initial pass, I saw some
-singleton amino acid variants which would require \>1 nt change, and
-these were only found in a single sequence with many X amino acid
+large numbers of missing `X` characters – from my initial pass, I saw
+some singleton amino acid variants which would require \>1 nt change,
+and these were only found in a single sequence with many X amino acid
 characters (the first half of the sequence was well determined, but the
 second half was all X’s, with the annotated “differences” being within
 short stretches between Xs with determiined amino acids), which made me
@@ -133,7 +134,11 @@ in better filtering amino acid variants to retain.
 
 ``` r
 alignment <- bio3d::read.fasta(file="data/alignments/Spike_GISAID/spike_GISAID_aligned.fasta", rm.dup=T)
+```
 
+    ## [1] " ** Duplicated sequence id's: Spike|hCoV-19/USA/MI-MDHHS-SC20330/2020|2020-03-19|EPI_ISL_450609|Original|hCoV-19^^Michigan|Human|Michigan_Department_of_Health_and_Human_Services|Michigan_Department_of_Health_and_Human_Services|Blankenship|USA **"
+
+``` r
 #remove non-human samples
 keep <- grep("Human",alignment$id);  alignment$ali <- alignment$ali[keep,]; alignment$id <- alignment$id[keep]
 
@@ -145,10 +150,10 @@ alignment_RBD <- alignment; alignment_RBD$ali <- alignment$ali[,RBD_sites$site_S
 #check that the first sequence entry matches our reference RBD sequence
 stopifnot(sum(!(alignment_RBD$ali[1,] == RBD_sites[,amino_acid_SARS2]))==0)
 
-#remove sequences that are >5% gaps, as the amino acid calls may be generally unreliable
+#remove sequences have gaps, as the amino acid calls may be generally unreliable
 remove <- c()
 for(i in 1:nrow(alignment_RBD$ali)){
-  if(sum(alignment_RBD$ali[i,]=="-") > 0.05*ncol(alignment_RBD$ali)){remove <- c(remove,i)}
+  if(sum(alignment_RBD$ali[i,]=="-") > 0){remove <- c(remove,i)}
 }
 
 alignment_RBD$ali <- alignment_RBD$ali[-remove,];alignment_RBD$id <- alignment_RBD$id[-remove]
@@ -168,27 +173,35 @@ for(j in 1:ncol(alignment_RBD$ali)){
 }
 
 #remove any mutations that are *only* observed in X-rich sequences of dubious quality (keep counts in X-rich sequences if they were observed in at least one higher quality isolate)
-#make a data frame that gives each observed mutation, the isolate it was observed in, and the number of X characters in that sequence
+#make a data frame that gives each observed mutation, the isolate it was observed in, and the number of X characters in that sequence. Also, parse the header to give the country/geographic division of the sample
 variants <- data.frame(isolate=isolates_vec,mutation=variants_vec)
 for(i in 1:nrow(variants)){
   variants$number_X[i] <- sum(alignment_RBD$ali[which(alignment_RBD$id == variants[i,"isolate"]),]=="X")
+  variants$geography[i] <- strsplit(as.character(variants$isolate[i]),split="/")[[1]][2]
 }
 #filter the sequence set for mutations observed in at least one X=0 background
 variants_filtered <- data.frame(mutation=unique(variants[variants$number_X==0,"mutation"])) #only keep variants observed in at least one sequence with 0 X
 for(i in 1:nrow(variants_filtered)){
   variants_filtered$n_obs[i] <- sum(variants$mutation == variants_filtered$mutation[i]) #but keep counts for any sequence with observed filtered muts
+  variants_filtered$n_geography[i] <- length(unique(variants[variants$mutation == variants_filtered$mutation[i],"geography"]))
+  variants_filtered$list_geography[i] <- list(list(unique(variants[variants$mutation == variants_filtered$mutation[i],"geography"])))
 }
 
+#add count to mutants df
 mutants[,nobs:=0]
+mutants[,ngeo:=0]
+mutants[,geo_list:=as.list(NA)]
 for(i in 1:nrow(mutants)){
   if(mutants$mutation_RBD[i] %in% variants_filtered$mutation){
     mutants$nobs[i] <- variants_filtered[variants_filtered$mutation==mutants$mutation_RBD[i],"n_obs"]
+    mutants$ngeo[i] <- variants_filtered[variants_filtered$mutation==mutants$mutation_RBD[i],"n_geography"]
+    mutants$geo_list[i] <- variants_filtered[variants_filtered$mutation==mutants$mutation_RBD[i],"list_geography"]
   }
 }
 ```
 
-We see 368 amino acid polymorphisims within the 27827 sequences uploaded
-in GISAID, which represents 89 of our 3819 measured missense mutants. In
+We see 478 amino acid polymorphisims within the 31483 sequences uploaded
+in GISAID, which represents 98 of our 3819 measured missense mutants. In
 the table below, we can see that many of these mutations are observed
 only one or a few times, so there may still be unaccounted for
 sequencinig artifacts, which we tried to account for at least minimally
@@ -200,22 +213,22 @@ kable(table(mutants[mutant!=wildtype & mutant!="*",nobs]),col.names=c("mutation 
 
 | mutation count | frequency |
 | :------------- | --------: |
-| 0              |      3730 |
-| 1              |        53 |
-| 2              |        15 |
+| 0              |      3721 |
+| 1              |        56 |
+| 2              |        16 |
 | 3              |         7 |
-| 4              |         2 |
-| 5              |         1 |
-| 6              |         1 |
+| 4              |         4 |
+| 5              |         2 |
 | 7              |         1 |
-| 8              |         1 |
-| 9              |         2 |
-| 10             |         1 |
+| 8              |         2 |
+| 10             |         3 |
 | 12             |         1 |
-| 22             |         1 |
+| 13             |         1 |
+| 24             |         1 |
 | 30             |         1 |
-| 44             |         1 |
-| 94             |         1 |
+| 31             |         1 |
+| 49             |         1 |
+| 131            |         1 |
 
 We plot each mutations experimental phenotype versus the number of times
 it is observed in the circulating Spike alignment, for binding (top) and
@@ -228,28 +241,36 @@ effects.
 
 <img src="circulating_variants_files/figure-gfm/scatter_circulating_variants_nobs-1.png" style="display: block; margin: auto;" />
 
+We also make plots showing mutational effects versus the number of
+geographic regions in which a mutation has been observed.
+
+<img src="circulating_variants_files/figure-gfm/scatter_circulating_variants_ngeography-1.png" style="display: block; margin: auto;" />
+
 Here are tables giving mutations that were seen \>20 times, and those
 seen any number of times with measured binding effects \>0.05. We are
 currently slotted to validate the effect of N439K in both yeast display
 and pseudovirus/mammalian experimental assays, and V367F, T478I, and
-V483A in yeast display.
+V483A in yeast display. (S477N just came online as being prevalent with
+the newest GISAID set of sequences we used, after we had started cloning
+for validations.)
 
-| mutation | expr\_lib1 | expr\_lib2 | expr\_avg | bind\_lib1 | bind\_lib2 | bind\_avg | nobs |
-| :------- | ---------: | ---------: | --------: | ---------: | ---------: | --------: | ---: |
-| V367F    |         NA |       0.74 |      0.74 |       0.02 |       0.13 |      0.07 |   22 |
-| N439K    |     \-0.33 |     \-0.36 |    \-0.35 |       0.11 |     \-0.02 |      0.04 |   94 |
-| T478I    |     \-0.14 |     \-0.18 |    \-0.16 |     \-0.05 |     \-0.02 |    \-0.04 |   44 |
-| V483A    |       0.01 |       0.17 |      0.09 |       0.00 |     \-0.05 |    \-0.03 |   30 |
+| Mutation | expr, lib1 | expr, lib2 | expression effect | bind, lib1 | bind, lib2 | binding effect | number of GISAID sequences | number locations |
+| :------- | ---------: | ---------: | ----------------: | ---------: | ---------: | -------------: | -------------------------: | ---------------: |
+| V367F    |         NA |       0.74 |              0.74 |       0.02 |       0.13 |           0.07 |                         24 |                8 |
+| N439K    |     \-0.33 |     \-0.36 |            \-0.35 |       0.11 |     \-0.02 |           0.04 |                        131 |                2 |
+| S477N    |       0.02 |       0.10 |              0.06 |       0.02 |       0.09 |           0.06 |                         31 |                2 |
+| T478I    |     \-0.14 |     \-0.18 |            \-0.16 |     \-0.05 |     \-0.02 |         \-0.04 |                         49 |                1 |
+| V483A    |       0.01 |       0.17 |              0.09 |       0.00 |     \-0.05 |         \-0.03 |                         30 |                2 |
 
-| mutation | expr\_lib1 | expr\_lib2 | expr\_avg | bind\_lib1 | bind\_lib2 | bind\_avg | nobs |
-| :------- | ---------: | ---------: | --------: | ---------: | ---------: | --------: | ---: |
-| G339D    |       0.21 |       0.40 |      0.30 |       0.04 |       0.07 |      0.06 |    1 |
-| V367F    |         NA |       0.74 |      0.74 |       0.02 |       0.13 |      0.07 |   22 |
-| K378R    |       0.07 |       0.24 |      0.16 |       0.03 |       0.13 |      0.08 |    1 |
-| E406Q    |       0.06 |       0.02 |      0.04 |       0.08 |       0.06 |      0.07 |    1 |
-| Q414A    |       0.35 |       0.24 |      0.30 |       0.07 |       0.24 |      0.16 |    1 |
-| S477N    |       0.02 |       0.10 |      0.06 |       0.02 |       0.09 |      0.06 |    1 |
-| Y508H    |       0.13 |       0.14 |      0.14 |       0.10 |       0.05 |      0.07 |    1 |
+| Mutation | expr, lib1 | expr, lib2 | expression effect | bind, lib1 | bind, lib2 | binding effect | number of GISAID sequences | number locations |
+| :------- | ---------: | ---------: | ----------------: | ---------: | ---------: | -------------: | -------------------------: | ---------------: |
+| G339D    |       0.21 |       0.40 |              0.30 |       0.04 |       0.07 |           0.06 |                          1 |                1 |
+| V367F    |         NA |       0.74 |              0.74 |       0.02 |       0.13 |           0.07 |                         24 |                8 |
+| K378R    |       0.07 |       0.24 |              0.16 |       0.03 |       0.13 |           0.08 |                          1 |                1 |
+| E406Q    |       0.06 |       0.02 |              0.04 |       0.08 |       0.06 |           0.07 |                          1 |                1 |
+| N440K    |       0.07 |     \-0.31 |            \-0.12 |       0.05 |       0.09 |           0.07 |                          1 |                1 |
+| S477N    |       0.02 |       0.10 |              0.06 |       0.02 |       0.09 |           0.06 |                         31 |                2 |
+| Y508H    |       0.13 |       0.14 |              0.14 |       0.10 |       0.05 |           0.07 |                          1 |                1 |
 
 Let’s visualize the positions with interesting circulating variants in
 our *favorite* exploratory heatmaps\! Below, we output maps first for
@@ -296,25 +317,8 @@ mutants[,SARS2_codon:=RBD_sites[site_SARS2==SARS2_site,codon_SARS2],by=mutation]
 mutants[,singlemut := mutant %in% get.codon.muts(SARS2_codon),by=mutation]
 ```
 
-Are any of our observed GISAID mutations \>1nt changes? Below, we see
-one mutation with a single observation that would require 2+ nucleotide
-changes from the wildtype SARS-CoV-2 codon (or other synonymous codons
-encoding the SARS-CoV-2 amino acid). (My first-pass analysis here showed
-four such multi-nt mutations, three of which had obviously suspicious
-mutation calls which caused me to go back to update my filtering
-protocol. Perhaps this remaining mutation points to something additional
-we could add.)
-
-Is there anything suspicious about the isolates bearing this mutation?
-This mutation is observed in the sequence
-Spike|hCoV-19/USA/AZ-TG271878/2020|2020-03-20|EPI\_ISL\_426542|Original|hCoV-19^^Arizona|Human|AZ\_SPHL|TGen\_North|Lemmer|USA.
-This sequence is observed to have 2 amino acid variants (D75V, Q84A),
-both of which are unique to this sequence (and the former of which has
-moderately deleterious effects on binding and expression). There do not
-appear to be any ambiguous nts in this RBD sequence, so I’m not sure if
-there is reason to filter it from our dataset besides ad hoc (we could
-filter out singleton sequences containing \>1 amino acid mutation if we
-think that is a generally unreliable class?).
+Are any of our observed GISAID mutations \>1nt changes? In the current
+alignment, no\!
 
 ``` r
 kable(mutants[singlemut==F & nobs>0,.(mutation_RBD,mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs,SARS2_codon)])
@@ -322,7 +326,6 @@ kable(mutants[singlemut==F & nobs>0,.(mutation_RBD,mutation,expr_lib1,expr_lib2,
 
 | mutation\_RBD | mutation | expr\_lib1 | expr\_lib2 | expr\_avg | bind\_lib1 | bind\_lib2 | bind\_avg | nobs | SARS2\_codon |
 | :------------ | :------- | ---------: | ---------: | --------: | ---------: | ---------: | --------: | ---: | :----------- |
-| Q84A          | Q414A    |       0.35 |       0.24 |       0.3 |       0.07 |       0.24 |      0.16 |    1 | caa          |
 
 Below is a heatmap of binding effects for all mutations accessible in
 single nucleotide changes from the SARS-CoV-2 WT reference sequence,
@@ -357,20 +360,104 @@ circulating mutants for both binding and expression effects that are
 visually by eye higher than expected by random mutation alone. This
 suggests that purifying selection is removing deleterious RBD mutations
 that affect traits correlated with our measured binding and expression
-phenotypes.
-
-How do we want to quantify this? The simplest statistical approach would
-be permutations – draw random sets of mutation from the single-nt amino
-acid mutation pool, and compare the observed e.g. median mutational
-effect of mutations actually observed \>X times with the permuted sets.
-This will surely show significant effects of purifying selection (median
-higher in actual observed mutant set than randomly selected sets), but
-is there something more interesting to be done than simply confirm the
-significant shift in median? And, can we say anything with meat on it
-about whether there is indeed a lack of selection for affinity-enhancing
-mutations? (That is, is there a way to quantitatively compare the
-probability of observing a stronger affinity-enhancing mutation than we
-see in our observed set?) These are the things I want to think about
-here\!
+phenotypes. We may also see evidence that there is not strong positive
+selection for enhanced ACE2-binding affinity, as there are single
+mutations that can cause larger affinity increases than are actually
+seen in the GISAID set. We can evaluate these two conclusions further
+below with permutation tests.
 
 <img src="circulating_variants_files/figure-gfm/circulating_variant_DFEs-1.png" style="display: block; margin: auto;" />
+
+Let’s use permutation tests to evaluate whether the shift in median
+mutational effects among GISAID sequences of different minimum frequency
+cutoffs is significant relative to the overall distribution of
+single-mutant effects. We draw samples without replacement from the raw
+distribution of single-mutation effects of size n, where n is the number
+of actual mutants observed above our cutoff among GISAID sequences.
+Within each random sample, we determine the median mutational effect, as
+well as the highest mutational effect and the fraction of random
+mutations that have binding efects \>0. We then compare our actual
+values to the permuted samples to evaluate the biases in mutational
+effects among mutations observed in the GISAID sequences.
+
+``` r
+set.seed(18041)
+n_rep <- 1000000
+median_0 <- vector(length=n_rep)
+max_0 <- vector(length=n_rep)
+frac_pos_0 <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(bind_avg),bind_avg],nrow(mutants[nobs>0,]))
+  median_0[i] <- median(sample)
+  max_0[i] <- max(sample)
+  frac_pos_0[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_0,xlab="median mutational effect on binding",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(median_0>median(mutants[nobs>0,bind_avg]))/length(median_0)));abline(v=median(mutants[nobs>0,bind_avg]),lty=2)
+
+hist(max_0,xlab="max mutational effect on binding",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(max_0>=max(mutants[nobs>0,bind_avg]))/length(max_0)));abline(v=max(mutants[nobs>0,bind_avg]),lty=2)
+
+hist(frac_pos_0,xlab="fraction muts with positive effects on binding",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(frac_pos_0>=sum(mutants[nobs>0,bind_avg]>0)/nrow(mutants[nobs>0,]))/length(frac_pos_0)));abline(v=sum(mutants[nobs>0,bind_avg]>0)/nrow(mutants[nobs>0,]),lty=2)
+```
+
+<img src="circulating_variants_files/figure-gfm/permute_samples_0-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-zero-GISAID.pdf",sep="")))
+```
+
+``` r
+n_rep <- 1000000
+median_1 <- vector(length=n_rep)
+max_1 <- vector(length=n_rep)
+frac_pos_1 <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(bind_avg),bind_avg],nrow(mutants[nobs>1,]))
+  median_1[i] <- median(sample)
+  max_1[i] <- max(sample)
+  frac_pos_1[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_1,xlab="median mutational effect on binding",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(median_1>median(mutants[nobs>1,bind_avg]))/length(median_1)));abline(v=median(mutants[nobs>1,bind_avg]),lty=2)
+
+hist(max_1,xlab="max mutational effect on binding",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(max_1>=max(mutants[nobs>1,bind_avg]))/length(max_1)));abline(v=max(mutants[nobs>1,bind_avg]),lty=2)
+
+hist(frac_pos_1,xlab="fraction muts with positive effects on binding",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(frac_pos_1>=sum(mutants[nobs>1,bind_avg]>0)/nrow(mutants[nobs>1,]))/length(frac_pos_1)));abline(v=sum(mutants[nobs>1,bind_avg]>0)/nrow(mutants[nobs>1,]),lty=2)
+```
+
+<img src="circulating_variants_files/figure-gfm/permute_samples_1-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID.pdf",sep="")))
+```
+
+``` r
+n_rep <- 1000000
+median_5 <- vector(length=n_rep)
+max_5 <- vector(length=n_rep)
+frac_pos_5 <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(bind_avg),bind_avg],nrow(mutants[nobs>5,]))
+  median_5[i] <- median(sample)
+  max_5[i] <- max(sample)
+  frac_pos_5[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_5,xlab="median mutational effect on binding",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(median_5>median(mutants[nobs>5,bind_avg]))/length(median_5)));abline(v=median(mutants[nobs>5,bind_avg]),lty=2)
+
+hist(max_5,xlab="max mutational effect on binding",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(max_5>=max(mutants[nobs>5,bind_avg]))/length(max_5)));abline(v=max(mutants[nobs>5,bind_avg]),lty=2)
+
+hist(frac_pos_5,xlab="fraction muts with positive effects on binding",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(frac_pos_5>=sum(mutants[nobs>5,bind_avg]>0)/nrow(mutants[nobs>5,]))/length(frac_pos_5)));abline(v=sum(mutants[nobs>5,bind_avg]>0)/nrow(mutants[nobs>5,]),lty=2)
+```
+
+<img src="circulating_variants_files/figure-gfm/permute_samples_5-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID.pdf",sep="")))
+```

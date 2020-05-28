@@ -58,9 +58,9 @@ setnames(mutants, "site_RBD", "RBD_site");setnames(mutants, "site_SARS2", "SARS2
 
 ## Analyzing amino acid diversity in GISAID Spike sequences
 
-We constructed an alignment of all Spike sequences available on GISAID. On the EpiCoV page, under downloads, one of the pre-made options is a fasta of all Spike sequences isolated thus far, which is updated each day. I have downloaded this file, unzipped, replaced spaces in fasta headers with underscores, and aligned sequences. We load in this alignment using the `read.fasta` function of the `bio3d` package, and trim the alignment to RBD residues. We remove sequecnes from non-human isolates (e.g. bat, pangolin, "environment", mink, cat, TIGER), and then iterate through the alignment and save any observed mutations. We then filter mutations based on rationale below, and add counts of filtered observations for each mutation as an 'nobs' colum in our overall mutants data table.
+We constructed an alignment of all Spike sequences available on GISAID as of 27 May, 2020. On the EpiCoV page, under downloads, one of the pre-made options is a fasta of all Spike sequences isolated thus far, which is updated each day. I have downloaded this file, unzipped, replaced spaces in fasta headers with underscores, and aligned sequences. We load in this alignment using the `read.fasta` function of the `bio3d` package, and trim the alignment to RBD residues. We remove sequecnes from non-human isolates (e.g. bat, pangolin, "environment", mink, cat, TIGER) and sequences with gap `-` characters, and then iterate through the alignment and save any observed mutations. We then filter mutations based on rationale below, and add counts of filtered observations for each mutation as an 'nobs' colum in our overall mutants data table.
 
-We filter out any mutations that were *only* observed on sequences with large numbers of missing characters -- from my initial pass, I saw some singleton amino acid variants which would require >1 nt change, and these were only found in a single sequence with many X amino acid characters (the first half of the sequence was well determined, but the second half was all X's, with the annotated "differences" being within short stretches between Xs with determiined amino acids), which made me realize I needed to be careful not only of sequences rich in gap "-" characters, but also ambiguous "X" characters. However, I didn't want to remove all sequences with undetermined characters off the bat, because another pattern I saw is that for isolates bearing the N439K mutation, >10 are well determined across the entire RBD, but ~80 have many X characters (in part of the RBD that is *not* near the N439K sequence call). So, my preference would be to believe a mutation observed in an X-rich sequence *if the variant in the sequence is observed in at least one variant that does not contain an X*, but not believe mutations that are *only* observed in X-rich sequences. (I noticed this issue with N439K, but this is not the only mutation like this which is observed on 0X sequences at least once but other times on sequences with X characters.) That is the filtering I therefore do below. This is basically the limits of my genomic dataset sleuthing. Is there anything else we should be doing to assess validity of observed mutants, particularly e.g. could N439K simply be a biased sequencing error that emerges in these Scotland sequencing samples? Would love ideas or help in better filtering amino acid variants to retain.
+We filter out any mutations that were *only* observed on sequences with large numbers of missing `X` characters -- from my initial pass, I saw some singleton amino acid variants which would require >1 nt change, and these were only found in a single sequence with many X amino acid characters (the first half of the sequence was well determined, but the second half was all X's, with the annotated "differences" being within short stretches between Xs with determiined amino acids), which made me realize I needed to be careful not only of sequences rich in gap "-" characters, but also ambiguous "X" characters. However, I didn't want to remove all sequences with undetermined characters off the bat, because another pattern I saw is that for isolates bearing the N439K mutation, >10 are well determined across the entire RBD, but ~80 have many X characters (in part of the RBD that is *not* near the N439K sequence call). So, my preference would be to believe a mutation observed in an X-rich sequence *if the variant in the sequence is observed in at least one variant that does not contain an X*, but not believe mutations that are *only* observed in X-rich sequences. (I noticed this issue with N439K, but this is not the only mutation like this which is observed on 0X sequences at least once but other times on sequences with X characters.) That is the filtering I therefore do below. This is basically the limits of my genomic dataset sleuthing. Is there anything else we should be doing to assess validity of observed mutants, particularly e.g. could N439K simply be a biased sequencing error that emerges in these Scotland sequencing samples? Would love ideas or help in better filtering amino acid variants to retain.
 
 
 ```{r gisaid_spike_alignment}
@@ -77,10 +77,10 @@ alignment_RBD <- alignment; alignment_RBD$ali <- alignment$ali[,RBD_sites$site_S
 #check that the first sequence entry matches our reference RBD sequence
 stopifnot(sum(!(alignment_RBD$ali[1,] == RBD_sites[,amino_acid_SARS2]))==0)
 
-#remove sequences that are >5% gaps, as the amino acid calls may be generally unreliable
+#remove sequences have gaps, as the amino acid calls may be generally unreliable
 remove <- c()
 for(i in 1:nrow(alignment_RBD$ali)){
-  if(sum(alignment_RBD$ali[i,]=="-") > 0.05*ncol(alignment_RBD$ali)){remove <- c(remove,i)}
+  if(sum(alignment_RBD$ali[i,]=="-") > 0){remove <- c(remove,i)}
 }
 
 alignment_RBD$ali <- alignment_RBD$ali[-remove,];alignment_RBD$id <- alignment_RBD$id[-remove]
@@ -100,23 +100,32 @@ for(j in 1:ncol(alignment_RBD$ali)){
 }
 
 #remove any mutations that are *only* observed in X-rich sequences of dubious quality (keep counts in X-rich sequences if they were observed in at least one higher quality isolate)
-#make a data frame that gives each observed mutation, the isolate it was observed in, and the number of X characters in that sequence
+#make a data frame that gives each observed mutation, the isolate it was observed in, and the number of X characters in that sequence. Also, parse the header to give the country/geographic division of the sample
 variants <- data.frame(isolate=isolates_vec,mutation=variants_vec)
 for(i in 1:nrow(variants)){
   variants$number_X[i] <- sum(alignment_RBD$ali[which(alignment_RBD$id == variants[i,"isolate"]),]=="X")
+  variants$geography[i] <- strsplit(as.character(variants$isolate[i]),split="/")[[1]][2]
 }
 #filter the sequence set for mutations observed in at least one X=0 background
 variants_filtered <- data.frame(mutation=unique(variants[variants$number_X==0,"mutation"])) #only keep variants observed in at least one sequence with 0 X
 for(i in 1:nrow(variants_filtered)){
   variants_filtered$n_obs[i] <- sum(variants$mutation == variants_filtered$mutation[i]) #but keep counts for any sequence with observed filtered muts
+  variants_filtered$n_geography[i] <- length(unique(variants[variants$mutation == variants_filtered$mutation[i],"geography"]))
+  variants_filtered$list_geography[i] <- list(list(unique(variants[variants$mutation == variants_filtered$mutation[i],"geography"])))
 }
 
+#add count to mutants df
 mutants[,nobs:=0]
+mutants[,ngeo:=0]
+mutants[,geo_list:=as.list(NA)]
 for(i in 1:nrow(mutants)){
   if(mutants$mutation_RBD[i] %in% variants_filtered$mutation){
     mutants$nobs[i] <- variants_filtered[variants_filtered$mutation==mutants$mutation_RBD[i],"n_obs"]
+    mutants$ngeo[i] <- variants_filtered[variants_filtered$mutation==mutants$mutation_RBD[i],"n_geography"]
+    mutants$geo_list[i] <- variants_filtered[variants_filtered$mutation==mutants$mutation_RBD[i],"list_geography"]
   }
 }
+
 
 ```
 
@@ -130,28 +139,42 @@ We plot each mutations experimental phenotype versus the number of times it is o
 
 ```{r scatter_circulating_variants_nobs, fig.width=8,fig.height=8.5,fig.align="center", dpi=500,dev="png",echo=FALSE}
 par(mfrow=c(2,2))
-plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)");abline(h=0,lty=2)
-#points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=16,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)");abline(h=0,lty=2)
 
-plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)",ylim=c(-0.5,0.1));abline(h=0,lty=2)
-#points(mutants[nobs==0,nobs],mutants[nobs==0,bind_avg],pch=16,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,bind_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of observations among GISAID Spikes",ylab="delta log10(Ka,app)",ylim=c(-0.5,0.1));abline(h=0,lty=2)
 
-plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF");abline(h=0,lty=2)
-#points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=16,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF");abline(h=0,lty=2)
 
-plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,col="#00000030",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF",ylim=c(-1,1));abline(h=0,lty=2)
-#points(mutants[nobs==0,nobs],mutants[nobs==0,expr_avg],pch=16,col="#ff000030")
+plot(mutants[nobs>0,nobs],mutants[nobs>0,expr_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of observations among GISAID Spikes",ylab="delta expression meanF",ylim=c(-1,1));abline(h=0,lty=2)
 
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/phenotype_v_GISAID-nobs.pdf",sep="")))
 ```
 
-Here are tables giving mutations that were seen >20 times, and those seen any number of times with measured binding effects >0.05. We are currently slotted to validate the effect of N439K in both yeast display and pseudovirus/mammalian experimental assays, and V367F, T478I, and V483A in yeast display.
+We also make plots showing mutational effects versus the number of geographic regions in which a mutation has been observed.
+
+```{r scatter_circulating_variants_ngeography, fig.width=8,fig.height=8.5,fig.align="center", dpi=500,dev="png",echo=FALSE}
+par(mfrow=c(2,2))
+plot(mutants[nobs>0,ngeo],mutants[nobs>0,bind_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of geographical observations",ylab="delta log10(Ka,app)");abline(h=0,lty=2)
+
+plot(mutants[nobs>0,ngeo],mutants[nobs>0,bind_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of geographical observations",ylab="delta log10(Ka,app)",ylim=c(-0.5,0.1));abline(h=0,lty=2)
+
+plot(mutants[nobs>0,ngeo],mutants[nobs>0,expr_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of geographical observations",ylab="delta expression meanF");abline(h=0,lty=2)
+
+plot(mutants[nobs>0,ngeo],mutants[nobs>0,expr_avg],pch=16,cex=1.2,col="#00000050",xlab="Number of geographical observations",ylab="delta expression meanF",ylim=c(-1,1));abline(h=0,lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/phenotype_v_GISAID-nobs.pdf",sep="")))
+```
+
+Here are tables giving mutations that were seen >20 times, and those seen any number of times with measured binding effects >0.05. We are currently slotted to validate the effect of N439K in both yeast display and pseudovirus/mammalian experimental assays, and V367F, T478I, and V483A in yeast display. (S477N just came online as being prevalent with the newest GISAID set of sequences we used, after we had started cloning for validations.)
 
 ```{r table_most_common_variants, echo=F}
-kable(mutants[nobs>20,.(mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs)])
+kable(mutants[nobs>20,.(mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs,ngeo)],
+      col.names=c("Mutation","expr, lib1","expr, lib2","expression effect","bind, lib1","bind, lib2", "binding effect","number of GISAID sequences", "number locations"))
 ```
 
 ```{r table_highest_binding_variants, echo=F}
-kable(mutants[nobs>0 & bind_avg>0.05,.(mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs)])
+kable(mutants[nobs>0 & bind_avg>0.05,.(mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs,ngeo)],
+      col.names=c("Mutation","expr, lib1","expr, lib2","expression effect","bind, lib1","bind, lib2", "binding effect","number of GISAID sequences", "number locations"))
 ```
 
 Let's visualize the positions with interesting circulating variants in our *favorite* exploratory heatmaps! Below, we output maps first for positions with circulating variants observed >20 times (left two maps), and second for those positions with circulating variants of at least >0.05 effect on binding (right two maps). These maps show the SARS-CoV-2 wildtype state with an "x" indicator, the SARS-CoV-1 state with an "o", and "^" marks any amino acid variants observed at least one time in the GISAID sequences.
@@ -217,9 +240,9 @@ p4 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
   geom_text(aes(label=SARS1_indicator),size=2,color="gray10")
 
 
-grid.arrange(p1,p2,p3,p4,ncol=4,widths=c(1,1,1.225,1.225))
+grid.arrange(p1,p2,p3,p4,ncol=4,widths=c(1,1,1.15,1.15))
 
-#invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/heatmaps_circulating_variants.pdf",sep="")))
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/heatmaps_circulating_variants.pdf",sep="")))
 ```
 
 ## Strength of selection among circulating variants
@@ -250,9 +273,7 @@ mutants[,SARS2_codon:=RBD_sites[site_SARS2==SARS2_site,codon_SARS2],by=mutation]
 mutants[,singlemut := mutant %in% get.codon.muts(SARS2_codon),by=mutation]
 ```
 
-Are any of our observed GISAID mutations >1nt changes? Below, we see one mutation with a single observation that would require 2+ nucleotide changes from the wildtype SARS-CoV-2 codon (or other synonymous codons encoding the SARS-CoV-2 amino acid). (My first-pass analysis here showed four such multi-nt mutations, three of which had obviously suspicious mutation calls which caused me to go back to update my filtering protocol. Perhaps this remaining mutation points to something additional we could add.)
-
-Is there anything suspicious about the isolates bearing this mutation? This mutation is observed in the sequence `r isolates_vec[which(variants_vec=="Q84A")]`. This sequence is observed to have `r sum(isolates_vec==isolates_vec[which(variants_vec=="Q84A")])` amino acid variants (`r variants_vec[isolates_vec==isolates_vec[which(variants_vec=="Q84A")]]`), both of which are unique to this sequence (and the former of which has moderately deleterious effects on binding and expression). There do not appear to be any ambiguous nts in this RBD sequence, so I'm not sure if there is reason to filter it from our dataset besides ad hoc (we could filter out singleton sequences containing >1 amino acid mutation if we think that is a generally unreliable class?).
+Are any of our observed GISAID mutations >1nt changes? In the current alignment, no!
 
 ```{r table_GISAID_multimuts}
 kable(mutants[singlemut==F & nobs>0,.(mutation_RBD,mutation,expr_lib1,expr_lib2,expr_avg,bind_lib1,bind_lib2,bind_avg,nobs,SARS2_codon)])
@@ -281,62 +302,111 @@ p2 <- ggplot(muts_temp[mutant!="*" & SARS2_site %in% seq(432,531),],aes(SARS2_si
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
 
 grid.arrange(p1,p2,ncol=1)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/single-nt-mut_heatmap.pdf",sep="")))
 ```
 
 As has been seen in other studies, the genetic code is structured in a conservative way such that neighboring codons exhibit similiar biochemical properties, which causes single-nt amino acid changes to have less deleterious effects than multiple-nt-mutant codon changes. We see this trend in our data as well, further illustrating why we should compare circulating variants to the single-nt-mutant amino acid effects as the "raw" distribution of functional effects. (Median mutational effect of single-nt mutants = `r median(mutants[mutant!=wildtype & singlemut==T,bind_avg],na.rm=T)`; median mutational effect of all amino acid muts = `r median(mutants[mutant!=wildtype,bind_avg],na.rm=T)`; P-value `r round(wilcox.test(mutants[mutant!=wildtype & singlemut==T,bind_avg],mutants[mutant!=wildtype,bind_avg])$p.value,digits=5)`, Wilcoxon rank-sum test.)
 
-To illustrate how selection acts on circulating variants, let's compare the functional effects of observed mutations to those observed zero times. The violin plots below show the distribution of functional effects on binding (left) and expression (right), comparing single-nt amino acid mutations with 0 observed counts in GISAID versus increasingly stringent GISAID count cutoffs. We can see a bias among circulating mutants for both binding and expression effects that are visually by eye higher than expected by random mutation alone. This suggests that purifying selection is removing deleterious RBD mutations that affect traits correlated with our measured binding and expression phenotypes.
+To illustrate how selection acts on circulating variants, let's compare the functional effects of observed mutations to those observed zero times. The violin plots below show the distribution of functional effects on binding (left) and expression (right), comparing single-nt amino acid mutations with 0 observed counts in GISAID versus increasingly stringent GISAID count cutoffs. We can see a bias among circulating mutants for both binding and expression effects that are visually by eye higher than expected by random mutation alone. This suggests that purifying selection is removing deleterious RBD mutations that affect traits correlated with our measured binding and expression phenotypes. We may also see evidence that there is not strong positive selection for enhanced ACE2-binding affinity, as there are single mutations that can cause larger affinity increases than are actually seen in the GISAID set. We can evaluate these two conclusions further below with permutation tests.
 
-How do we want to quantify this? The simplest statistical approach would be permutations -- draw random sets of mutation from the single-nt amino acid mutation pool, and compare the observed e.g. median mutational effect of mutations actually observed >X times with the permuted sets. This will surely show significant effects of purifying selection (median higher in actual observed mutant set than randomly selected sets), but is there something more interesting to be done than simply confirm the significant shift in median? And, can we say anything with meat on it about whether there is indeed  a lack of selection for affinity-enhancing mutations? (That is, is there a way to quantitatively compare the probability of observing a stronger affinity-enhancing mutation than we see in our observed set?) These are the things I want to think about here!
+```{r circulating_variant_DFEs, fig.width=8,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE}
+#define factor for different nobs cutoffs, and collate into long data table for plotting
+muts_temp <- mutants[nobs==0 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp[,nobs_indicator:=as.factor("0")]
+muts_temp_add0 <- mutants[nobs>0 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp_add0[,nobs_indicator:=as.factor(">0")]
+muts_temp_add1 <- mutants[nobs>1 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp_add1[,nobs_indicator:=as.factor(">1")]
+muts_temp_add5 <- mutants[nobs>5 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp_add5[,nobs_indicator:=as.factor(">5")]
 
-```{r circulating_variant_DFEs, fig.width=8,fig.height=10,fig.align="center", dpi=500,dev="png",echo=FALSE}
-#define factor for T/F at different nobs cutoffs
-muts_temp <- copy(mutants)
-muts_temp[,nobs_indicator := as.factor(NA)]
-muts_temp[nobs==0 & singlemut==TRUE & wildtype!=mutant & mutant!="*",nobs_indicator:=as.factor("0")]
-muts_temp[nobs>0,nobs_indicator:=as.factor(">0")]
+muts_temp <- rbind(muts_temp,muts_temp_add0,muts_temp_add1,muts_temp_add5)
 
-p1 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(bind_avg),],aes(x=nobs_indicator,y=bind_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("mutation count in GISAID sequences")+ylab("average delta_log10Ka,app per site (binding)")
+set.seed(198)
+p1 <- ggplot(muts_temp[!is.na(bind_avg),],aes(x=nobs_indicator,y=bind_avg))+
+  geom_jitter(width=0.2, alpha=0.25)+stat_summary(fun.y=median,geom="point",size=4,color="red",shape=18)+
+  xlab("mutation count in GISAID sequences")+ylab("delta_log10Ka,app (binding)")+
+  theme_classic()
 
 p2 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(expr_avg),],aes(x=nobs_indicator,y=expr_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("mutation count in GISAID sequences")+ylab("average delta_meanF per site (expression)")
+  geom_jitter(width=0.2, alpha=0.25)+stat_summary(fun.y=median,geom="point",size=4,color="red",shape=18)+
+  xlab("mutation count in GISAID sequences")+ylab("delta_meanF (expression)")+
+  theme_classic()
 
-muts_temp <- copy(mutants)
-muts_temp[,nobs_indicator := as.factor(NA)]
-muts_temp[nobs==0 & singlemut==TRUE & wildtype!=mutant & mutant!="*",nobs_indicator:=as.factor("0")]
-muts_temp[nobs>1,nobs_indicator:=as.factor(">1")]
+grid.arrange(p1,p2,ncol=2)
 
-p3 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(bind_avg),],aes(x=nobs_indicator,y=bind_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("mutation count in GISAID sequences")+ylab("average delta_log10Ka,app per site (binding)")
-
-p4 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(expr_avg),],aes(x=nobs_indicator,y=expr_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("mutation count in GISAID sequences")+ylab("average delta_meanF per site (expression)")
-
-muts_temp <- copy(mutants)
-muts_temp[,nobs_indicator := as.factor(NA)]
-muts_temp[nobs==0 & singlemut==TRUE & wildtype!=mutant & mutant!="*",nobs_indicator:=as.factor("0")]
-muts_temp[nobs>4,nobs_indicator:=as.factor(">=5")]
-
-p5 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(bind_avg),],aes(x=nobs_indicator,y=bind_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("mutation count in GISAID sequences")+ylab("average delta_log10Ka,app per site (binding)")
-
-p6 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(expr_avg),],aes(x=nobs_indicator,y=expr_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("mutation count in GISAID sequences")+ylab("average delta_meanF per site (expression)")
-
-
-
-
-grid.arrange(p1,p2,p3,p4,p5,p6,ncol=2)
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/distribution-binding_v_nobs-GISAID.pdf",sep="")))
 ```
 
+Let's use permutation tests to evaluate whether the shift in median mutational effects among GISAID sequences of different minimum frequency cutoffs is significant relative to the overall distribution of single-mutant effects. We draw samples without replacement from the raw distribution of single-mutation effects of size n, where n is the number of actual mutants observed above our cutoff among GISAID sequences. Within each random sample, we determine the median mutational effect, as well as the highest mutational effect and the fraction of random mutations that have binding efects >0. We then compare our actual values to the permuted samples to evaluate the biases in mutational effects among mutations observed in the GISAID sequences.
 
+```{r permute_samples_0, fig.width=10,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
+set.seed(18041)
+n_rep <- 1000000
+median_0 <- vector(length=n_rep)
+max_0 <- vector(length=n_rep)
+frac_pos_0 <- vector(length=n_rep)
 
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(bind_avg),bind_avg],nrow(mutants[nobs>0,]))
+  median_0[i] <- median(sample)
+  max_0[i] <- max(sample)
+  frac_pos_0[i] <- sum(sample>0)/length(sample)
+}
 
+par(mfrow=c(1,3))
+hist(median_0,xlab="median mutational effect on binding",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(median_0>median(mutants[nobs>0,bind_avg]))/length(median_0)));abline(v=median(mutants[nobs>0,bind_avg]),lty=2)
 
+hist(max_0,xlab="max mutational effect on binding",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(max_0>=max(mutants[nobs>0,bind_avg]))/length(max_0)));abline(v=max(mutants[nobs>0,bind_avg]),lty=2)
+
+hist(frac_pos_0,xlab="fraction muts with positive effects on binding",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(frac_pos_0>=sum(mutants[nobs>0,bind_avg]>0)/nrow(mutants[nobs>0,]))/length(frac_pos_0)));abline(v=sum(mutants[nobs>0,bind_avg]>0)/nrow(mutants[nobs>0,]),lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-zero-GISAID.pdf",sep="")))
+```
+
+```{r permute_samples_1, fig.width=10,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
+n_rep <- 1000000
+median_1 <- vector(length=n_rep)
+max_1 <- vector(length=n_rep)
+frac_pos_1 <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(bind_avg),bind_avg],nrow(mutants[nobs>1,]))
+  median_1[i] <- median(sample)
+  max_1[i] <- max(sample)
+  frac_pos_1[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_1,xlab="median mutational effect on binding",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(median_1>median(mutants[nobs>1,bind_avg]))/length(median_1)));abline(v=median(mutants[nobs>1,bind_avg]),lty=2)
+
+hist(max_1,xlab="max mutational effect on binding",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(max_1>=max(mutants[nobs>1,bind_avg]))/length(max_1)));abline(v=max(mutants[nobs>1,bind_avg]),lty=2)
+
+hist(frac_pos_1,xlab="fraction muts with positive effects on binding",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(frac_pos_1>=sum(mutants[nobs>1,bind_avg]>0)/nrow(mutants[nobs>1,]))/length(frac_pos_1)));abline(v=sum(mutants[nobs>1,bind_avg]>0)/nrow(mutants[nobs>1,]),lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID.pdf",sep="")))
+```
+
+```{r permute_samples_5, fig.width=10,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
+n_rep <- 1000000
+median_5 <- vector(length=n_rep)
+max_5 <- vector(length=n_rep)
+frac_pos_5 <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(bind_avg),bind_avg],nrow(mutants[nobs>5,]))
+  median_5[i] <- median(sample)
+  max_5[i] <- max(sample)
+  frac_pos_5[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_5,xlab="median mutational effect on binding",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(median_5>median(mutants[nobs>5,bind_avg]))/length(median_5)));abline(v=median(mutants[nobs>5,bind_avg]),lty=2)
+
+hist(max_5,xlab="max mutational effect on binding",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(max_5>=max(mutants[nobs>5,bind_avg]))/length(max_5)));abline(v=max(mutants[nobs>5,bind_avg]),lty=2)
+
+hist(frac_pos_5,xlab="fraction muts with positive effects on binding",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(frac_pos_5>=sum(mutants[nobs>5,bind_avg]>0)/nrow(mutants[nobs>5,]))/length(frac_pos_5)));abline(v=sum(mutants[nobs>5,bind_avg]>0)/nrow(mutants[nobs>5,]),lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID.pdf",sep="")))
+```
