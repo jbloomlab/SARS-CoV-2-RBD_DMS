@@ -69,11 +69,11 @@ RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 
 ## Compare mutational tolerance within antibody epitopes
 
-We have annotated antibody epitope residues for seven mAbs with published structures -- six of the seven mAbs were raised against SARS-CoV-1, but at least two of them cross-react with SARS-CoV-2 (CR3022, VHH72), and more generally, they highlight the types of epitopes that SARS-related CoV RBDs can induce. The seventh, B38, was isolated from a SARS-CoV-2 convalescent patient. Of course, many more SARS-CoV-2 raised mAbs will be upcoming, and we can add them in as needed, including mAbs (e.g. S309) whose structures are not yet publicly available.
+We have annotated antibody epitope residues for eight mAbs with published structures -- seven of the eight mAbs were raised against SARS-CoV-1, but at least three of them cross-react with SARS-CoV-2 (CR3022, VHH72, S309), and more generally, they highlight the types of epitopes that SARS-related CoV RBDs can induce. The seventh, B38, was isolated from a SARS-CoV-2 convalescent patient.
 
-Let's compare patterns of mutational sensitivity within each of the mAb epitopes, and compare to ACE2 contact residues for reference. Below, we output violin plots for individual mutational effects at sites within each epitope (top row), the average mutational effect per site for residues within each epitope (middle row), and the maximum mutational effect of any of the possible mutations per site for residues within each epitope (bottom row). The mean and max per-site give more global views of mutational constraint.
+Let's compare patterns of mutational sensitivity within each of the mAb epitopes, and compare to ACE2 contact residues for reference. Below, we output jitter plots that illustrate the range of individual mutational effects within each epitope (black points). The red diamond indicates the median effect of mutations within each epitope. We also output jiitter plots illustrating the *maximum* effect of any of the 19 mutations within each antibody epitope -- this reflects the most extreme form of constraint, where we see if a position has *any* mutations that are tolerated.
 
-```{r violin_plot_epitope_mut_effects, fig.width=9, fig.height=9, fig.align="center",dpi=300,dev="png",echo=F}
+```{r violin_plot_epitope_mut_effects, fig.width=9, fig.height=6, fig.align="center",dpi=300,dev="png",echo=F}
 #output long data table of mutants with a new column of "epitope" to facet by in violin plots (needed to do this way because some sites are duplicated among multiple epitopes)
 mutants_ACE2 <- mutants[SARS2_site %in% RBD_sites[SARS2_ACE2_contact==T,site_SARS2],];mutants_ACE2$epitope <- "ACE2"
 mutants_B38 <- mutants[SARS2_site %in% RBD_sites[epitope_B38==T,site_SARS2],];mutants_B38$epitope <- "B38"
@@ -83,18 +83,11 @@ mutants_F26G19 <- mutants[SARS2_site %in% RBD_sites[epitope_F26G19==T,site_SARS2
 mutants_S230 <- mutants[SARS2_site %in% RBD_sites[epitope_S230==T,site_SARS2],];mutants_S230$epitope <- "S230"
 mutants_VHH72 <- mutants[SARS2_site %in% RBD_sites[epitope_VHH72==T,site_SARS2],];mutants_VHH72$epitope <- "VHH72"
 mutants_CR3022 <- mutants[SARS2_site %in% RBD_sites[epitope_CR3022==T,site_SARS2],];mutants_CR3022$epitope <- "CR3022"
+mutants_S309 <- mutants[SARS2_site %in% RBD_sites[epitope_S309==T,site_SARS2],];mutants_S309$epitope <- "S309"
 
-mutants_epitope <- rbind(mutants_ACE2,mutants_B38,mutants_80R,mutants_m396,mutants_F26G19,mutants_S230,mutants_VHH72,mutants_CR3022);mutants_epitope$epitope <- factor(mutants_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022"))
+mutants_epitope <- rbind(mutants_ACE2,mutants_B38,mutants_80R,mutants_m396,mutants_F26G19,mutants_S230,mutants_VHH72,mutants_CR3022, mutants_S309);mutants_epitope$epitope <- factor(mutants_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022","S309"))
 
-p1 <- ggplot(mutants_epitope[mutant!="*" & mutant!=wildtype & !is.na(bind_avg),],aes(x=epitope,y=bind_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("delta_log10Ka,app (binding)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
-
-p2 <- ggplot(mutants_epitope[mutant!="*" & mutant!=wildtype & !is.na(expr_avg),],aes(x=epitope,y=expr_avg))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("delta_meanF (expression)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
-
-#output long data table of sites with a new column of "epitope" to facet by in violin plots
+#output long data table of sites with a new column of "epitope" to facet by in violin plots for max stat
 sites_ACE2 <- RBD_sites[SARS2_ACE2_contact==T,]; sites_ACE2$epitope <- "ACE2"
 sites_B38 <- RBD_sites[epitope_B38==T,]; sites_B38$epitope <- "B38"
 sites_80R <- RBD_sites[epitope_80R==T,]; sites_80R$epitope <- "80R"
@@ -103,35 +96,44 @@ sites_F26G19 <- RBD_sites[epitope_F26G19==T,]; sites_F26G19$epitope <- "F26G19"
 sites_S230 <- RBD_sites[epitope_S230==T,]; sites_S230$epitope <- "S230"
 sites_VHH72 <- RBD_sites[epitope_VHH72==T,]; sites_VHH72$epitope <- "VHH72"
 sites_CR3022 <- RBD_sites[epitope_CR3022==T,]; sites_CR3022$epitope <- "CR3022"
+sites_S309 <- RBD_sites[epitope_S309==T,]; sites_S309$epitope <- "S309"
 
-sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,sites_S230,sites_VHH72,sites_CR3022);sites_epitope$epitope <- factor(sites_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022"))
-
-p3 <- ggplot(sites_epitope,aes(x=epitope,y=mean_bind))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("average delta_log10Ka,app per site (binding))")+theme(axis.text.x=element_text(angle=-45,hjust=0))
-
-p4 <- ggplot(sites_epitope,aes(x=epitope,y=mean_expr))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("average delta_meanF per site (expression)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
-
-p5 <- ggplot(sites_epitope,aes(x=epitope,y=max_bind))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("max delta_log10Ka,app per site (binding))")+theme(axis.text.x=element_text(angle=-45,hjust=0))
-
-p6 <- ggplot(sites_epitope,aes(x=epitope,y=max_expr))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("max delta_meanF per site (expression)")+theme(axis.text.x=element_text(angle=-45,hjust=0))
+sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,sites_S230,sites_VHH72,sites_CR3022,sites_S309);sites_epitope$epitope <- factor(sites_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022","S309"))
 
 
-grid.arrange(p1,p2,p3,p4,p5,p6,ncol=2)
+set.seed(198)
+p1 <- ggplot(mutants_epitope[!is.na(bind_avg),],aes(x=epitope,y=bind_avg))+
+  geom_jitter(width=0.2, alpha=0.2)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
+  xlab("epitope")+ylab("delta_log10Ka,app (binding)")+
+  theme_classic()
+
+p2 <- ggplot(mutants_epitope[!is.na(expr_avg),],aes(x=epitope,y=expr_avg))+
+  geom_jitter(width=0.2, alpha=0.2)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
+  xlab("epitope")+ylab("delta_meanF (expression)")+
+  theme_classic()
+
+p3 <- ggplot(sites_epitope[!is.na(max_bind),],aes(x=epitope,y=max_bind))+
+  geom_jitter(width=0.2, alpha=0.5)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
+  xlab("epitope")+ylab("maximum per-site delta_log10Ka,app (binding)")+
+  theme_classic()
+
+p4 <- ggplot(sites_epitope[!is.na(max_expr),],aes(x=epitope,y=max_expr))+
+  geom_jitter(width=0.2, alpha=0.5)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
+  xlab("epitope")+ylab("maximum per-site delta_meanF (expression)")+
+  theme_classic()
+
+grid.arrange(p1,p2,p3,p4,ncol=2)
+
+invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/distribution-mut-effect_per_epitope.pdf",sep="")))
+
 
 ```
 
-We can see for the first 5 antibodies, all of which bind epitopes mostly or fully within the RBM, that epitope sites exhibit mutational constraint with regards to binding (though not as much constraint as on the ACE2-contact residues themselves). There is *perhaps* some visual variation among antibody epitopes in the severity of the average mutational effect to epitope contact positions. (However, statistically, there is not variation in the median effect of mutations on binding in these five epitopes, Kruskal-Wallis ANOVA P-value `r round(kruskal.test(mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),bind_avg] ~ mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),epitope])$p.value,digits=3)`). The average mutation in these RBM motif epitope sites incurs a ~0.5-0.6 reduction in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is likely meaningful (more extreme than SARS-CoV-1 reduction in affinity (0.25 log10Ka uniits), on par with LYRa11 (0.5 log10Ka units) which can still promote huACE2-mediated cellular entry, but with reduced quantitative in vitro infectivity according to Letko et al. 2020). 
+We can see for the first 5 antibodies, all of which bind epitopes mostly or fully within the RBM, that epitope sites exhibit mutational constraint with regards to binding (though not as much constraint as on the ACE2-contact residues themselves). There is *perhaps* some visual variation among antibody epitopes in the severity of the average mutational effect to epitope contact positions. (However, statistically, there is not variation in the median effect of mutations on binding in these five epitopes, Kruskal-Wallis ANOVA P-value `r round(kruskal.test(mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),bind_avg] ~ mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),epitope])$p.value,digits=3)`). The average mutation in these RBM motif epitope sites incurs a ~0.5-0.6 reduction in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is likely meaningful (more extreme than SARS-CoV-1 reduction in affinity (0.25 log10Ka units), on par with LYRa11 (0.5 log10Ka units) which can still promote huACE2-mediated cellular entry, but with reduced quantitative in vitro infectivity according to Letko et al. 2020). 
 
-As we can see in the structural alignment of mAbs bound to the RBD ini the PyMol session file I point to at the beginning of this notebook, these mAbs all clue into a couple "patches" of constrained residues in the RBM. 80R and B38 both bind to two patches at the direct ACE2 contact interface that are mutationally constrained, centered around residues ~Y489 and ~Y505. (These two mAbs also seem to have the most contact residues, suggesting they achieve the most "engagement" compared to other mAbs, apparently without sacrificing by engaging lots of mutationally tolerant sites.) S230 engages just the ~Y489 patch. F26G19 and m396, on the other hand, focus on this ~Y505 lobe, and continue to follow two channels of mutational constraint down the "side" of the RBD, toward ~N437 and ~G404, respectively. These two "modes" of RBM recognition do seem to occupy the major patches of mutational constraint in this region, suggesting refining the approaches of these two types of RBM-directed mAbs might be fruitful.
+As we can see in the structural alignment of mAbs bound to the RBD in the PyMol session file I point to at the beginning of this notebook, these mAbs all clue into a couple "patches" of constrained residues in the RBM. 80R and B38 both bind to two patches at the direct ACE2 contact interface that are mutationally constrained, centered around residues ~Y489 and ~Y505. (These two mAbs also seem to have the most contact residues, suggesting they achieve the most "engagement" compared to other mAbs, apparently without sacrificing by engaging lots of mutationally tolerant sites.) S230 engages just the ~Y489 patch. F26G19 and m396, on the other hand, focus on this ~Y505 lobe, and continue to follow two channels of mutational constraint down the "side" of the RBD, toward ~N437 and ~G404, respectively. These two "modes" of RBM recognition do seem to occupy the major patches of mutational constraint in this region, suggesting refining the approaches of these two types of RBM-directed mAbs might be fruitful.
 
-The other two antibodies, VHH72 and CR3022, bind epiitopes within the "core RBD", meaning mutational constraint on expression might be more relevant -- and we do see that mutations in these epitopes suffer expression defects, with an average mutation defect of ~0.5 log-MFI uniits, which is substantial relative to the tight range of expression seen among our panel of RBD homologs. We can see that much of the core RBD surface is constrained with respect to mutational effects on expression, along a lateral "belt" around the middle of the core RBD, though many of the more mutationally sensitive positions are buried in little 'crevices' on the RBD surface, compared to the more mutationally tolerant knobs that jut out. CR3022 does hone in one of these more obvious expression-constrained 'patches', centered around residue ~Y380. VHH72 binds to a seemingly less "red" patch just to the side of CR3022, centered around ~S375. Though we don't have the structure yet, S309 will be binding to another pretty striking "patch" of mutational sensitivity in the core RBD, in the channel around N343 and its attached glycan. Our structural analysis points to another super obvious patch of mutational constraint, for which we have *not* seen any mAbs described (though perhaps we should look?), centered around E465 on the opposite side of the RBD from the VHH72 epitope. This region contacts the NTD/S<sup>A</sup> domain in the closed full Spike quaternary context but is exposed in the RBD-up conformation. Could be intersting to look more into!
+The other three antibodies, VHH72, CR3022, and S309, bind epitopes within the "core RBD", meaning mutational constraint on expression might be more relevant -- and we do see that mutations in these epitopes suffer expression defects, with an average mutation defect of ~0.5 log-MFI units, which is substantial relative to the tight range of expression seen among our panel of RBD homologs. We can see that much of the core RBD surface is constrained with respect to mutational effects on expression, along a lateral "belt" around the middle of the core RBD, though many of the more mutationally sensitive positions are buried in little 'crevices' on the RBD surface, compared to the more mutationally tolerant knobs that jut out. CR3022 does hone in one of these more obvious expression-constrained 'patches', centered around residue ~Y380. VHH72 binds to a seemingly less "red" patch just to the side of CR3022, centered around ~S375. S309 engages a partially constrained patch near the N343 glycan, on the opposite "face" of the RBD compared to the other 7 mAbs. This face faces outward in the "down" RBD conformation in the full spike trimer structure -- whereas the main face is actually buried in this structure, but becomes exposed when the RBD samples the "up" conformation.. Our structural analysis points to another patch of mutational constraint on this S309-side "exposed" surface, for which we have *not* seen any mAbs described (though perhaps we should look?), centered around E465. This region contacts the NTD/S<sup>A</sup> domain in the closed full spike quaternary context (but is exposed in the RBD-up conformation), which could enforce additional mutational constraint on this hypothetical epitope. Could be intersting to look more into!
 
 For a more high-resolution look at the effects of particular mutations within each antibody epitope, we can visualize heatmaps of the sites that constitute each antibody's epitope. (Not sure there's much interesting here, haven't looked in detail but keeping it here for now anyway.) We visualize mutational effects on *binding* for the RBM-directed mAbs, and *expression* for the core RBD mAbs.
 
@@ -203,11 +205,18 @@ p2 <- ggplot(mutants_epitope[mutant!="*" & epitope=="VHH72",],aes(SARS2_site,mut
   coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
   geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
 
-grid.arrange(p1,p2,nrow=1)
+p3 <- ggplot(mutants_epitope[mutant!="*" & epitope=="S309",],aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,2.5/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="S309 epitope site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+
+grid.arrange(p1,p2,p3,nrow=1)
 
 ```
 
-To put constraint on epitopes in context, let's look at the fraction of mutations within each epitope that are compatible with two levels of affinity -- that of SARS-CoV-1, the lowest known affinity capable of mediating human infectivity, and LYRa11, which can promote huACE2-mediated cellular infection in cell culture, though at reduced infectivity compared to e.g. SARS-CoV-1 RBD. Finally, we output the fraction of mutations within each epitope that have an expression effect of >0.2, a somewhat arbitrary value (the range of expression phenotypes was ~0.18, but all higher than our SARS-CoV-2 wildtype).
+To put constraint on epitopes in context, let's look at the fraction of mutations within each epitope that are compatible with two levels of affinity -- that of SARS-CoV-1, the lowest known affinity capable of mediating human infectivity, and LYRa11, which can promote huACE2-mediated cellular infection in cell culture, though at reduced infectivity compared to e.g. SARS-CoV-1 RBD. Finally, we output the fraction of mutations within each epitope that have an expression effect of >-0.2, a somewhat arbitrary value (the range of expression phenotypes was ~0.18, but all higher than our SARS-CoV-2 wildtype).
 
 ```{r table affinity cutoffs, echo=F}
 epitopes_table <- data.frame(epitope=unique(mutants_epitope$epitope))
@@ -230,7 +239,7 @@ Let's compare our mutational constraint on antibody epitopes to natural diversit
 We see that epitopes exhibit the least natural sequence variation for the core-RBD mAbs, VHH72 and CR3022. Among the RBM-directed mAbs, 80R seems to bind sites that are more variable across the sarbecovirus clade.
 
 ```{r natural_diversity_epitopes, fig.width=4.5, fig.height=3, fig.align="center",dpi=300,dev="png",echo=F}
-alignment <- read.fasta(file='data/alignments/RBDs_aligned.fasta')
+alignment <- bio3d::read.fasta(file='data/alignments/RBDs_aligned.fasta')
 #remove column that is gap in the SARS-CoV-2 sequence (only an A in BM48-31)
 alignment$ali <- alignment$ali[,which(alignment$ali[1,]!="-")]
 entropy <- entropy(alignment)$H
@@ -246,13 +255,16 @@ sites_F26G19 <- RBD_sites[epitope_F26G19==T,]; sites_F26G19$epitope <- "F26G19"
 sites_S230 <- RBD_sites[epitope_S230==T,]; sites_S230$epitope <- "S230"
 sites_VHH72 <- RBD_sites[epitope_VHH72==T,]; sites_VHH72$epitope <- "VHH72"
 sites_CR3022 <- RBD_sites[epitope_CR3022==T,]; sites_CR3022$epitope <- "CR3022"
+sites_S309 <- RBD_sites[epitope_S309==T,]; sites_S309$epitope <- "S309"
 
-sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,sites_S230,sites_VHH72,sites_CR3022);sites_epitope$epitope <- factor(sites_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022"))
-
+sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,sites_S230,sites_VHH72,sites_CR3022,sites_S309);sites_epitope$epitope <- factor(sites_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022","S309"))
 
 ggplot(sites_epitope,aes(x=epitope,y=Neff))+
-  geom_violin(scale="width")+stat_summary(fun.y=median,geom="point",size=1)+
-  xlab("epitope")+ylab("N_eff per epitope site")+theme(axis.text.x=element_text(angle=-45,hjust=0))
+  geom_jitter(width=0.2, alpha=0.5)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
+  xlab("epitope")+ylab("N_eff per epitope site")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
+  theme_classic()
+
+invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/distribution-Neff_per_epitope.pdf",sep="")))
 
 ```
 

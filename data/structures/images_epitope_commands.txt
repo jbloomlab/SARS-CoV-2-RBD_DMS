@@ -102,4 +102,49 @@ as surface, VHH72_contacts
 png ./images_epitope-outlines/VHH72_view2_overlay.png, ray=1, 1200, 1200
 
 
+#view 3, to see the NLGS and S309 interaction interface
+turn y, -180
+
+set_view (\
+     0.065335535,   -0.643707454,   -0.762431443,\
+     0.996116400,    0.086604312,    0.012258800,\
+     0.058132574,   -0.760310173,    0.646892905,\
+     0.002255535,    0.000589155, -200.537643433,\
+   -32.869243622,   26.272405624,   17.597675323,\
+  -55744.250000000, 56146.261718750,  -20.000000000 )
+  
+hide everything
+as surface, RBD_expr
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_expr_view3.png, ray=1, 1200, 1200
+hide everything
+as surface, RBD_bind  
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_bind_view3.png, ray=1, 1200, 1200
+
+select N343_NLGS, trimer_6wps and chain A and resi 1320+1321+1322+1323+1324+1325; color red, N343_NLGS
+
+hide everything
+as surface, RBD_expr; as sticks, N343_NLGS
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_expr_view3_NLGS.png, ray=1, 1200, 1200
+hide everything
+as surface, RBD_bind ; as sticks, N343_NLGS
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_bind_view3_NLGS.png, ray=1, 1200, 1200
+
+
+select S309_contacts, RBD_bind and resi 334+335+337+339+340+343+344+345+346+356+357+359+360+361+441
+
+hide everything
+as surface, S309_contacts
+set ray_trace_mode, 2
+set ray_trace_color, black
+set ray_trace_gain, 1
+set ray_opaque_background, 0
+png ./images_epitope-outlines/S309_view3_overlay.png, ray=1, 1200, 1200
+
+as sticks, N343_NLGS
+png ./images_epitope-outlines/S309_view3_NLGS_overlay.png, ray=1, 1200, 1200
+
 #open up each xxx_overlay.png and xxx_base.png in Illustrator, align, trace outline in thicker black line, remove the overlay.png layer and keep traced outline. Then save each final png

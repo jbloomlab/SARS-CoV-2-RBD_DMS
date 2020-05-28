@@ -159,19 +159,29 @@ RBD2_B38_contacts <- binding.site(RBD2_B38, a.inds=atom.select(RBD2_B38, chain="
 sites_alignment$epitope_B38 <- F
 sites_alignment[sites_alignment$site_SARS2 %in% RBD2_B38_contacts$resno,"epitope_B38"] <- T
 
+#S309 bound to SARS2 trimer, pdb 6wps (chain A, B, E = spike protomers, interact with H+L, C+D, F+G respectively)
+RBD2_S309 <- read.pdb(file="data/structures/Ab-bound/S309_6wps.pdb")
+RBD2_S309_contacts <- binding.site(RBD2_S309, a.inds=atom.select(RBD2_S309, chain="A"), b.inds=atom.select(RBD2_S309, chain=c("H","L")),cutoff=4, hydrogens=F)
+RBD2_S309_contacts2 <- binding.site(RBD2_S309, a.inds=atom.select(RBD2_S309, chain="B"), b.inds=atom.select(RBD2_S309, chain=c("C","D")),cutoff=4, hydrogens=F)
+RBD2_S309_contacts3 <- binding.site(RBD2_S309, a.inds=atom.select(RBD2_S309, chain="E"), b.inds=atom.select(RBD2_S309, chain=c("F","G")),cutoff=4, hydrogens=F)
+
+#keep any residue annotated as contact in any protomer
+contacts <- unique(RBD2_S309_contacts$resno,RBD2_S309_contacts2$resno,RBD2_S309_contacts3$resno)
+
+sites_alignment$epitope_S309 <- F
+sites_alignment[sites_alignment$site_SARS2 %in% contacts,"epitope_S309"] <- T
+
+
 
 #annotate positions that are buried with the rest of spike trimer in the RBD down conformations.
-#in pdb 6vsb, we want to identify RBD residues witin 4A from non-RBD resiidues in chains B and/or C, but not A
-STrimer_2 <- clean.pdb(read.pdb(file="data/structures/ACE2-bound/6vsb.pdb"), rm.wat=T, rm.lig=T)
-STrimer_upA_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="A",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="A",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)
+#in pdb 6vxx, we want to identify RBD residues witin 4A from non-RBD residues
+STrimer_2 <- clean.pdb(read.pdb(file="data/structures/ACE2-bound/6vxx.pdb"), rm.wat=T, rm.lig=T)
+STrimer_downA_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="A",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="A",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)
 STrimer_downB_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="B",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="B",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)
 STrimer_downC_contacts <- binding.site(STrimer_2, a.inds=atom.select(STrimer_2, chain="C",resno=sites_alignment$site_SARS2), b.inds=atom.select(STrimer_2, chain="C",resno=sites_alignment$site_SARS2,inverse=T),cutoff=4, hydrogens=F)  
 
-#keep only residues that are contacts in the B or C down conformations but not the A up conformation
-contacts <- unique(STrimer_downB_contacts$resno,STrimer_downC_contacts$resno)
-contacts <- contacts[!(contacts %in% STrimer_upA_contacts$resno)]
-#remove sites 331 and 332, which are the first two in my RBD cutoffs but are unstructured in the up chain A conformation, otherwise would be excluded
-contacts <- contacts[!(contacts %in% c(331,332))]
+#keep any residue annotated as contact in any protomer
+contacts <- unique(STrimer_downA_contacts$resno,STrimer_downB_contacts$resno,STrimer_downC_contacts$resno)
 
 sites_alignment$buried_downRBD <- F
 sites_alignment[sites_alignment$site_SARS2 %in% contacts,"buried_downRBD"] <- T

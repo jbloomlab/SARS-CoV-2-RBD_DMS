@@ -107,24 +107,22 @@ RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 
 ## Compare mutational tolerance within antibody epitopes
 
-We have annotated antibody epitope residues for seven mAbs with
-published structures – six of the seven mAbs were raised against
-SARS-CoV-1, but at least two of them cross-react with SARS-CoV-2
-(CR3022, VHH72), and more generally, they highlight the types of
+We have annotated antibody epitope residues for eight mAbs with
+published structures – seven of the eight mAbs were raised against
+SARS-CoV-1, but at least three of them cross-react with SARS-CoV-2
+(CR3022, VHH72, S309), and more generally, they highlight the types of
 epitopes that SARS-related CoV RBDs can induce. The seventh, B38, was
-isolated from a SARS-CoV-2 convalescent patient. Of course, many more
-SARS-CoV-2 raised mAbs will be upcoming, and we can add them in as
-needed, including mAbs (e.g. S309) whose structures are not yet publicly
-available.
+isolated from a SARS-CoV-2 convalescent patient.
 
 Let’s compare patterns of mutational sensitivity within each of the mAb
 epitopes, and compare to ACE2 contact residues for reference. Below, we
-output violin plots for individual mutational effects at sites within
-each epitope (top row), the average mutational effect per site for
-residues within each epitope (middle row), and the maximum mutational
-effect of any of the possible mutations per site for residues within
-each epitope (bottom row). The mean and max per-site give more global
-views of mutational constraint.
+output jitter plots that illustrate the range of individual mutational
+effects within each epitope (black points). The red diamond indicates
+the median effect of mutations within each epitope. We also output
+jiitter plots illustrating the *maximum* effect of any of the 19
+mutations within each antibody epitope – this reflects the most extreme
+form of constraint, where we see if a position has *any* mutations that
+are tolerated.
 
 <img src="antibody_epitopes_files/figure-gfm/violin_plot_epitope_mut_effects-1.png" style="display: block; margin: auto;" />
 
@@ -139,11 +137,11 @@ these five epitopes, Kruskal-Wallis ANOVA P-value 0.28). The average
 mutation in these RBM motif epitope sites incurs a \~0.5-0.6 reduction
 in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is
 likely meaningful (more extreme than SARS-CoV-1 reduction in affinity
-(0.25 log10Ka uniits), on par with LYRa11 (0.5 log10Ka units) which can
+(0.25 log10Ka units), on par with LYRa11 (0.5 log10Ka units) which can
 still promote huACE2-mediated cellular entry, but with reduced
 quantitative in vitro infectivity according to Letko et al. 2020).
 
-As we can see in the structural alignment of mAbs bound to the RBD ini
+As we can see in the structural alignment of mAbs bound to the RBD in
 the PyMol session file I point to at the beginning of this notebook,
 these mAbs all clue into a couple “patches” of constrained residues in
 the RBM. 80R and B38 both bind to two patches at the direct ACE2 contact
@@ -159,11 +157,11 @@ recognition do seem to occupy the major patches of mutational constraint
 in this region, suggesting refining the approaches of these two types of
 RBM-directed mAbs might be fruitful.
 
-The other two antibodies, VHH72 and CR3022, bind epiitopes within the
-“core RBD”, meaning mutational constraint on expression might be more
-relevant – and we do see that mutations in these epitopes suffer
+The other three antibodies, VHH72, CR3022, and S309, bind epitopes
+within the “core RBD”, meaning mutational constraint on expression might
+be more relevant – and we do see that mutations in these epitopes suffer
 expression defects, with an average mutation defect of \~0.5 log-MFI
-uniits, which is substantial relative to the tight range of expression
+units, which is substantial relative to the tight range of expression
 seen among our panel of RBD homologs. We can see that much of the core
 RBD surface is constrained with respect to mutational effects on
 expression, along a lateral “belt” around the middle of the core RBD,
@@ -172,16 +170,19 @@ little ‘crevices’ on the RBD surface, compared to the more mutationally
 tolerant knobs that jut out. CR3022 does hone in one of these more
 obvious expression-constrained ‘patches’, centered around residue
 \~Y380. VHH72 binds to a seemingly less “red” patch just to the side of
-CR3022, centered around \~S375. Though we don’t have the structure yet,
-S309 will be binding to another pretty striking “patch” of mutational
-sensitivity in the core RBD, in the channel around N343 and its attached
-glycan. Our structural analysis points to another super obvious patch of
-mutational constraint, for which we have *not* seen any mAbs described
-(though perhaps we should look?), centered around E465 on the opposite
-side of the RBD from the VHH72 epitope. This region contacts the
-NTD/S<sup>A</sup> domain in the closed full Spike quaternary context but
-is exposed in the RBD-up conformation. Could be intersting to look more
-into\!
+CR3022, centered around \~S375. S309 engages a partially constrained
+patch near the N343 glycan, on the opposite “face” of the RBD compared
+to the other 7 mAbs. This face faces outward in the “down” RBD
+conformation in the full spike trimer structure – whereas the main face
+is actually buried in this structure, but becomes exposed when the RBD
+samples the “up” conformation.. Our structural analysis points to
+another patch of mutational constraint on this S309-side “exposed”
+surface, for which we have *not* seen any mAbs described (though perhaps
+we should look?), centered around E465. This region contacts the
+NTD/S<sup>A</sup> domain in the closed full spike quaternary context
+(but is exposed in the RBD-up conformation), which could enforce
+additional mutational constraint on this hypothetical epitope. Could be
+intersting to look more into\!
 
 For a more high-resolution look at the effects of particular mutations
 within each antibody epitope, we can visualize heatmaps of the sites
@@ -201,8 +202,8 @@ mediating human infectivity, and LYRa11, which can promote
 huACE2-mediated cellular infection in cell culture, though at reduced
 infectivity compared to e.g. SARS-CoV-1 RBD. Finally, we output the
 fraction of mutations within each epitope that have an expression effect
-of \>0.2, a somewhat arbitrary value (the range of expression phenotypes
-was \~0.18, but all higher than our SARS-CoV-2 wildtype).
+of \>-0.2, a somewhat arbitrary value (the range of expression
+phenotypes was \~0.18, but all higher than our SARS-CoV-2 wildtype).
 
 | epitope | median delta\_log<sub>10</sub>(*K*<sub>A,app</sub>) | median delta\_log-fluorescence | fraction muts \> SARS-CoV-1 affinity | fraction muts \> LYRa11 affinity | fraction muts \> -0.2 expression effect |
 | :------ | --------------------------------------------------: | -----------------------------: | -----------------------------------: | -------------------------------: | --------------------------------------: |
@@ -214,6 +215,7 @@ was \~0.18, but all higher than our SARS-CoV-2 wildtype).
 | S230    |                                              \-0.65 |                         \-0.44 |                                 0.33 |                             0.44 |                                    0.33 |
 | VHH72   |                                              \-0.16 |                         \-0.55 |                                 0.61 |                             0.72 |                                    0.28 |
 | CR3022  |                                              \-0.14 |                         \-0.59 |                                 0.63 |                             0.73 |                                    0.26 |
+| S309    |                                              \-0.14 |                         \-0.50 |                                 0.65 |                             0.85 |                                    0.32 |
 
 ## Comparison to natural sequence diversity
 

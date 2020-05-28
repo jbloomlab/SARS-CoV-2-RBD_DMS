@@ -35,3 +35,8 @@ results/binding_Kds/*
 results/single_mut_effects/*
 !results/single_mut_effects/single_mut_effects.csv
 !results/single_mut_effects/homolog_effects.csv
+
+!results/structure_function
+results/structure_function/*
+!results/structure_function/6m0j_b-factor-mean-bind.pdb
+!results/structure_function/6m0j_b-factor-mean-expr.pdb
