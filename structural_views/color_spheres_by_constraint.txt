@@ -1,0 +1,82 @@
+#commands to load in structures colored by mutational constraint, and output png images
+
+load ../results/structure_function/6m0j_b-factor-mean-bind.pdb
+load ../results/structure_function/6m0j_b-factor-mean-expr.pdb
+
+create ACE2, 6m0j_b-factor-mean-bind and chain A
+create RBD_bind, 6m0j_b-factor-mean-bind and chain E; remove RBD_bind and chain A
+create RBD_expr, 6m0j_b-factor-mean-expr and chain E; remove RBD_expr and chain A
+delete 6m0j_b-factor-mean-bind
+delete 6m0j_b-factor-mean-expr
+
+hide all; show cartoon
+color warmpink, ACE2; color gray60, RBD_bind; color gray60, RBD_expr
+set sphere_scale, 0.4
+create RBD_bind_CA, RBD_bind and name ca
+create RBD_expr_CA, RBD_expr and name ca
+as spheres, RBD_bind_CA; as spheres, RBD_expr_CA
+spectrum b, red white, RBD_bind_CA, minimum=-2, maximum=0
+spectrum b, red white, RBD_expr_CA, minimum=-2, maximum=0
+
+show sticks, ACE2 and resi 31+353 and sidechain or name ca
+color atomic, ACE2 and resi 31+353 and sidechain and (not elem C)
+
+show sticks, RBD_bind and resn cys and sidechain or name ca
+color yellow, RBD_bind and resn cys and sidechain
+
+set ray_shadows, off
+
+set_view (\
+     0.478106141,   -0.055033516,    0.876555264,\
+    -0.867068768,    0.129264340,    0.481051981,\
+    -0.139804155,   -0.990028918,    0.014082435,\
+    -0.001742625,    0.000708751, -201.952697754,\
+   -42.961154938,   18.951690674,   17.338169098,\
+  -318.630035400,  722.547485352,  -20.000000000 )
+
+hide spheres, RBD_expr_CA; show spheres, RBD_bind_CA
+png ./images_global-sensitivity/RBD_bind_view1.png, ray=1, 1200, 1200
+hide spheres, RBD_bind_CA; show spheres, RBD_expr_CA
+png ./images_global-sensitivity/RBD_expr_view1.png, ray=1, 1200, 1200
+
+turn y, 180
+
+hide spheres, RBD_expr_CA; show spheres, RBD_bind_CA
+png ./images_global-sensitivity/RBD_bind_view2.png, ray=1, 1200, 1200
+hide spheres, RBD_bind_CA; show spheres, RBD_expr_CA
+png ./images_global-sensitivity/RBD_expr_view2.png, ray=1, 1200, 1200
+
+#image of positions with binding-specific mutational constraint
+set_view (\
+    -0.605948687,    0.173763514,   -0.776259959,\
+     0.765190125,    0.393942833,   -0.509123743,\
+     0.217357263,   -0.902492881,   -0.371680290,\
+    -0.002422562,    0.000641450, -201.984176636,\
+   -41.726081848,   21.208866119,   14.234137535,\
+  -653.737365723, 1057.659423828,  -20.000000000 )
+
+hide spheres, RBD_bind_CA; hide spheres, RBD_expr_CA
+show spheres, RBD_bind and resi 443+447+449+456+473+475+476+487+489+496+500+502+505
+color cyan, RBD_bind and resi 443+447+449+456+473+475+476+487+489+496+500+502+505
+set sphere_scale, 1
+png ./images_global-sensitivity/RBD_bind-specific-constraint.png, ray=1, 1200, 1200
+
+#image of positions that can tolerate putative NLGS introduction
+set_view (\
+     0.546591818,   -0.283837557,    0.787804663,\
+    -0.830965936,   -0.067824014,    0.552108169,\
+    -0.103299633,   -0.956419528,   -0.272931844,\
+     0.001816407,    0.000942402, -185.736541748,\
+   -41.975131989,   18.776378632,   22.240188599,\
+   105.770263672,  265.819946289,  -20.000000000 )
+   
+hide spheres, RBD_bind; hide spheres, RBD_expr; hide spheres, ACE2
+color gray60, RBD_bind; color gray60, RBD_expr
+show sticks, RBD_bind and resn cys and sidechain or name ca
+color yellow, RBD_bind and resn cys and sidechain
+show spheres, RBD_bind and resi 354+360+388+394+448+450+460+481+501
+color deepblue, RBD_bind and resi 354+360+388+394+448+450+460+481
+color ruby, RBD_bind and resi 501
+set ray_shadows, off
+png ./images_global-sensitivity/RBD_new-NLGS.png, ray=1, 1200, 1200
+

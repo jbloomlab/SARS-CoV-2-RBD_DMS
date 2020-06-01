@@ -1,0 +1,150 @@
+#commands to use in a pymol session with surface_constraint_features.pse open, to generate images showing epitope surfaces in light of mutational sensitivities
+
+#set view for RBM apex "top" view -- for ACE2 contact, B38, 80R epitopes
+
+set_view (\
+     0.103962660,   -0.990441740,   -0.090294719,\
+    -0.975488186,   -0.119222037,    0.184708893,\
+    -0.193707138,    0.068876669,   -0.978597999,\
+     0.002427220,   -0.002175181, -183.673004150,\
+   -35.701065063,   27.697360992,   10.228893280,\
+  -55761.304687500, 56129.207031250,  -20.000000000 )
+
+hide everything
+as surface, RBD_expr
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_expr_view1.png, ray=1, 1200, 1200
+hide everything
+as surface, RBD_bind  
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_bind_view1.png, ray=1, 1200, 1200
+
+select ACE2_contacts, RBD_bind and resi 417+446+449+453+455+456+475+486+487+489+493+496+498+500+501+502+505
+hide everything
+as surface, ACE2_contacts
+set ray_trace_mode, 2
+set ray_trace_color, black
+set ray_trace_gain, 1
+set ray_opaque_background, 0
+png ./images_epitope-outlines/ACE2_view1_overlay.png, ray=1, 1200, 1200
+
+select 80R_contacts, RBD_bind and resi 439+445+446+449+452+455+470+482+484+485+486+488+489+490+492+493+494+496+498+499+500+501+502+505+506
+hide everything
+as surface, 80R_contacts
+png ./images_epitope-outlines/80R_view1_overlay.png, ray=1, 1200, 1200
+
+
+select B38_contacts, RBD_bind and resi 403+405+406+409+415+416+417+420+421+453+455+456+457+458+459+460+473+474+475+476+484+486+487+489+490+492+493+495+496+498+500+501+502+505
+hide everything
+as surface, B38_contacts
+png ./images_epitope-outlines/B38_view1_overlay.png, ray=1, 1200, 1200
+
+
+
+###set view for 'lateral' view of RBD (view2), for all interfaces
+set_view (\
+    -0.065335467,   -0.643707156,    0.762431443,\
+    -0.996116400,    0.086604267,   -0.012258712,\
+    -0.058132630,   -0.760309815,   -0.646892905,\
+     0.002255535,    0.000589155, -200.537643433,\
+   -32.869243622,   26.272405624,   17.597675323,\
+  -55744.250000000, 56146.261718750,  -20.000000000 )
+
+
+hide everything
+as surface, RBD_expr
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_expr_view2.png, ray=1, 1200, 1200
+hide everything
+as surface, RBD_bind  
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_bind_view2.png, ray=1, 1200, 1200
+
+hide everything
+as surface, ACE2_contacts
+set ray_trace_mode, 2
+set ray_trace_color, black
+set ray_trace_gain, 1
+set ray_opaque_background, 0
+png ./images_epitope-outlines/ACE2_view2_overlay.png, ray=1, 1200, 1200
+
+hide everything
+as surface, 80R_contacts
+png ./images_epitope-outlines/80R_view2_overlay.png, ray=1, 1200, 1200
+
+hide everything
+as surface, B38_contacts
+png ./images_epitope-outlines/B38_view2_overlay.png, ray=1, 1200, 1200
+
+select CR3022_contacts, RBD_bind and resi 369+370+371+372+374+377+378+379+380+381+382+383+384+385+386+390+429+430+515+516+517
+hide everything
+as surface, CR3022_contacts
+png ./images_epitope-outlines/CR3022_view2_overlay.png, ray=1, 1200, 1200
+
+select F26G19_contacts, RBD_bind and resi 372+375+404+405+437+439+440+500+501+502+503+504+505+506+508
+hide everything
+as surface, F26G19_contacts
+png ./images_epitope-outlines/F26G19_view2_overlay.png, ray=1, 1200, 1200
+
+select m396_contacts, RBD_bind and resi 372+375+376+378+403+404+405+408+439+449+496+498+499+500+501+502+503+504+505+506+508
+hide everything
+as surface, m396_contacts
+png ./images_epitope-outlines/m396_view2_overlay.png, ray=1, 1200, 1200
+
+select S230_contacts, RBD_bind and resi 415+416+417+420+421+454+455+456+457+458+459+460+473+474+475+476+477+485+486+487+488+489
+hide everything
+as surface, S230_contacts
+png ./images_epitope-outlines/S230_view2_overlay.png, ray=1, 1200, 1200
+
+select VHH72_contacts, RBD_bind and resi 369+370+371+372+374+375+376+377+378+379+384+385+404+408+437+503+508
+hide everything
+as surface, VHH72_contacts
+png ./images_epitope-outlines/VHH72_view2_overlay.png, ray=1, 1200, 1200
+
+
+#view 3, to see the NLGS and S309 interaction interface
+turn y, -180
+
+set_view (\
+     0.065335535,   -0.643707454,   -0.762431443,\
+     0.996116400,    0.086604312,    0.012258800,\
+     0.058132574,   -0.760310173,    0.646892905,\
+     0.002255535,    0.000589155, -200.537643433,\
+   -32.869243622,   26.272405624,   17.597675323,\
+  -55744.250000000, 56146.261718750,  -20.000000000 )
+  
+hide everything
+as surface, RBD_expr
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_expr_view3.png, ray=1, 1200, 1200
+hide everything
+as surface, RBD_bind  
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_bind_view3.png, ray=1, 1200, 1200
+
+select N343_NLGS, trimer_6wps and chain A and resi 1320+1321+1322+1323+1324+1325; color red, N343_NLGS
+
+hide everything
+as surface, RBD_expr; as sticks, N343_NLGS
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_expr_view3_NLGS.png, ray=1, 1200, 1200
+hide everything
+as surface, RBD_bind ; as sticks, N343_NLGS
+set ray_trace_mode, 0
+png ./images_epitope-outlines/RBD_bind_view3_NLGS.png, ray=1, 1200, 1200
+
+
+select S309_contacts, RBD_bind and resi 334+335+337+339+340+343+344+345+346+356+357+359+360+361+441
+
+hide everything
+as surface, S309_contacts
+set ray_trace_mode, 2
+set ray_trace_color, black
+set ray_trace_gain, 1
+set ray_opaque_background, 0
+png ./images_epitope-outlines/S309_view3_overlay.png, ray=1, 1200, 1200
+
+as sticks, N343_NLGS
+png ./images_epitope-outlines/S309_view3_NLGS_overlay.png, ray=1, 1200, 1200
+
+#open up each xxx_overlay.png and xxx_base.png in Illustrator, align, trace outline in thicker black line, remove the overlay.png layer and keep traced outline. Then save each final png
