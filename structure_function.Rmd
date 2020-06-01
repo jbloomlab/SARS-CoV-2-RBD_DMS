@@ -697,7 +697,7 @@ dmsview_output <- rbind(dmsview_output_bind,dmsview_output_expr)
 dmsview_output[condition=="ACE2-binding", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_bind","max_bind","min_bind")],by=c("label_site","mutation","condition")]
 dmsview_output[condition=="expression", c("site_mean_effect", "site_max_effect", "site_min_effect") := RBD_sites[site_SARS2==label_site,c("mean_expr","max_expr","min_expr")],by=c("label_site","mutation","condition")]
 
-write.csv(dmsview_output,file=config$dms_view_file)
+write.csv(dmsview_output,file=config$dms_view_file, row.names=FALSE)
 
 ```
 
