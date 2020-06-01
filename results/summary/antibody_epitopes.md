@@ -126,6 +126,11 @@ are tolerated.
 
 <img src="antibody_epitopes_files/figure-gfm/violin_plot_epitope_mut_effects-1.png" style="display: block; margin: auto;" />
 
+Integrate these plots onto a single scatter plot, showing the median
+mutational effect on binding versus expression for residues in each
+antibody epitope
+
+<img src="antibody_epitopes_files/figure-gfm/scatterplot_epitope_mut_effects-1.png" style="display: block; margin: auto;" />
 We can see for the first 5 antibodies, all of which bind epitopes mostly
 or fully within the RBM, that epitope sites exhibit mutational
 constraint with regards to binding (though not as much constraint as on

@@ -147,4 +147,14 @@ png ./images_epitope-outlines/S309_view3_overlay.png, ray=1, 1200, 1200
 as sticks, N343_NLGS
 png ./images_epitope-outlines/S309_view3_NLGS_overlay.png, ray=1, 1200, 1200
 
+select hypothetical-epitope, RBD_expr and resi 353+355+426+457+462+463+464+465+466+467
+hide everything
+as surface, hypothetical-epitope
+set ray_trace_mode, 2
+set ray_trace_color, black
+set ray_trace_gain, 1
+set ray_opaque_background, 0
+png ./images_epitope-outlines/hypothetical-epitope_view3_overlay.png, ray=1, 1200, 1200
+
+
 #open up each xxx_overlay.png and xxx_base.png in Illustrator, align, trace outline in thicker black line, remove the overlay.png layer and keep traced outline. Then save each final png
