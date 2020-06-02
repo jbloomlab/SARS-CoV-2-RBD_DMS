@@ -10,6 +10,14 @@ library(bio3d)
 #read in file that gives concordance between numbering of SARS-CoV-2 and SARS-CoV RBDs
 sites_alignment <- read.csv(file="data/structures/RBD_sites_input.csv",stringsAsFactors=F)
 
+#Add entropy and N_eff columns from natural diversity in sarbecovirus RBD alignment
+alignment <- bio3d::read.fasta(file='data/alignments/RBDs_aligned.fasta')
+#remove column that is gap in the SARS-CoV-2 sequence (only an A in BM48-31)
+alignment$ali <- alignment$ali[,which(alignment$ali[1,]!="-")]
+entropy <- entropy(alignment)$H
+sites_alignment$entropy <- entropy
+sites_alignment$Neff <- exp(entropy)
+
 #annotate residues as belonging to the RBM (SARS-CoV-2 residues N437-Y508)
 sites_alignment$RBM <- F
 sites_alignment[sites_alignment$site_SARS2 %in% seq(437,508),"RBM"] <- T

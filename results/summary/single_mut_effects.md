@@ -46,7 +46,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -635,6 +635,21 @@ betas[is.na(bind_lib2),bind_lib2 := bind_lib2_coef]
 betas[,bind_avg := mean(c(bind_lib1,bind_lib2),na.rm=T),by=mutation]
 ```
 
+Here is the final plot showing correlation in mutational effects on
+binding between the two libraries. Overall, we derived single mutant
+binding scores for 3802 of 3819 RBD mutations.
+
+``` r
+x <- betas$bind_lib1; y <- betas$bind_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect",ylab="lib2 mutational effect",main=paste("binding, final muts\nR-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+<img src="single_mut_effects_files/figure-gfm/bind_final_correlation-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_final-single-mut_bind.pdf",sep="")))
+```
+
 ## Assessing global epistasis models for expression data
 
 Next, we will assess the global epistasis models built on the expression
@@ -908,6 +923,21 @@ betas[,expr_lib2 := expr_lib2_coef]
 betas[,expr_avg := mean(c(expr_lib1,expr_lib2),na.rm=T),by=mutation]
 ```
 
+Here is the final plot showing correlation in mutational effects on
+expression between the two libraries. Overall, we derived single mutant
+expression scores for 3798 of 3819 RBD mutations.
+
+``` r
+x <- betas$expr_lib1; y <- betas$expr_lib2; fit <- lm(y~x)
+plot(x,y,pch=16,col="#00000067",xlab="lib1 mutational effect",ylab="lib2 mutational effect",main=paste("expression, final muts\nR-squared:",round(summary(fit)$r.squared,digits=3)))
+```
+
+<img src="single_mut_effects_files/figure-gfm/expr_final_correlation-1.png" style="display: block; margin: auto;" />
+
+``` r
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_final-single-mut_expr.pdf",sep="")))
+```
+
 Last, save our estimated single-mutant effects as a csv file. We output
 the estimated effects on binding and expression in each library and the
 average of the libraries.
@@ -1159,6 +1189,8 @@ expression effects.
 
 Below, we generate plots for all barcodes showing the relationship
 between the barcode’s response fit value and the expression phenotype
-for that barcode.
+for that barcode. We exclude barcodes with titration fit Kds \> 1e-7, as
+these response variables are just randomly guessed since there was no
+actual response to fit across our concentration range.
 
 <img src="single_mut_effects_files/figure-gfm/response_v_expression-1.png" style="display: block; margin: auto;" />

@@ -43,7 +43,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -107,11 +107,12 @@ RBD_sites[,min_expr := min(mutants[SARS2_site==site_SARS2 & wildtype != mutant &
 
 ## Relationship between DMS mutational tolerance and natural sequence diversity
 
-We load in an alignment of sarbecovirus RBD sequences, whose curation
-and alignment is described in the `data/alignments` subdirectory. Many
-of these sequences are so-called “Clade 2” sequences, which have not
-been shown to bind human or any other ACE2 – so whether they evolve
-under constraint for ACE2-binding is unclear. Therefore, we consider the
+We compare our measurements of mutational tolerance to natural diversity
+from our alignment of sarbecovirus RBD sequences, whose curation and
+alignment is described in the `data/alignments` subdirectory. Many of
+these sequences are so-called “Clade 2” sequences, which have not been
+shown to bind human or any other ACE2 – so whether they evolve under
+constraint for ACE2-binding is unclear. Therefore, we consider the
 entire sarbecovirus RBD alignment, and one restricted to the SARS-CoV-2
 and SARS-CoV-1 clade sequences (which consists of just 12 RBD
 sequences). The full alignment is probably relevant to mutational
@@ -119,7 +120,7 @@ constraint on expression (since we see that the Clade 2 and 3 sequencs
 in our homolog panel still have the same expression range as the
 ACE2-binding variants), while the restricted alignment is probably more
 relevant to mutational constraint on ACE2 binding (since the Clade 2 and
-3 sequencs in our homolog panel had no detectable binding to huACE2.)
+3 sequences in our homolog panel had no detectable binding to huACE2.)
 
 Within each of these alignments, we compute the entropy of the alignment
 column (and the related effective number amino acids N<sub>eff</sub>),
