@@ -226,16 +226,17 @@ phenotypes was \~0.18, but all higher than our SARS-CoV-2 wildtype).
 
 Let’s compare our mutational constraint on antibody epitopes to natural
 diversity in different antibody epitopes from an alignment of
-sarbecovirus RBDs. We read in an alignment of RBD amino acid sequences
-from across the sarbecovirus clade (noting that many of these sequences
-are so-called “Clade 2” sequences, which have not been shown to bind
-human or any other ACE2 – so whether they evolve under constraint for
-ACE2-binding, at this point, is unclear. Bat ACE2 is also under elevated
-positive selection, so these Clade 2 sequences could be adapted to “odd”
-ACE2s within bat hosts, or who knows what…). We then compute the entropy
-of each alignment position, and compare the site-wise entropy/number of
-effective amino acids (N<sub>eff</sub>) of sites in each antibody
-epitope.
+sarbecovirus RBDs. We previously calculated the effective number of
+amino acids (Neff) at each site in an alignment of RBD amino acid
+sequences from across the sarbecovirus clade (noting that many of these
+sequences are so-called “Clade 2” sequences, which have not been shown
+to bind human or any other ACE2 – so whether they evolve under
+constraint for ACE2-binding, at this point, is unclear. Bat ACE2 is also
+under elevated positive selection, so these Clade 2 sequences could be
+adapted to “odd” ACE2s within bat hosts, or who knows what…). We then
+compute the entropy of each alignment position, and compare the
+site-wise entropy/number of effective amino acids (N<sub>eff</sub>) of
+sites in each antibody epitope.
 
 We see that epitopes exhibit the least natural sequence variation for
 the core-RBD mAbs, VHH72 and CR3022. Among the RBM-directed mAbs, 80R
