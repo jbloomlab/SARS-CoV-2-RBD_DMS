@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse","bio3d","gridExtra","egg")
+packages = c("yaml","data.table","tidyverse","bio3d","gridExtra","egg","ggridges")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -44,7 +44,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 14.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -61,24 +61,25 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] egg_0.4.5         gridExtra_2.3     bio3d_2.3-4      
-    ##  [4] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.3      
-    ##  [7] purrr_0.3.2       readr_1.3.1       tidyr_0.8.3      
-    ## [10] tibble_2.1.3      ggplot2_3.2.0     tidyverse_1.2.1  
-    ## [13] data.table_1.12.2 yaml_2.2.0        knitr_1.23       
+    ##  [1] ggridges_0.5.1    egg_0.4.5         gridExtra_2.3    
+    ##  [4] bio3d_2.3-4       forcats_0.4.0     stringr_1.4.0    
+    ##  [7] dplyr_0.8.3       purrr_0.3.2       readr_1.3.1      
+    ## [10] tidyr_0.8.3       tibble_2.1.3      ggplot2_3.2.0    
+    ## [13] tidyverse_1.2.1   data.table_1.12.2 yaml_2.2.0       
+    ## [16] knitr_1.23       
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_1.0.1       cellranger_1.1.0 pillar_1.4.2     compiler_3.6.1  
-    ##  [5] tools_3.6.1      digest_0.6.20    lubridate_1.7.4  jsonlite_1.6    
-    ##  [9] evaluate_0.14    nlme_3.1-140     gtable_0.3.0     lattice_0.20-38 
-    ## [13] pkgconfig_2.0.2  rlang_0.4.0      cli_1.1.0        rstudioapi_0.10 
-    ## [17] parallel_3.6.1   haven_2.1.1      xfun_0.7         withr_2.1.2     
-    ## [21] xml2_1.2.0       httr_1.4.0       hms_0.4.2        generics_0.0.2  
-    ## [25] grid_3.6.1       tidyselect_0.2.5 glue_1.3.1       R6_2.4.0        
-    ## [29] readxl_1.3.1     rmarkdown_1.13   modelr_0.1.4     magrittr_1.5    
-    ## [33] backports_1.1.4  scales_1.0.0     htmltools_0.3.6  rvest_0.3.4     
-    ## [37] assertthat_0.2.1 colorspace_1.4-1 stringi_1.4.3    lazyeval_0.2.2  
-    ## [41] munsell_0.5.0    broom_0.5.2      crayon_1.3.4
+    ##  [1] tidyselect_0.2.5 xfun_0.7         haven_2.1.1      lattice_0.20-38 
+    ##  [5] colorspace_1.4-1 generics_0.0.2   htmltools_0.3.6  rlang_0.4.0     
+    ##  [9] pillar_1.4.2     glue_1.3.1       withr_2.1.2      modelr_0.1.4    
+    ## [13] readxl_1.3.1     plyr_1.8.4       munsell_0.5.0    gtable_0.3.0    
+    ## [17] cellranger_1.1.0 rvest_0.3.4      evaluate_0.14    parallel_3.6.1  
+    ## [21] broom_0.5.2      Rcpp_1.0.1       scales_1.0.0     backports_1.1.4 
+    ## [25] jsonlite_1.6     hms_0.4.2        digest_0.6.20    stringi_1.4.3   
+    ## [29] grid_3.6.1       cli_1.1.0        tools_3.6.1      magrittr_1.5    
+    ## [33] lazyeval_0.2.2   crayon_1.3.4     pkgconfig_2.0.2  xml2_1.2.0      
+    ## [37] lubridate_1.7.4  assertthat_0.2.1 rmarkdown_1.13   httr_1.4.0      
+    ## [41] rstudioapi_0.10  R6_2.4.0         nlme_3.1-140     compiler_3.6.1
 
 ## Setup
 
@@ -366,6 +367,13 @@ does allow rare errant outliers without large loss in
 likelihoood/shifting of the mean parameter.
 
 <img src="structure_function_files/figure-gfm/DFE_bind-1.png" style="display: block; margin: auto;" />
+
+To have plots like above but compared to distribution of wt/syn, which
+are collapsed to a single zero point estimate in these plots, we need to
+go back to the barcode-level measurements themselves. We do that below,
+generating “joyplots”.
+
+<img src="structure_function_files/figure-gfm/DFE_ridgeplots-1.png" style="display: block; margin: auto;" />
 
 ## Exploratory heatmaps
 
