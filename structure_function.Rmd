@@ -4,6 +4,7 @@ author: "Tyler Starr"
 date: "5/11/2020"
 output:
   github_document:
+    toc: true
     html_preview: false
 editor_options: 
   chunk_output_type: inline
@@ -706,10 +707,10 @@ dmsview_output_bind <- mutants[mutant != "*",.(site=RBD_site,label_site=SARS2_si
 dmsview_output_expr <- mutants[mutant != "*",.(site=RBD_site,label_site=SARS2_site,wildtype,mutation=mutant,protein_chain="E",protein_site=SARS2_site,condition="expression",mut_delta_effect=expr_avg)]
 
 for(i in 1:nrow(dmsview_output_bind)){
-  dmsview_output_bind$mut_relative_effect[i] <- 10^(dmsview_output_bind$mut_delta_effect[i])/sum(10^(dmsview_output_bind[label_site==dmsview_output_bind[i,label_site],mut_delta_effect]))
+  dmsview_output_bind$mut_relative_effect[i] <- (10^(dmsview_output_bind$mut_delta_effect[i]))/sum(10^(dmsview_output_bind[label_site==dmsview_output_bind[i,label_site],mut_delta_effect]))
 }
 for(i in 1:nrow(dmsview_output_expr)){
-  dmsview_output_expr$mut_relative_effect[i] <- 10^(dmsview_output_expr$mut_delta_effect[i])/10^(exp(dmsview_output_expr[label_site==dmsview_output_expr[i,label_site],mut_delta_effect]))
+  dmsview_output_expr$mut_relative_effect[i] <- (10^(dmsview_output_expr$mut_delta_effect[i]))/sum(10^(dmsview_output_expr[label_site==dmsview_output_expr[i,label_site],mut_delta_effect]))
 }
 
 dmsview_output <- rbind(dmsview_output_bind,dmsview_output_expr)
