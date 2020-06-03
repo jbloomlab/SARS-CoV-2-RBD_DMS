@@ -1,3 +1,13 @@
+"""Streamline the creation of sequence logos.
+
+This module contains function that streamline the use of
+`logomaker <https://logomaker.readthedocs.io/>`_ to make sequence logos.
+
+Written by Jesse Bloom, 2020.
+
+"""
+
+
 import collections
 import itertools
 import math
@@ -9,13 +19,14 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def full_prot_logo(
+def line_wrapped_logo(
         tidy_df,
         *,
         site_col='site',
         letter_col='letter',
         height_col='height',
         color_col='color',
+        sitelabel_col=None,
         highlight_color_col=None,
         highlight_alpha_col=None,
         sites_per_line=100,
@@ -32,6 +43,7 @@ def full_prot_logo(
         xlabel=None,
         ylabel=None,
         label_fontsize=16,
+        xlabelpad=10,
         baseline_on_top=True,
         ):
     """Draw logo wrapping several lines with custom colors and overlays.
@@ -48,6 +60,9 @@ def full_prot_logo(
         Column in `tidy_df` with letter height.
     color_col : str
         Column in `tidy_df` with letter color.
+    sitelabel_col : None or str
+        Column in `tidy_df` with labels for site ticks if different than
+        `site_col`.
     highlight_color_col : None or str
         Column in `tidy_df` with background highlight color, or `None`
         or `NA` if site not highlighted. Only one color can be assigned
@@ -85,12 +100,14 @@ def full_prot_logo(
         Label for y-axis (shared over entire plot).
     label_fontsize : int
         Size of labels drawn for `xlabel`, `ylabel`.
+    xlabelpad : float
+        Padding above x-axis label.
     baseline_on_top : bool
         Draw baseline (horizontal line at 0 height) on top of letters.
 
     """
     expect_cols = [site_col, letter_col, height_col, color_col]
-    for col in [highlight_color_col, highlight_alpha_col]:
+    for col in [sitelabel_col, highlight_color_col, highlight_alpha_col]:
         if col is not None:
             expect_cols.append(col)
     for col in expect_cols:
@@ -100,45 +117,22 @@ def full_prot_logo(
     if set(letters_to_drop).intersection(set(all_letters)):
         raise ValueError('overlap between `letters_to_drop` and `all_letters`')
 
+    # drop any extra letters
+    tidy_df = tidy_df.query(f"{letter_col} not in {letters_to_drop}")
+
     # make wide data frame for logomaker
-    if tidy_df[site_col].dtype != int:
-        raise ValueError('`site_col` currently must be integers')
-    tidy_df = (tidy_df
-               .query(f"{letter_col} not in {letters_to_drop}")
-               .sort_values(site_col)
-               )
-    extra_letters = set(tidy_df[letter_col].unique()) - set(all_letters)
-    if extra_letters:
-        raise ValueError(f"`tidy_df` has extra letters: {extra_letters}\n"
-                         'add them to `all_letters` or `letters_to_drop`')
-    dup_entries = (
-        tidy_df
-        .groupby([site_col, letter_col])
-        .aggregate(n_entries=pd.NamedAgg(height_col, 'count'))
-        .query('n_entries > 1')
-        )
-    if len(dup_entries):
-        raise ValueError(f"duplicates for sites / letters:\n{dup_entries}")
-    wide_df = tidy_df.pivot_table(
-                        index=site_col,
-                        columns=letter_col,
-                        values=height_col,
-                        )
-    if wide_df.isnull().any(None):
-        if missing_letter == 'zero_height':
-            wide_df = wide_df.fillna(0)
-        elif missing_letter == 'error':
-            raise ValueError('some letters missing, set `missing_letter`')
-        else:
-            raise ValueError(f"invalid `missing_letter` of {missing_letter}")
+    wide_df = tidy_to_wide_df(tidy_df, site_col, letter_col,
+                              height_col, all_letters)
 
     # dict matching (site, letter) to color
     colors = tidy_df.set_index([site_col, letter_col])[color_col].to_dict()
 
-    # dicts matching site to highlight color and alpha
+    # dicts matching sites to labels, highlight color, and alpha
+    sitelabels = collections.defaultdict(lambda: '')
     highlight_colors = {}
     highlight_alphas = collections.defaultdict(lambda: 0.25)
-    for d, col in [(highlight_colors, highlight_color_col),
+    for d, col in [(sitelabels, sitelabel_col),
+                   (highlight_colors, highlight_color_col),
                    (highlight_alphas, highlight_alpha_col),
                    ]:
         if col is not None:
@@ -243,7 +237,13 @@ def full_prot_logo(
 
         # format axes and ticks
         logo.style_spines(visible=False)
-        logo.style_xticks(**xticks_kwargs)
+        if sitelabels:
+            xticks_kwargs['spacing'] = 1
+            logo.style_xticks(**xticks_kwargs)
+            ax.set_xticklabels([str(sitelabels[site]) for site in
+                                range(min(isites), max(isites) + 1)])
+        else:
+            logo.style_xticks(**xticks_kwargs)
         ax.tick_params(axis='x',
                        length=0,  # no xtick lines
                        pad=0,  # no padding between xtick labels and axis
@@ -261,13 +261,91 @@ def full_prot_logo(
         ax_fig.tick_params(labelcolor='none', top=False, bottom=False,
                            left=False, right=False)
         if xlabel:
-            ax_fig.set_xlabel(xlabel, fontsize=label_fontsize, labelpad=10)
+            ax_fig.set_xlabel(xlabel, fontsize=label_fontsize,
+                              labelpad=xlabelpad)
         if ylabel:
             ax_fig.set_ylabel(ylabel, fontsize=label_fontsize)
 
     fig.tight_layout(h_pad=1.5)
 
     return fig
+
+
+def tidy_to_wide_df(tidy_df,
+                    site_col,
+                    letter_col,
+                    height_col,
+                    all_letters,
+                    missing_letter='error',
+                    ):
+    """Convert tidy data frame of letters and heights into a wide one.
+
+    Parameters
+    ----------
+    tidy_df : pandas.DataFrame
+        Tidy data frame of letters and their heights for each site.
+    site_col : str
+        Column `tidy_df` with sites.
+    letter_col : str
+        Column `tidy_df` with letters.
+    height_col : str
+        Column `tidy_df` with letter heights.
+    all_letters : list or tuple.
+        Wide data frame has these columns, which must represent all
+        letters in `letter_col`.
+    missing_letter : {'zero_height', 'error'}
+        If letter is missing at a site, assign zero height or raise error?
+
+    Returns
+    -------
+    pandas.DataFrame
+        Wide data frame with sorted sites as index, letters as columns,
+        and letter heights as entries.
+
+    Example
+    -------
+    >>> tidy_df = pd.DataFrame({'site': [1, 2, 2],
+    ...                         'letter': ['A', 'A', 'B'],
+    ...                         'height': [0.1, 0.7, 0.3]})
+    >>> tidy_to_wide_df(tidy_df, 'site', 'letter', 'height',
+    ...                 ['A', 'B', 'C'], 'zero_height')
+    letter    A    B
+    site            
+    1       0.1  0.0
+    2       0.7  0.3
+
+    """
+    if tidy_df[site_col].dtype != int:
+        raise ValueError('`site_col` currently must be integers')
+
+    extra_letters = set(tidy_df[letter_col].unique()) - set(all_letters)
+    if extra_letters:
+        raise ValueError(f"`tidy_df` has extra letters: {extra_letters}")
+
+    dup_entries = (
+        tidy_df
+        .groupby([site_col, letter_col])
+        .aggregate(n_entries=pd.NamedAgg(height_col, 'count'))
+        .query('n_entries > 1')
+        )
+    if len(dup_entries):
+        raise ValueError(f"duplicates for sites / letters:\n{dup_entries}")
+
+    wide_df = tidy_df.pivot_table(
+                        index=site_col,
+                        columns=letter_col,
+                        values=height_col,
+                        )
+
+    if wide_df.isnull().any(None):
+        if missing_letter == 'zero_height':
+            wide_df = wide_df.fillna(0)
+        elif missing_letter == 'error':
+            raise ValueError('some letters missing, set `missing_letter`')
+        else:
+            raise ValueError(f"invalid `missing_letter` of {missing_letter}")
+
+    return wide_df
 
 
 if __name__ == '__main__':
