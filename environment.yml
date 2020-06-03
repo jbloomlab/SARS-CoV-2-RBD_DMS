@@ -250,6 +250,7 @@ dependencies:
     - dms-variants==0.6.0
     - dna-features-viewer==3.0.1
     - kiwisolver==1.2.0
+    - logomaker==0.8
     - matplotlib==3.2.1
     - mizani==0.6.0
     - multiprocess==0.70.9

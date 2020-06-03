@@ -43,3 +43,7 @@ The [./structures/annotate-structural-elements.R](structures/annotate-structural
 The file [./structures/surface_constraint_features.pse](structures/surface_constraint_features.pse) was constructed from a set of `pdb` structures in this directory along with the output `pdb` files from the `structure_function.Rmd` script, which replaces the RBD b factor column with the mean mutational effects per site from our DMS measurements. By executing the list of commands in [./structures/surface_constraint_commands.txt](structures/surface_constraint_commands.txt) in `PyMol`, this `.pse` can be generated anew. This PyMol session contains structural alignments of ACE2-bound RBD, full Spike trimer in the closed state, and all mAb structures included in our analyses. The RBD is loaded as two different objects, where the surface is colored by the mean mutational effect on binding or expression (colored from red to white, where any site with mean mutational effect values less than or equal to -2 is the darkest red, and mean effects from -2 to zero scale from red to white).
 
 The images in [./structures/epitopes_view2.pdf](structures/epitopes_view2.pdf) were generated from this PyMol session by following the commands and instructions given iin [./structures/images_epitope_commands.txt](structures/images_epitope_commands.txt).
+
+## Fonts
+
+- [./uni-sans/](uni-sans) has the Uni-Sans font downloaded from here: https://www.1001fonts.com/uni-sans-font.html
