@@ -129,6 +129,21 @@ invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/distribution-mut-e
 
 ```
 
+Integrate these plots onto a single scatter plot, showing the median mutational effect on binding versus expression for residues in each antibody epitope
+
+```{r scatterplot_epitope_mut_effects, fig.width=4.5, fig.height=4.5, fig.align="center",dpi=300,dev="png",echo=F}
+x <- c(); for(i in unique(mutants_epitope$epitope)){x <- c(x, median(mutants_epitope[epitope==i,expr_avg],na.rm=T))}
+y <- c(); for(i in unique(mutants_epitope$epitope)){y <- c(y, median(mutants_epitope[epitope==i,bind_avg],na.rm=T))}
+x.sd <- c(); for(i in unique(mutants_epitope$epitope)){x.sd <- c(x.sd, sd(mutants_epitope[epitope==i,expr_avg],na.rm=T))}
+y.sd <- c(); for(i in unique(mutants_epitope$epitope)){y.sd <- c(y.sd, sd(mutants_epitope[epitope==i,bind_avg],na.rm=T))}
+
+plot(x,y,xlab="mean mutational effect on expression",ylab="mean mutational effect on binding",pch=16,cex=1.3,col="#00000090",ylim=c(-1,0),xlim=c(-0.6,0))
+# #error bars for SD
+# arrows(x0=x-x.sd, y0=y,x1=x+x.sd, y1=y,code=3,angle=90,length=0.02)
+# arrows(x0=x, y0=y-y.sd,x1=x,y1=y+y.sd,code=3,angle=90,length=0.02)
+
+invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/scatter_epitopes_mean-bind-v-mean-expr.pdf",sep="")))
+```
 We can see for the first 5 antibodies, all of which bind epitopes mostly or fully within the RBM, that epitope sites exhibit mutational constraint with regards to binding (though not as much constraint as on the ACE2-contact residues themselves). There is *perhaps* some visual variation among antibody epitopes in the severity of the average mutational effect to epitope contact positions. (However, statistically, there is not variation in the median effect of mutations on binding in these five epitopes, Kruskal-Wallis ANOVA P-value `r round(kruskal.test(mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),bind_avg] ~ mutants_epitope[epitope %in% c("B38", "80R", "m396", "F26G19", "S230"),epitope])$p.value,digits=3)`). The average mutation in these RBM motif epitope sites incurs a ~0.5-0.6 reduction in log<sub>10</sub>(*K*<sub>A,app</sub>) ACE2-binding affinity, which is likely meaningful (more extreme than SARS-CoV-1 reduction in affinity (0.25 log10Ka units), on par with LYRa11 (0.5 log10Ka units) which can still promote huACE2-mediated cellular entry, but with reduced quantitative in vitro infectivity according to Letko et al. 2020). 
 
 As we can see in the structural alignment of mAbs bound to the RBD in the PyMol session file I point to at the beginning of this notebook, these mAbs all clue into a couple "patches" of constrained residues in the RBM. 80R and B38 both bind to two patches at the direct ACE2 contact interface that are mutationally constrained, centered around residues ~Y489 and ~Y505. (These two mAbs also seem to have the most contact residues, suggesting they achieve the most "engagement" compared to other mAbs, apparently without sacrificing by engaging lots of mutationally tolerant sites.) S230 engages just the ~Y489 patch. F26G19 and m396, on the other hand, focus on this ~Y505 lobe, and continue to follow two channels of mutational constraint down the "side" of the RBD, toward ~N437 and ~G404, respectively. These two "modes" of RBM recognition do seem to occupy the major patches of mutational constraint in this region, suggesting refining the approaches of these two types of RBM-directed mAbs might be fruitful.
@@ -234,18 +249,11 @@ kable(epitopes_table, digits=2, col.names=c("epitope","median delta_log<sub>10</
 
 ## Comparison to natural sequence diversity
 
-Let's compare our mutational constraint on antibody epitopes to natural diversity in different antibody epitopes from an alignment of sarbecovirus RBDs. We read in an alignment of RBD amino acid sequences from across the sarbecovirus clade (noting that many of these sequences are so-called "Clade 2" sequences, which have not been shown to bind human or any other ACE2 -- so whether they evolve under constraint for ACE2-binding, at this point, is unclear. Bat ACE2 is also under elevated positive selection, so these Clade 2 sequences could be adapted to "odd" ACE2s within bat hosts, or who knows what...). We then compute the entropy of each alignment position, and compare the site-wise entropy/number of effective amino acids (N<sub>eff</sub>) of sites in each antibody epitope.
+Let's compare our mutational constraint on antibody epitopes to natural diversity in different antibody epitopes from an alignment of sarbecovirus RBDs. We previously calculated the effective number of amino acids (Neff) at each site in an alignment of RBD amino acid sequences from across the sarbecovirus clade (noting that many of these sequences are so-called "Clade 2" sequences, which have not been shown to bind human or any other ACE2 -- so whether they evolve under constraint for ACE2-binding, at this point, is unclear. Bat ACE2 is also under elevated positive selection, so these Clade 2 sequences could be adapted to "odd" ACE2s within bat hosts, or who knows what...). We then compute the entropy of each alignment position, and compare the site-wise entropy/number of effective amino acids (N<sub>eff</sub>) of sites in each antibody epitope.
 
 We see that epitopes exhibit the least natural sequence variation for the core-RBD mAbs, VHH72 and CR3022. Among the RBM-directed mAbs, 80R seems to bind sites that are more variable across the sarbecovirus clade.
 
 ```{r natural_diversity_epitopes, fig.width=4.5, fig.height=3, fig.align="center",dpi=300,dev="png",echo=F}
-alignment <- bio3d::read.fasta(file='data/alignments/RBDs_aligned.fasta')
-#remove column that is gap in the SARS-CoV-2 sequence (only an A in BM48-31)
-alignment$ali <- alignment$ali[,which(alignment$ali[1,]!="-")]
-entropy <- entropy(alignment)$H
-RBD_sites$entropy <- entropy
-RBD_sites$Neff <- exp(entropy)
-
 #remake sites_epitope with new column
 sites_ACE2 <- RBD_sites[SARS2_ACE2_contact==T,]; sites_ACE2$epitope <- "ACE2"
 sites_B38 <- RBD_sites[epitope_B38==T,]; sites_B38$epitope <- "B38"
@@ -256,13 +264,13 @@ sites_S230 <- RBD_sites[epitope_S230==T,]; sites_S230$epitope <- "S230"
 sites_VHH72 <- RBD_sites[epitope_VHH72==T,]; sites_VHH72$epitope <- "VHH72"
 sites_CR3022 <- RBD_sites[epitope_CR3022==T,]; sites_CR3022$epitope <- "CR3022"
 sites_S309 <- RBD_sites[epitope_S309==T,]; sites_S309$epitope <- "S309"
+sites_hypothetical_epitope <- RBD_sites[site_SARS2 %in% c(353,355,426,457,462,463,464,465,466,467),]; sites_hypothetical_epitope$epitope <- "candidate"
 
-sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,sites_S230,sites_VHH72,sites_CR3022,sites_S309);sites_epitope$epitope <- factor(sites_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022","S309"))
+sites_epitope <- rbind(sites_ACE2,sites_B38,sites_80R,sites_m396,sites_F26G19,sites_S230,sites_VHH72,sites_CR3022,sites_S309,sites_hypothetical_epitope);sites_epitope$epitope <- factor(sites_epitope$epitope,levels=c("ACE2","B38","80R","m396","F26G19","S230","VHH72","CR3022","S309","candidate"))
 
 ggplot(sites_epitope,aes(x=epitope,y=Neff))+
-  geom_jitter(width=0.2, alpha=0.5)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
-  xlab("epitope")+ylab("N_eff per epitope site")+theme(axis.text.x=element_text(angle=-45,hjust=0))+
-  theme_classic()
+  geom_jitter(width=0.2, alpha=0.5)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+theme_classic()+
+  xlab("epitope")+ylab("N_eff per epitope site")+theme(axis.text.x=element_text(angle=45,hjust=1))
 
 invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/distribution-Neff_per_epitope.pdf",sep="")))
 

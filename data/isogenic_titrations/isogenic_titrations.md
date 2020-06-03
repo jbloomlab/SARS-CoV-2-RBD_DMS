@@ -248,7 +248,8 @@ ggsave(
   "./results/homolog_titration.pdf",
   scale = 1,
   width = NA,
-  height = NA
+  height = NA,
+  useDingbats=F
 )
 ```
 
@@ -290,7 +291,8 @@ ggsave(
   "./results/wildtype_triplicate_titration.pdf",
   scale = 1,
   width = NA,
-  height = NA
+  height = NA,
+  useDingbats = F
 )
 ```
 

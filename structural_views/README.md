@@ -1,0 +1,9 @@
+## Structural images
+
+This directory contains a series of text files containing PyMol commands that can be run to generate structural views and alignments for various figures and analyses.
+
+- The file [surface_constraint_features.pse](surface_constraint_features.pse) was constructed from a set of `pdb` structures in the `data` subdirectory and the output `pdb` files from the `structure_function.Rmd` script, which replaces the RBD b factor column with the mean mutational effects per site from our DMS measurements. By executing the list of commands in [surface_constraint_commands.txt](surface_constraint_commands.txt) in `PyMol`, this `.pse` can be generated anew. This PyMol session contains structural alignments of ACE2-bound RBD, full Spike trimer in the open and closed states, and all mAb structures included in our analyses. The RBD is loaded as two different objects, where the surface is colored by the mean mutational effect on binding or expression (colored from red to white, where any site with mean mutational effect values less than or equal to -2 is the darkest red, and mean effects from -2 to zero scale from red to white).
+
+- The commands in [images_epitope_commands.txt](images_epitope_commands.txt) generate a series of base and outline png files in the `./images_epitope-outlines` subdirectory, which can be aligned to highlight epitopes on the RBD surface
+
+- The commands in [color_spheres_by_constraint.txt](color_spheres_by_constraint.txt) generate a series of figures relevant to our discussion of overall structure-function constraints, including the representations of the RBD with Calpha sphere colored by mutational constraint, and a couple additional representations such as potential NLGS knock-ins and the location of residues with binding-specific mutational constraint.
