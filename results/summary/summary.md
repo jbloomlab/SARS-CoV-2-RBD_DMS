@@ -44,8 +44,10 @@ workflow:
 
 10. [Structure-function analysis of mutational effects](structure_function.md).
 
-11. [Mutational constraint within RBD antibody epitopes](antibody_epitopes.md)
+11. [Logo plots of mutational effects](logoplots_of_muteffects.md).
 
-12. [RBD variation across the sarbecovirus clade](sarbecovirus_diversity.md)
+12. [Mutational constraint within RBD antibody epitopes](antibody_epitopes.md)
 
-13. [RBD variation in circulating SARS-CoV-2 isolates](circulating_variants.md).
+13. [RBD variation across the sarbecovirus clade](sarbecovirus_diversity.md)
+
+14. [RBD variation in circulating SARS-CoV-2 isolates](circulating_variants.md).

@@ -39,3 +39,11 @@ The [./structures/](structures) directory contains information relevant for stru
 Specifically, [./structures/Ab-bound/](structures/Ab-bound) and [./structures/ACE2-bound](./structures/ACE2-bound) contain PDB files of SARS-CoV and SARS-CoV-2 spike and RBD proteins, either free, bound to ACE2, or antibodies. Each subdirectory contains the `.pdb` files, and a `.pse` session illustrating structural alignment of the component `.pdb` files.
 
 The [./structures/annotate-structural-elements.R](structures/annotate-structural-elements.R) script analyzes the various PDB files to create strucutral annotations, including relative solvent accessibility, ACE2 contact residues, and antibody epitope sites. This script was run to create the file [./RBD_sites.csv](RBD_sites.csv)
+
+The file [./structures/surface_constraint_features.pse](structures/surface_constraint_features.pse) was constructed from a set of `pdb` structures in this directory along with the output `pdb` files from the `structure_function.Rmd` script, which replaces the RBD b factor column with the mean mutational effects per site from our DMS measurements. By executing the list of commands in [./structures/surface_constraint_commands.txt](structures/surface_constraint_commands.txt) in `PyMol`, this `.pse` can be generated anew. This PyMol session contains structural alignments of ACE2-bound RBD, full Spike trimer in the closed state, and all mAb structures included in our analyses. The RBD is loaded as two different objects, where the surface is colored by the mean mutational effect on binding or expression (colored from red to white, where any site with mean mutational effect values less than or equal to -2 is the darkest red, and mean effects from -2 to zero scale from red to white).
+
+The images in [./structures/epitopes_view2.pdf](structures/epitopes_view2.pdf) were generated from this PyMol session by following the commands and instructions given iin [./structures/images_epitope_commands.txt](structures/images_epitope_commands.txt).
+
+## Fonts
+
+- [./uni-sans/](uni-sans) has the Uni-Sans font downloaded from here: https://www.1001fonts.com/uni-sans-font.html
