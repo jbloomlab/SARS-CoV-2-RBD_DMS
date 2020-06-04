@@ -51,6 +51,7 @@ rule make_summary:
         single_mut_effects_file=config['single_mut_effects_file'],
         homolog_effects_file=config['homolog_effects_file'],
         structure_function='results/summary/structure_function.md',
+        logoplots_of_muteffects='results/summary/logoplots_of_muteffects.md',
         circulating_variants='results/summary/circulating_variants.md',
         antibody_epitopes='results/summary/antibody_epitopes.md',
         sarbecovirus_diversity='results/summary/sarbecovirus_diversity.md'
@@ -108,11 +109,13 @@ rule make_summary:
                
             10. [Structure-function analysis of mutational effects]({path(input.structure_function)}).
 
-            11. [Mutational constraint within RBD antibody epitopes]({path(input.antibody_epitopes)})
+            11. [Logo plots of mutational effects]({path(input.logoplots_of_muteffects)}).
 
-            12. [RBD variation across the sarbecovirus clade]({path(input.sarbecovirus_diversity)})
+            12. [Mutational constraint within RBD antibody epitopes]({path(input.antibody_epitopes)})
+
+            13. [RBD variation across the sarbecovirus clade]({path(input.sarbecovirus_diversity)})
             
-            13. [RBD variation in circulating SARS-CoV-2 isolates]({path(input.circulating_variants)}).
+            14. [RBD variation in circulating SARS-CoV-2 isolates]({path(input.circulating_variants)}).
             
 
             """
@@ -185,6 +188,16 @@ rule circulating_variants:
         mv {params.md} {output.md};
         mv {params.md_files} {output.md_files}
         """
+
+rule logoplots_of_muteffects:
+    input:
+        config['single_mut_effects_file']
+    output:
+        nb_markdown=nb_markdown('logoplots_of_muteffects.ipynb')
+    params:
+        nb='logoplots_of_muteffects.ipynb'
+    shell:
+        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
 rule structure_function:
     input:
