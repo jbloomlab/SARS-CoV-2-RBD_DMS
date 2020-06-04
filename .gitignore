@@ -40,3 +40,5 @@ results/single_mut_effects/*
 results/structure_function/*
 !results/structure_function/6m0j_b-factor-mean-bind.pdb
 !results/structure_function/6m0j_b-factor-mean-expr.pdb
+
+!results/dms_view/
