@@ -45,6 +45,7 @@ workflow:
 10. [Structure-function analysis of mutational effects](structure_function.md).
 
 11. [Logo plots of mutational effects](logoplots_of_muteffects.md).
+    Also creates [input file for `dms-view`](../dms_view/dms-view_table.csv).
 
 12. [Mutational constraint within RBD antibody epitopes](antibody_epitopes.md)
 

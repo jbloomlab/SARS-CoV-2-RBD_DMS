@@ -1,4 +1,5 @@
 # Logo plots showing effects of mutations
+Creates logo plot visualizations and input file for [dms-view](https://dms-view.github.io/) visualizations.
 
 ## Imports and read data
 Import Python modules:
@@ -52,8 +53,6 @@ Read in the configuration file, and then read the input data files from that:
 ```python
 with open('config.yaml') as f:
     config = yaml.safe_load(f)
-    
-os.makedirs(config['figs_dir'], exist_ok=True)
 
 print(f"Reading single-mutant effects from {config['single_mut_effects_file']}")
 mut_effects = pd.read_csv(config['single_mut_effects_file'])
@@ -368,6 +367,13 @@ site_annotations.head()
 
 
 
+Make output directory:
+
+
+```python
+os.makedirs(config['logoplots_dir'], exist_ok=True)
+```
+
 ## Compute letter heights
 Here we explain how we use the experimental measurements to compute letter heights for plotting in the logo plots.
 
@@ -409,7 +415,7 @@ Assuming that we want to compute probabilities at the same temperature at which 
 There is no natural thermodynamic interpretation for expression, so we arbitrarily choose $\alpha_{\rm{expr}}$ so that the range of the exponents in computing $p_{r,a}^{\rm{expr}}$ is the same as that for computing $p_{r,a}^{\rm{bind}}$, which gives $\alpha_{\rm{expr}} = \alpha_{\rm{bind}} \frac{\max x_{r,a}^{\rm{expr}} - \min x_{r,a}^{\rm{expr}}}{\max x_{r,a}^{\rm{bind}} - \min x_{r,a}^{\rm{bind}}}$.
 
 Note, however, since in the end we are creating visualizations, it would also be reasonable to manually tune the values of $\alpha$ to adjust how much more favorable amino acids have larger letters (on a heat-map representation, this adjustment of $\alpha$ just corresponds to changing the log base or the color scale).
-So the the actual calculatins below, we add a manual scaling factor to make things look a bit more peaked than in the thermodynamic interpretation:
+So the the actual calculations below, we add a manual scaling factor $>1$ to make things look a bit more peaked than in the thermodynamic interpretation:
 
 ### Actually compute letter heights
 We now actually compute the letter heights use the definitions above.
@@ -421,7 +427,7 @@ In the final data frame, `prob_bind` / `prob_expr` are the letter heights define
 nostop_mut_effects = mut_effects.query('(mutant != "*") and (wildtype != "*")')
 
 # exponent scaling factors alpha for binding and expression
-manual_scale_alpha = 1.3  # ad hoc additional scaling factor for exponents
+manual_scale_alpha = 1.4  # ad hoc additional scaling factor for exponents
 alpha_bind = math.log(10) * manual_scale_alpha
 alpha_expr = alpha_bind * ((nostop_mut_effects['expr_avg'].max() - nostop_mut_effects['expr_avg'].min()) /
                            (nostop_mut_effects['bind_avg'].max() - nostop_mut_effects['bind_avg'].min()))
@@ -447,7 +453,7 @@ letter_heights = (
             )
     [['site_SARS2', 'site_RBD', 'wildtype', 'mutant',
       'prob_bind', 'prob_expr', 'site_info_bind', 'site_info_expr',
-      'mut_info_bind', 'mut_info_expr']]
+      'mut_info_bind', 'mut_info_expr', 'bind_avg', 'expr_avg']]
     )
 
 assert not letter_heights[['mut_info_bind', 'mut_info_expr', 'prob_bind', 'prob_expr']].isnull().any(axis=None)
@@ -456,8 +462,8 @@ letter_heights.head().round(3)
 ```
 
     alpha (exponent scale factor):
-    binding = 2.993
-    expression = 2.947
+    binding = 3.224
+    expression = 3.173
 
 
 
@@ -491,6 +497,8 @@ letter_heights.head().round(3)
       <th>site_info_expr</th>
       <th>mut_info_bind</th>
       <th>mut_info_expr</th>
+      <th>bind_avg</th>
+      <th>expr_avg</th>
     </tr>
   </thead>
   <tbody>
@@ -501,11 +509,13 @@ letter_heights.head().round(3)
       <td>N</td>
       <td>A</td>
       <td>0.050</td>
-      <td>0.119</td>
-      <td>0.009</td>
-      <td>0.32</td>
-      <td>0.000</td>
-      <td>0.038</td>
+      <td>0.124</td>
+      <td>0.011</td>
+      <td>0.358</td>
+      <td>0.001</td>
+      <td>0.044</td>
+      <td>-0.03</td>
+      <td>-0.11</td>
     </tr>
     <tr>
       <th>1</th>
@@ -513,12 +523,14 @@ letter_heights.head().round(3)
       <td>1</td>
       <td>N</td>
       <td>C</td>
-      <td>0.042</td>
-      <td>0.004</td>
-      <td>0.009</td>
-      <td>0.32</td>
+      <td>0.041</td>
+      <td>0.003</td>
+      <td>0.011</td>
+      <td>0.358</td>
       <td>0.000</td>
       <td>0.001</td>
+      <td>-0.09</td>
+      <td>-1.26</td>
     </tr>
     <tr>
       <th>2</th>
@@ -526,12 +538,14 @@ letter_heights.head().round(3)
       <td>1</td>
       <td>N</td>
       <td>D</td>
-      <td>0.060</td>
-      <td>0.045</td>
-      <td>0.009</td>
-      <td>0.32</td>
+      <td>0.061</td>
+      <td>0.044</td>
+      <td>0.011</td>
+      <td>0.358</td>
       <td>0.001</td>
-      <td>0.014</td>
+      <td>0.016</td>
+      <td>0.03</td>
+      <td>-0.44</td>
     </tr>
     <tr>
       <th>3</th>
@@ -541,10 +555,12 @@ letter_heights.head().round(3)
       <td>E</td>
       <td>0.055</td>
       <td>0.066</td>
-      <td>0.009</td>
-      <td>0.32</td>
+      <td>0.011</td>
+      <td>0.358</td>
       <td>0.001</td>
-      <td>0.021</td>
+      <td>0.024</td>
+      <td>0.00</td>
+      <td>-0.31</td>
     </tr>
     <tr>
       <th>4</th>
@@ -552,12 +568,14 @@ letter_heights.head().round(3)
       <td>1</td>
       <td>N</td>
       <td>F</td>
-      <td>0.041</td>
-      <td>0.021</td>
-      <td>0.009</td>
-      <td>0.32</td>
+      <td>0.040</td>
+      <td>0.019</td>
+      <td>0.011</td>
+      <td>0.358</td>
       <td>0.000</td>
       <td>0.007</td>
+      <td>-0.10</td>
+      <td>-0.70</td>
     </tr>
   </tbody>
 </table>
@@ -584,7 +602,7 @@ _ = p.draw()
 ```
 
 
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_18_0.png)
+![png](logoplots_of_muteffects_files/logoplots_of_muteffects_20_0.png)
 
 
 ## Draw logo plots
@@ -637,6 +655,8 @@ logo_df.head()
       <th>site_info_expr</th>
       <th>mut_info_bind</th>
       <th>mut_info_expr</th>
+      <th>bind_avg</th>
+      <th>expr_avg</th>
       <th>amino_acid_SARS1</th>
       <th>RSA_bound</th>
       <th>RSA_unbound</th>
@@ -650,12 +670,14 @@ logo_df.head()
       <td>1</td>
       <td>N</td>
       <td>A</td>
-      <td>0.050044</td>
-      <td>0.119161</td>
-      <td>0.009328</td>
-      <td>0.32016</td>
-      <td>0.000467</td>
-      <td>0.038151</td>
+      <td>0.050009</td>
+      <td>0.124117</td>
+      <td>0.010774</td>
+      <td>0.358381</td>
+      <td>0.000539</td>
+      <td>0.044481</td>
+      <td>-0.03</td>
+      <td>-0.11</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -667,12 +689,14 @@ logo_df.head()
       <td>1</td>
       <td>N</td>
       <td>C</td>
-      <td>0.041817</td>
-      <td>0.004022</td>
-      <td>0.009328</td>
-      <td>0.32016</td>
-      <td>0.000390</td>
-      <td>0.001288</td>
+      <td>0.041214</td>
+      <td>0.003228</td>
+      <td>0.010774</td>
+      <td>0.358381</td>
+      <td>0.000444</td>
+      <td>0.001157</td>
+      <td>-0.09</td>
+      <td>-1.26</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -684,12 +708,14 @@ logo_df.head()
       <td>1</td>
       <td>N</td>
       <td>D</td>
-      <td>0.059890</td>
-      <td>0.045062</td>
-      <td>0.009328</td>
-      <td>0.32016</td>
-      <td>0.000559</td>
-      <td>0.014427</td>
+      <td>0.060681</td>
+      <td>0.043553</td>
+      <td>0.010774</td>
+      <td>0.358381</td>
+      <td>0.000654</td>
+      <td>0.015609</td>
+      <td>0.03</td>
+      <td>-0.44</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -701,12 +727,14 @@ logo_df.head()
       <td>1</td>
       <td>N</td>
       <td>E</td>
-      <td>0.054746</td>
-      <td>0.066097</td>
-      <td>0.009328</td>
-      <td>0.32016</td>
-      <td>0.000511</td>
-      <td>0.021162</td>
+      <td>0.055087</td>
+      <td>0.065794</td>
+      <td>0.010774</td>
+      <td>0.358381</td>
+      <td>0.000594</td>
+      <td>0.023579</td>
+      <td>0.00</td>
+      <td>-0.31</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -718,12 +746,14 @@ logo_df.head()
       <td>1</td>
       <td>N</td>
       <td>F</td>
-      <td>0.040584</td>
-      <td>0.020945</td>
-      <td>0.009328</td>
-      <td>0.32016</td>
-      <td>0.000379</td>
-      <td>0.006706</td>
+      <td>0.039907</td>
+      <td>0.019085</td>
+      <td>0.010774</td>
+      <td>0.358381</td>
+      <td>0.000430</td>
+      <td>0.006840</td>
+      <td>-0.10</td>
+      <td>-0.70</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -781,7 +811,7 @@ for height_col, ylabel in [
         ('prob_expr', 'RBD expression'),
         ]:
 
-    filename = os.path.join(config['figs_dir'], f"{height_col}_logo.pdf")
+    filename = os.path.join(config['logoplots_dir'], f"{height_col}_logo.pdf")
     print(f"\nPlotting {height_col} and saving to {filename}...")
     
     fig = logomaker_utils.line_wrapped_logo(
@@ -812,19 +842,19 @@ for height_col, ylabel in [
 ```
 
     
-    Plotting prob_bind and saving to results/figures/prob_bind_logo.pdf...
+    Plotting prob_bind and saving to results/logoplots/prob_bind_logo.pdf...
 
 
 
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_25_1.png)
+![png](logoplots_of_muteffects_files/logoplots_of_muteffects_27_1.png)
 
 
     
-    Plotting prob_expr and saving to results/figures/prob_expr_logo.pdf...
+    Plotting prob_expr and saving to results/logoplots/prob_expr_logo.pdf...
 
 
 
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_25_3.png)
+![png](logoplots_of_muteffects_files/logoplots_of_muteffects_27_3.png)
 
 
 ### Draw combined logo with binding and expression
@@ -835,23 +865,7 @@ We also make a column that colors letters differently if they are for expression
 
 
 ```python
-def color_by_direction(row):
-    """Assign letter colors differently for expression and binding."""
-    if row['property_type'] == 'expression':
-        if row['wildtype'].upper() == row['mutant'].upper():
-            return 'mediumblue'
-        else:
-            return 'cornflowerblue'
-    elif row['property_type'] == 'binding':
-        if row['wildtype'].upper() == row['mutant'].upper():
-            return 'darkred'
-        else:
-            return 'indianred'
-    else:
-        raise ValueError(f"invalid `property_type` {row['property_type']}")
-
-combo_logo_df = (
-    pd.concat([
+combo_logo_df = pd.concat([
         # data for binding
         logo_df.drop(columns=[c for c in logo_df.columns if '_expr' in c])
                .rename(columns={c: c.replace('_bind', '') for c in logo_df.columns})
@@ -865,8 +879,6 @@ combo_logo_df = (
                        property_type='expression'),
         ],
         ignore_index=True, sort=False)
-    .assign(color_by_direction=lambda x: x.apply(color_by_direction, axis=1))
-    )
 
 combo_logo_df
 ```
@@ -899,6 +911,8 @@ combo_logo_df
       <th>prob</th>
       <th>site_info</th>
       <th>mut_info</th>
+      <th>bind_avg</th>
+      <th>expr_avg</th>
       <th>amino_acid_SARS1</th>
       <th>RSA_bound</th>
       <th>RSA_unbound</th>
@@ -907,7 +921,6 @@ combo_logo_df
       <th>highlight_color</th>
       <th>highlight_alpha</th>
       <th>property_type</th>
-      <th>color_by_direction</th>
     </tr>
   </thead>
   <tbody>
@@ -917,9 +930,11 @@ combo_logo_df
       <td>1</td>
       <td>N</td>
       <td>A</td>
-      <td>0.050044</td>
-      <td>0.009328</td>
-      <td>0.000467</td>
+      <td>0.050009</td>
+      <td>0.010774</td>
+      <td>0.000539</td>
+      <td>-0.03</td>
+      <td>-0.11</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -928,7 +943,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>binding</td>
-      <td>indianred</td>
     </tr>
     <tr>
       <th>1</th>
@@ -936,9 +950,11 @@ combo_logo_df
       <td>1</td>
       <td>N</td>
       <td>C</td>
-      <td>0.041817</td>
-      <td>0.009328</td>
-      <td>0.000390</td>
+      <td>0.041214</td>
+      <td>0.010774</td>
+      <td>0.000444</td>
+      <td>-0.09</td>
+      <td>-1.26</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -947,7 +963,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>binding</td>
-      <td>indianred</td>
     </tr>
     <tr>
       <th>2</th>
@@ -955,9 +970,11 @@ combo_logo_df
       <td>1</td>
       <td>N</td>
       <td>D</td>
-      <td>0.059890</td>
-      <td>0.009328</td>
-      <td>0.000559</td>
+      <td>0.060681</td>
+      <td>0.010774</td>
+      <td>0.000654</td>
+      <td>0.03</td>
+      <td>-0.44</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -966,7 +983,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>binding</td>
-      <td>indianred</td>
     </tr>
     <tr>
       <th>3</th>
@@ -974,9 +990,11 @@ combo_logo_df
       <td>1</td>
       <td>N</td>
       <td>E</td>
-      <td>0.054746</td>
-      <td>0.009328</td>
-      <td>0.000511</td>
+      <td>0.055087</td>
+      <td>0.010774</td>
+      <td>0.000594</td>
+      <td>0.00</td>
+      <td>-0.31</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -985,7 +1003,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>binding</td>
-      <td>indianred</td>
     </tr>
     <tr>
       <th>4</th>
@@ -993,9 +1010,11 @@ combo_logo_df
       <td>1</td>
       <td>N</td>
       <td>F</td>
-      <td>0.040584</td>
-      <td>0.009328</td>
-      <td>0.000379</td>
+      <td>0.039907</td>
+      <td>0.010774</td>
+      <td>0.000430</td>
+      <td>-0.10</td>
+      <td>-0.70</td>
       <td>N</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1004,10 +1023,10 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>binding</td>
-      <td>indianred</td>
     </tr>
     <tr>
       <th>...</th>
+      <td>...</td>
       <td>...</td>
       <td>...</td>
       <td>...</td>
@@ -1031,9 +1050,11 @@ combo_logo_df
       <td>201</td>
       <td>T</td>
       <td>s</td>
-      <td>-0.054149</td>
-      <td>0.007288</td>
-      <td>-0.000395</td>
+      <td>-0.054449</td>
+      <td>0.008464</td>
+      <td>-0.000461</td>
+      <td>0.01</td>
+      <td>0.02</td>
       <td>T</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1042,7 +1063,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>expression</td>
-      <td>cornflowerblue</td>
     </tr>
     <tr>
       <th>8036</th>
@@ -1050,9 +1070,11 @@ combo_logo_df
       <td>201</td>
       <td>T</td>
       <td>t</td>
-      <td>-0.051050</td>
-      <td>0.007288</td>
-      <td>-0.000372</td>
+      <td>-0.051101</td>
+      <td>0.008464</td>
+      <td>-0.000433</td>
+      <td>0.00</td>
+      <td>0.00</td>
       <td>T</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1061,7 +1083,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>expression</td>
-      <td>mediumblue</td>
     </tr>
     <tr>
       <th>8037</th>
@@ -1069,9 +1090,11 @@ combo_logo_df
       <td>201</td>
       <td>T</td>
       <td>v</td>
-      <td>-0.042777</td>
-      <td>0.007288</td>
-      <td>-0.000312</td>
+      <td>-0.042241</td>
+      <td>0.008464</td>
+      <td>-0.000358</td>
+      <td>0.01</td>
+      <td>-0.06</td>
       <td>T</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1080,7 +1103,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>expression</td>
-      <td>cornflowerblue</td>
     </tr>
     <tr>
       <th>8038</th>
@@ -1088,9 +1110,11 @@ combo_logo_df
       <td>201</td>
       <td>T</td>
       <td>w</td>
-      <td>-0.040329</td>
-      <td>0.007288</td>
-      <td>-0.000294</td>
+      <td>-0.039643</td>
+      <td>0.008464</td>
+      <td>-0.000336</td>
+      <td>-0.02</td>
+      <td>-0.08</td>
       <td>T</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1099,7 +1123,6 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>expression</td>
-      <td>cornflowerblue</td>
     </tr>
     <tr>
       <th>8039</th>
@@ -1107,9 +1130,11 @@ combo_logo_df
       <td>201</td>
       <td>T</td>
       <td>y</td>
-      <td>-0.044056</td>
-      <td>0.007288</td>
-      <td>-0.000321</td>
+      <td>-0.043603</td>
+      <td>0.008464</td>
+      <td>-0.000369</td>
+      <td>-0.01</td>
+      <td>-0.05</td>
       <td>T</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -1118,42 +1143,34 @@ combo_logo_df
       <td>None</td>
       <td>0.25</td>
       <td>expression</td>
-      <td>cornflowerblue</td>
     </tr>
   </tbody>
 </table>
-<p>8040 rows × 16 columns</p>
+<p>8040 rows × 17 columns</p>
 </div>
 
 
 
 Now draw these logo plots with binding (upper-case letters) at top and expression (lower-case letters) at bottom.
-We plot this only for the probabilities; if you want the information content then change `height_col='prob'` to `height_col='info'`.
-We iterate over several options for fading or coloring letters:
+We plot this only for the probabilities; if you want the information content then change `height_col='prob'` to `height_col='info'`:
 
 
 ```python
-for name, fade_letters_by_height, color_col in [
-        ('fade_small_letters', (0.5, 1), 'color'),
-        ('no_fade_letters', None, 'color'),
-        ('color_by_pheno', None, 'color_by_direction'),
-        ]:
-
-    filename = os.path.join(config['figs_dir'], f"prob_{name}_logo.pdf")
-    print(f"\nPlotting {name} and saving to {filename}...")
-    
-    fig = logomaker_utils.line_wrapped_logo(
+filename = os.path.join(config['logoplots_dir'], f"prob_logo.pdf")
+print(f"\nPlotting and saving to {filename}...")
+   
+fig = logomaker_utils.line_wrapped_logo(
         combo_logo_df,
         site_col='site_SARS2',
         letter_col='mutant',
         height_col='prob',
-        color_col=color_col,
+        color_col='color',
         highlight_color_col='highlight_color',
         highlight_alpha_col='highlight_alpha',
         missing_letter='zero_height',
         sites_per_line=51,
         scaleheight=1.5,
-        fade_letters_by_height=fade_letters_by_height,
+        fade_letters_by_height=(0.5, 1),  # smaller letters more transparent
         style_xticks_kwargs={'spacing': 2,  # number every other residue  
                              },
         logo_kwargs={'font_name': 'Uni Sans',
@@ -1167,33 +1184,17 @@ for name, fade_letters_by_height, color_col in [
         all_letters=combo_logo_df['mutant'].unique()
         )
     
-    display(fig)
-    fig.savefig(filename)
-    plt.close(fig)
+display(fig)
+fig.savefig(filename)
+plt.close(fig)
 ```
 
     
-    Plotting fade_small_letters and saving to results/figures/prob_fade_small_letters_logo.pdf...
+    Plotting and saving to results/logoplots/prob_logo.pdf...
 
 
 
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_29_1.png)
-
-
-    
-    Plotting no_fade_letters and saving to results/figures/prob_no_fade_letters_logo.pdf...
-
-
-
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_29_3.png)
-
-
-    
-    Plotting color_by_pheno and saving to results/figures/prob_color_by_pheno_logo.pdf...
-
-
-
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_29_5.png)
+![png](logoplots_of_muteffects_files/logoplots_of_muteffects_31_1.png)
 
 
 ## Zoomed logos
@@ -1246,7 +1247,7 @@ plt.close(fig)
 ```
 
 
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_32_0.png)
+![png](logoplots_of_muteffects_files/logoplots_of_muteffects_34_0.png)
 
 
 ### Look at contact residues
@@ -1276,6 +1277,7 @@ fig = logomaker_utils.line_wrapped_logo(
         sites_per_line=51,
         scaleheight=1.9,
         scalewidth=1.2,
+        fade_letters_by_height=(0.5, 1),  # smaller letters more transparent
         logo_kwargs={'font_name': 'Uni Sans',
                      'width': 0.9,  # width of letters
                      'vpad': 0.05,  # vertical padding between letters
@@ -1292,10 +1294,299 @@ plt.close(fig)
 ```
 
 
-![png](logoplots_of_muteffects_files/logoplots_of_muteffects_34_0.png)
+![png](logoplots_of_muteffects_files/logoplots_of_muteffects_36_0.png)
 
+
+## Create input file for `dms-view`
 
 
 ```python
+dms_view_df = (
+    letter_heights
+    .rename(columns={'site_RBD': 'site',
+                     'site_SARS2': 'label_site',
+                     'mutant': 'mutation',
+                     'prob_bind': 'ACE2-binding',
+                     'prob_expr': 'expression',
+                     })
+    .assign(protein_chain='E',
+            protein_site=lambda x: x['label_site'],
+            )
+    .melt(id_vars=['site', 'label_site', 'wildtype', 'mutation',
+                   'protein_chain', 'protein_site'],
+          value_vars=['ACE2-binding', 'expression'],
+          var_name='condition',
+          value_name='mut_preference',
+          )
+    .merge(letter_heights
+           .rename(columns={'bind_avg': 'ACE2-binding',
+                            'expr_avg': 'expression',
+                            'site_SARS2': 'label_site',
+                            'mutant': 'mutation',
+                            })
+           .melt(id_vars=['label_site', 'mutation'],
+                 value_vars=['ACE2-binding', 'expression'],
+                 var_name='condition',
+                 value_name='mut_delta_effect',
+                 ),
+           validate='one_to_one'
+           )
+    .assign(
+        site_entropy=lambda x: x.groupby(['site', 'condition'])
+                                ['mut_preference']
+                                .transform(lambda p: -sum(p[p > 0] * 
+                                                          numpy.log(p[p > 0]))),
+        site_n_effective=lambda x: numpy.exp(x['site_entropy']),
+        site_mean_effect=lambda x: x.groupby(['site', 'condition'])
+                                    ['mut_delta_effect']
+                                    .transform('mean'),
+        site_min_effect=lambda x: x.groupby(['site', 'condition'])
+                                    ['mut_delta_effect']
+                                    .transform('min'),
+        site_max_effect=lambda x: x.groupby(['site', 'condition'])
+                                   ['mut_delta_effect']
+                                   .transform('max'),
+        )
+    )
 
+print(f"Writing to {config['dms_view_file']}")
+os.makedirs(config['dms_view_dir'], exist_ok=True)
+dms_view_df.to_csv(config['dms_view_file'], index=False)
+
+dms_view_df
 ```
+
+    Writing to results/dms_view/dms-view_table.csv
+
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site</th>
+      <th>label_site</th>
+      <th>wildtype</th>
+      <th>mutation</th>
+      <th>protein_chain</th>
+      <th>protein_site</th>
+      <th>condition</th>
+      <th>mut_preference</th>
+      <th>mut_delta_effect</th>
+      <th>site_entropy</th>
+      <th>site_n_effective</th>
+      <th>site_mean_effect</th>
+      <th>site_min_effect</th>
+      <th>site_max_effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>A</td>
+      <td>E</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.050009</td>
+      <td>-0.03</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>C</td>
+      <td>E</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.041214</td>
+      <td>-0.09</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>D</td>
+      <td>E</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.060681</td>
+      <td>0.03</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>E</td>
+      <td>E</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.055087</td>
+      <td>0.00</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>F</td>
+      <td>E</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.039907</td>
+      <td>-0.10</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>8035</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>S</td>
+      <td>E</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.054449</td>
+      <td>0.02</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8036</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>T</td>
+      <td>E</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.051101</td>
+      <td>0.00</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8037</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>V</td>
+      <td>E</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.042241</td>
+      <td>-0.06</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8038</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>W</td>
+      <td>E</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.039643</td>
+      <td>-0.08</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8039</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>Y</td>
+      <td>E</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.043603</td>
+      <td>-0.05</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+  </tbody>
+</table>
+<p>8040 rows × 14 columns</p>
+</div>
+
+
