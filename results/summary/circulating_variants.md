@@ -3,6 +3,12 @@ Circulating SARS-CoV-2 RBD variants
 Tyler Starr
 5/12/2020
 
+  - [Setup](#setup)
+  - [Analyzing amino acid diversity in GISAID Spike
+    sequences](#analyzing-amino-acid-diversity-in-gisaid-spike-sequences)
+  - [Strength of selection among circulating
+    variants](#strength-of-selection-among-circulating-variants)
+
 This notebook analyzes RBD variants that have been sampled in isolates
 within the current SARS-CoV-2 pandemic.
 

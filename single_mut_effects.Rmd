@@ -4,6 +4,7 @@ author: "Tyler Starr"
 date: "5/11/2020"
 output:
   github_document:
+    toc: true
     html_preview: false
 editor_options: 
   chunk_output_type: inline
@@ -45,13 +46,32 @@ sessionInfo()
 
 Read in tables of per-barcode measured and predicted phenotypes. With these, we can reproduce the plots from the global epistasis notebooks.
 
-```{r bc_tables, fig.width=4,fig.height=4,fig.align="center", dpi=300,dev="png"}
+```{r bc_tables, fig.width=6,fig.height=9,fig.align="center", dpi=300,dev="png"}
 bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))
 bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))
 
-#can reproduce figures from global epistasis notebooks, e.g.:
-plot(bc_bind[library=="lib1",latent_phenotype_Cauchy_1],bc_bind[library=="lib1",log10Ka],pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="Tite-seq log10(Ka)")
-points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],bc_bind[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=3)
+#reproduce figures from global epistasis notebooks for illustrating shape (and bc-level scatter) from curve fits:
+par(mfrow=c(3,2))
+plot(bc_bind[library=="lib1",latent_phenotype_Cauchy_1],bc_bind[library=="lib1",log10Ka],main="bind, lib1",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log10(Ka)")
+points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],bc_bind[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=1.5)
+
+plot(bc_bind[library=="lib2",latent_phenotype_Cauchy_2],bc_bind[library=="lib2",log10Ka],main="bind,lib2",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log10(Ka)")
+points(bc_bind[library=="lib2",latent_phenotype_Cauchy_2][order(bc_bind[library=="lib2",latent_phenotype_Cauchy_2])],bc_bind[library=="lib2",predicted_phenotype_Cauchy_2][order(bc_bind[library=="lib2",latent_phenotype_Cauchy_2])],type="l",col="red",lwd=1.5)
+
+plot(bc_expr[library=="lib1",latent_phenotype_Cauchy_1],bc_expr[library=="lib1",delta_ML_meanF],main="expr, lib1",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)")
+points(bc_expr[library=="lib1",latent_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],bc_expr[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=1.5)
+
+plot(bc_expr[library=="lib2",latent_phenotype_Cauchy_2],bc_expr[library=="lib2",delta_ML_meanF],main="expr,lib2",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)")
+points(bc_expr[library=="lib2",latent_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],bc_expr[library=="lib2",predicted_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],type="l",col="red",lwd=1.5)
+
+#zoom in on expression scale to see what's happening in the main bulk, not stretching the scale for e.g. multiple stop mutants that drive the weird patterning
+plot(bc_expr[library=="lib1",latent_phenotype_Cauchy_1],bc_expr[library=="lib1",delta_ML_meanF],main="expr, lib1",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)",xlim=c(-5,0.25))
+points(bc_expr[library=="lib1",latent_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],bc_expr[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=1.5)
+
+plot(bc_expr[library=="lib2",latent_phenotype_Cauchy_2],bc_expr[library=="lib2",delta_ML_meanF],main="expr,lib2",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)",xlim=c(-5,0.25))
+points(bc_expr[library=="lib2",latent_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],bc_expr[library=="lib2",predicted_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],type="l",col="red",lwd=1.5)
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/global-epistasis-shapes.pdf",sep="")))
 ```
 
 We also read in all parameters from global epistasis models, and collapse down to individual tables reporting the lib1, lib2, and joint model inferred effects.
@@ -181,7 +201,7 @@ plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 be
 x <- betas_bind_nonepistatic_Gaussian$effect_lib1; y <- betas_bind_nonepistatic_Gaussian$effect_lib2; fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlab="lib1 beta (no nonlinearity)",ylab="lib2 beta (no nonlinearity)",main=paste("binding, Gaussian nonepistatic, R-squared:",round(summary(fit)$r.squared,digits=3)))
 
-
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis-coefs_bind.pdf",sep="")))
 ```
 We can see, reassuringly, that our single mutation effect estimates are better when we incorporate the nonlinearity -- this shows that the global epistasis transform improves this single mutation deconvolution from the multi-mutants in the library. The Cauchy likelihood models show better correlation between replicates. This may be in part because the "shape" of global epistasis differed between libraries in the two Gaussian likelihood fits.
 
@@ -536,6 +556,8 @@ plot(x,y,pch=16,col="#00000067",xlim=c(-1,0.5),ylim=c(-4,1),xlab="average lib1&l
 #Gaussian, latent, zommed in
 x <- rowMeans(betas_expr_latent_Gaussian[,c("effect_lib1","effect_lib2")]);y <- NULL; for(i in 1:nrow(betas_expr_latent_Gaussian)){y <- c(y, betas[mutation_RBD==betas_expr_latent_Gaussian$mutation[i],mean(c(expr_lib1_direct,expr_lib2_direct))])};fit <- lm(y~x)
 plot(x,y,pch=16,col="#00000067",xlim=c(-1,0.5),ylim=c(-4,1),xlab="average lib1&lib2 beta",ylab="direct single mut measurement",main=paste("Directly measured vs Gaussian, zoom latent scale.\n expression R-squared:",round(summary(fit)$r.squared,digits=3)))
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_global-epistasis_v_direct-observed-singles_expr.pdf",sep="")))
 ```
 
 Taken together, the observed-scale global epistasis coefficients appear to deviate from directly sampled measurements, such that the observed-scale predictions generate more positive expression effects than are actually observed in the direct sampling. This could point to an incorrect/incomplete global nonlinearity correction? I think the errant negative points could also be contributing (that is, mutations which the model predicts should have ~neutral effects, but experimentally were determined to have large deleteirous effects on expression -- we filtered out wildtype/synonymous barcodes of this type, but we do not have a basis on which to filter out mutant variants since we can not identify these at face value). It does appear that perhaps the Cauchy likelihood model is more tolerant of these outliers (it seems to have more points in this lower-right quadrant, and mathematically, it should be more tolerant of this type of outlier behavior because of it's fatter tails). The Cauchy likelihood does have marginally smaller R-squared than Gaussian likelihood (perhaps because it *is* more tolerant of these outliers), but it appears to exhibit less of this "bending" in the curve versus directly sampled singles, which is behavior that seems preferred, so we will go ahead with the Cauchy-likelihood observed-scale measurements as our expression effects of mutations -- and because these correlate better between replicates than do the directly sampled single-mutant barcodes, in contrast to the binding phenotypes, we will use *all* coefficients, not a mix of direct and modeled effects.

@@ -3,6 +3,17 @@ Relationship between DMS data and sarbecovirus RBD natural diversity
 Tyler Starr
 5/18/2020
 
+  - [Setup](#setup)
+  - [Relationship between DMS mutational tolerance and natural sequence
+    diversity](#relationship-between-dms-mutational-tolerance-and-natural-sequence-diversity)
+  - [Shifting mutational preferences across sarbecovirus
+    clades](#shifting-mutational-preferences-across-sarbecovirus-clades)
+  - [Sequence and functional variation within the SARS-CoV-2
+    clade](#sequence-and-functional-variation-within-the-sars-cov-2-clade)
+  - [Predicting (or failing to predict) homolog affinities from single
+    mutant effect
+    measurements](#predicting-or-failing-to-predict-homolog-affinities-from-single-mutant-effect-measurements)
+
 This notebook analyzes DMS meausurements in relation to natural sequence
 diversity in a broader alignment of sarbecovirus RBDs.
 
