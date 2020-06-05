@@ -52,3 +52,6 @@ workflow:
 13. [RBD variation across the sarbecovirus clade](sarbecovirus_diversity.md)
 
 14. [RBD variation in circulating SARS-CoV-2 isolates](circulating_variants.md).
+
+15. [Make interactive heat map](interactive_heatmap.md).
+    Creates [this heatmap](../interactive_heatmap.html).
