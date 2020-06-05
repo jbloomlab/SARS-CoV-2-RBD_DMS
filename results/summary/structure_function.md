@@ -56,7 +56,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 14.04.6 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -366,7 +366,7 @@ variant. Therefore, these artefactually low expression barcodes are
 still present in the SARS-CoV-2 mutant variants, which might supress the
 scale by 0.1 or 0.2 log-MFI units relative to the homologs. I think this
 is all ok since we’re not reading as far into these expression effects,
-but it odes complicate direct comparison of the mutant DFE versus
+but it does complicate direct comparison of the mutant DFE versus
 homologs. Perhaps we could shift the entire DFE by the same log-MFI
 value by which the wildtype value shifted when we eliminated the
 artefactual low-expression measurements? But I don’t like this either,
@@ -376,7 +376,10 @@ which at least in theory should be able to partially able to deal with
 these outliers while not suffering huge decreases in the mean estimate
 of mutational effects on expression, because the Cauchy likelihood model
 does allow rare errant outliers without large loss in
-likelihoood/shifting of the mean parameter.
+likelihoood/shifting of the mean parameter. Anyway, SARS-CoV-2 is
+therefore our lowest ascribed expression homolog, and we calculate that
+436 single mutants (11.48%) of mutants have expression as high or higher
+than SARS-CoV-2.
 
 <img src="structure_function_files/figure-gfm/DFE_bind-1.png" style="display: block; margin: auto;" />
 
