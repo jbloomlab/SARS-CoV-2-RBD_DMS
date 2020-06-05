@@ -42,3 +42,5 @@ results/structure_function/*
 !results/structure_function/6m0j_b-factor-mean-expr.pdb
 
 !results/dms_view/
+
+!results/interactive_heatmap.html

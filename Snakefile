@@ -55,7 +55,9 @@ rule make_summary:
         dms_view_file=config['dms_view_file'],
         circulating_variants='results/summary/circulating_variants.md',
         antibody_epitopes='results/summary/antibody_epitopes.md',
-        sarbecovirus_diversity='results/summary/sarbecovirus_diversity.md'
+        sarbecovirus_diversity='results/summary/sarbecovirus_diversity.md',
+        interactive_heatmap='results/summary/interactive_heatmap.md',
+        interactive_heatmap_html=config['interactive_heatmap'],
     output:
         summary = os.path.join(config['summary_dir'], 'summary.md')
     run:
@@ -118,7 +120,9 @@ rule make_summary:
             13. [RBD variation across the sarbecovirus clade]({path(input.sarbecovirus_diversity)})
             
             14. [RBD variation in circulating SARS-CoV-2 isolates]({path(input.circulating_variants)}).
-            
+
+            15. [Make interactive heat map]({path(input.interactive_heatmap)}).
+                Creates [this heatmap]({path(input.interactive_heatmap_html)}).
 
             """
             ).strip())
@@ -131,6 +135,17 @@ rule make_dag:
         os.path.join(config['summary_dir'], 'dag.svg')
     shell:
         "snakemake --forceall --dag | dot -Tsvg > {output}"
+
+rule interactive_heatmap:
+    input:
+        config['single_mut_effects_file']
+    output:
+        nb_markdown=nb_markdown('interactive_heatmap.ipynb'),
+        heatmap_html=config['interactive_heatmap']
+    params:
+        nb='interactive_heatmap.ipynb'
+    shell:
+        "python scripts/run_nb.py {params.nb} {output.nb_markdown}"
 
 rule sarbecovirus_diversity:
     input:
