@@ -4,6 +4,7 @@ author: "Tyler Starr"
 date: "5/12/2020"
 output:
   github_document:
+    toc: true
     html_preview: false
 editor_options: 
   chunk_output_type: inline

@@ -3,6 +3,12 @@ Mutational tolerance in antibody epitopes
 Tyler Starr
 5/12/2020
 
+  - [Setup](#setup)
+  - [Compare mutational tolerance within antibody
+    epitopes](#compare-mutational-tolerance-within-antibody-epitopes)
+  - [Comparison to natural sequence
+    diversity](#comparison-to-natural-sequence-diversity)
+
 This notebook analyzes the mutational tolerance of residues within
 epitopes of different monoclonal antibodies. I suggest opening the PyMol
 session in the repo at `data/structures/surface_constraint_features.pse`
