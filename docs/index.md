@@ -5,4 +5,8 @@
 layout: default
 ---
 
-here is where we are going to write stuff about the heatmap tool
+### Instructions
+- Hover over cells with mouse to reveal additional information.
+- Select site subsets using the drop down menu below the plots.
+- Change which sites are displayed by brushing the zoom bar and dragging the brush.
+- Clear the zoom bar by double clicking it.
