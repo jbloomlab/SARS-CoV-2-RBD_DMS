@@ -19,7 +19,7 @@ seqdata_source: HutchServer
 pacbio_runs: data/PacBio_runs.csv
 
 # list of Illumina sequencing runs of barcodes
-barcode_runs: data/barcode_runs.csv 
+barcode_runs: data/barcode_runs.csv
 
 # output directories / files
 summary_dir: results/summary
@@ -56,7 +56,7 @@ circulating_variants_dir: results/circulating_variants
 antibody_epitopes_dir: results/antibody_epitopes
 sarbecovirus_diversity_dir: results/sarbecovirus_diversity
 logoplots_dir: results/logoplots
-interactive_heatmap: results/interactive_heatmap.html
+interactive_heatmap: docs/_includes/interactive_heatmap.html
 
 # parameters for running PacBio `ccs` program
 min_ccs_accuracy: 0.999

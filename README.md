@@ -95,6 +95,8 @@ Then the large results files were added for tracking with:
     git lfs track results/structure_function/6m0j_b-factor-mean-bind.pdb
     git lfs track results/structure_function/6m0j_b-factor-mean-expr.pdb
 
+The one exception is the `interactive_heatmap.html` which is placed in `./docs/_includes/` so that it can be rendered using GitHub Pages.
+
 ## Updating the conda environment
 The [environment.yml](environment.yml) file contains a fully pinned conda environment.
 An environment without all of the versions pinned is in [environment_unpinned.yml](environment_unpinned.yml).
