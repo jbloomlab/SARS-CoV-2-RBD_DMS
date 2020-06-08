@@ -1934,17 +1934,21 @@ To get more quantitative information like that plotted above, we determine how m
 ```python
 count_dfs = []
 for variant_type in ['all', 'single']:
-    count_dfs.append(
-        variants.mutCounts(variant_type, mut_type='aa', samples=None)
-        .assign(variant_type=variant_type)
-        )
+    i_counts = (variants.mutCounts(variant_type, mut_type='aa', samples=None)
+                .assign(variant_type=variant_type)
+                )
+    count_dfs += [i_counts.assign(include_stops=True),
+                  i_counts
+                  .query('not mutation.str.contains("\*")', engine='python')
+                  .assign(include_stops=False)
+                  ]
     
 display(HTML(
     pd.concat(count_dfs)
     .assign(count=lambda x: (numpy.clip(x['count'], None, 2)
                              .map({0: '0', 1: '1', 2:'>1'}))
             )
-    .groupby(['variant_type', 'library', 'count'])
+    .groupby(['variant_type', 'include_stops', 'library', 'count'])
     .aggregate(number_of_mutations=pd.NamedAgg(column='mutation', aggfunc='count'))
     .to_html()
     ))
@@ -1957,10 +1961,12 @@ display(HTML(
       <th></th>
       <th></th>
       <th></th>
+      <th></th>
       <th>number_of_mutations</th>
     </tr>
     <tr>
       <th>variant_type</th>
+      <th>include_stops</th>
       <th>library</th>
       <th>count</th>
       <th></th>
@@ -1968,7 +1974,48 @@ display(HTML(
   </thead>
   <tbody>
     <tr>
-      <th rowspan="9" valign="top">all</th>
+      <th rowspan="18" valign="top">all</th>
+      <th rowspan="9" valign="top">False</th>
+      <th rowspan="3" valign="top">lib1</th>
+      <th>0</th>
+      <td>21</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>&gt;1</th>
+      <td>3783</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">lib2</th>
+      <th>0</th>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>&gt;1</th>
+      <td>3781</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">all libraries</th>
+      <th>0</th>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>&gt;1</th>
+      <td>3795</td>
+    </tr>
+    <tr>
+      <th rowspan="9" valign="top">True</th>
       <th rowspan="3" valign="top">lib1</th>
       <th>0</th>
       <td>24</td>
@@ -2008,7 +2055,48 @@ display(HTML(
       <td>3994</td>
     </tr>
     <tr>
-      <th rowspan="9" valign="top">single</th>
+      <th rowspan="18" valign="top">single</th>
+      <th rowspan="9" valign="top">False</th>
+      <th rowspan="3" valign="top">lib1</th>
+      <th>0</th>
+      <td>479</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>584</td>
+    </tr>
+    <tr>
+      <th>&gt;1</th>
+      <td>2756</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">lib2</th>
+      <th>0</th>
+      <td>467</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>543</td>
+    </tr>
+    <tr>
+      <th>&gt;1</th>
+      <td>2809</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">all libraries</th>
+      <th>0</th>
+      <td>178</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>243</td>
+    </tr>
+    <tr>
+      <th>&gt;1</th>
+      <td>3398</td>
+    </tr>
+    <tr>
+      <th rowspan="9" valign="top">True</th>
       <th rowspan="3" valign="top">lib1</th>
       <th>0</th>
       <td>507</td>
