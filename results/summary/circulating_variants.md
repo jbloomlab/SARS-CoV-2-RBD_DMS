@@ -308,13 +308,13 @@ get.codon.muts <- function(codon){
   codon_split <- strsplit(codon,split="")[[1]]
   codon_muts <- vector()
   for(i in nt[nt!=codon_split[1]]){
-    codon_muts <- c(codon_muts,translate(c(i,codon_split[2:3])))
+    codon_muts <- c(codon_muts,seqinr::translate(c(i,codon_split[2:3])))
   }
   for(i in nt[nt!=codon_split[2]]){
-    codon_muts <- c(codon_muts,translate(c(codon_split[1],i,codon_split[3])))
+    codon_muts <- c(codon_muts,seqinr::translate(c(codon_split[1],i,codon_split[3])))
   }
   for(i in nt[nt!=codon_split[3]]){
-    codon_muts <- c(codon_muts,translate(c(codon_split[1:2],i)))
+    codon_muts <- c(codon_muts,seqinr::translate(c(codon_split[1:2],i)))
   }
   return(codon_muts)
 }
@@ -357,8 +357,8 @@ effect of single-nt mutants = -0.22; median mutational effect of all
 amino acid muts = -0.34; P-value 2.3^{-4}, Wilcoxon rank-sum test.)
 
 To illustrate how selection acts on circulating variants, let’s compare
-the functional effects of observed mutations to those observed zero
-times. The violin plots below show the distribution of functional
+the functional effects of mutations, binned by number of observations in
+GISAID. The violin plots below show the distribution of functional
 effects on binding (left) and expression (right), comparing single-nt
 amino acid mutations with 0 observed counts in GISAID versus
 increasingly stringent GISAID count cutoffs. We can see a bias among
