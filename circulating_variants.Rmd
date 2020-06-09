@@ -259,13 +259,13 @@ get.codon.muts <- function(codon){
   codon_split <- strsplit(codon,split="")[[1]]
   codon_muts <- vector()
   for(i in nt[nt!=codon_split[1]]){
-    codon_muts <- c(codon_muts,translate(c(i,codon_split[2:3])))
+    codon_muts <- c(codon_muts,seqinr::translate(c(i,codon_split[2:3])))
   }
   for(i in nt[nt!=codon_split[2]]){
-    codon_muts <- c(codon_muts,translate(c(codon_split[1],i,codon_split[3])))
+    codon_muts <- c(codon_muts,seqinr::translate(c(codon_split[1],i,codon_split[3])))
   }
   for(i in nt[nt!=codon_split[3]]){
-    codon_muts <- c(codon_muts,translate(c(codon_split[1:2],i)))
+    codon_muts <- c(codon_muts,seqinr::translate(c(codon_split[1:2],i)))
   }
   return(codon_muts)
 }
@@ -309,30 +309,32 @@ invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/single-nt-mut_h
 
 As has been seen in other studies, the genetic code is structured in a conservative way such that neighboring codons exhibit similiar biochemical properties, which causes single-nt amino acid changes to have less deleterious effects than multiple-nt-mutant codon changes. We see this trend in our data as well, further illustrating why we should compare circulating variants to the single-nt-mutant amino acid effects as the "raw" distribution of functional effects. (Median mutational effect of single-nt mutants = `r median(mutants[mutant!=wildtype & singlemut==T,bind_avg],na.rm=T)`; median mutational effect of all amino acid muts = `r median(mutants[mutant!=wildtype,bind_avg],na.rm=T)`; P-value `r round(wilcox.test(mutants[mutant!=wildtype & singlemut==T,bind_avg],mutants[mutant!=wildtype,bind_avg])$p.value,digits=5)`, Wilcoxon rank-sum test.)
 
-To illustrate how selection acts on circulating variants, let's compare the functional effects of observed mutations to those observed zero times. The violin plots below show the distribution of functional effects on binding (left) and expression (right), comparing single-nt amino acid mutations with 0 observed counts in GISAID versus increasingly stringent GISAID count cutoffs. We can see a bias among circulating mutants for both binding and expression effects that are visually by eye higher than expected by random mutation alone. This suggests that purifying selection is removing deleterious RBD mutations that affect traits correlated with our measured binding and expression phenotypes. We may also see evidence that there is not strong positive selection for enhanced ACE2-binding affinity, as there are single mutations that can cause larger affinity increases than are actually seen in the GISAID set. We can evaluate these two conclusions further below with permutation tests.
+To illustrate how selection acts on circulating variants, let's compare the functional effects of mutations, binned by number of observations in GISAID. The violin plots below show the distribution of functional effects on binding (left) and expression (right), comparing single-nt amino acid mutations with 0 observed counts in GISAID versus increasingly stringent GISAID count cutoffs. We can see a bias among circulating mutants for both binding and expression effects that are visually by eye higher than expected by random mutation alone. This suggests that purifying selection is removing deleterious RBD mutations that affect traits correlated with our measured binding and expression phenotypes. We may also see evidence that there is not strong positive selection for enhanced ACE2-binding affinity, as there are single mutations that can cause larger affinity increases than are actually seen in the GISAID set. We can evaluate these two conclusions further below with permutation tests.
 
 ```{r circulating_variant_DFEs, fig.width=8,fig.height=4,fig.align="center", dpi=500,dev="png",echo=FALSE}
 #define factor for different nobs cutoffs, and collate into long data table for plotting
-muts_temp <- mutants[nobs==0 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
-muts_temp[,nobs_indicator:=as.factor("0")]
-muts_temp_add0 <- mutants[nobs>0 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
-muts_temp_add0[,nobs_indicator:=as.factor(">0")]
-muts_temp_add1 <- mutants[nobs>1 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
-muts_temp_add1[,nobs_indicator:=as.factor(">1")]
-muts_temp_add5 <- mutants[nobs>5 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
-muts_temp_add5[,nobs_indicator:=as.factor(">5")]
+muts_temp <- mutants[singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp[,nobs_indicator:=as.factor("all single nt muts")]
+muts_temp_add0 <- mutants[nobs>=1 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp_add0[,nobs_indicator:=as.factor(">=1")]
+muts_temp_add1 <- mutants[nobs>=2 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp_add1[,nobs_indicator:=as.factor(">=2")]
+muts_temp_add5 <- mutants[nobs>=6 & singlemut==TRUE & wildtype!=mutant & mutant!="*", ]
+muts_temp_add5[,nobs_indicator:=as.factor(">=6")]
 
 muts_temp <- rbind(muts_temp,muts_temp_add0,muts_temp_add1,muts_temp_add5)
 
 set.seed(198)
 p1 <- ggplot(muts_temp[!is.na(bind_avg),],aes(x=nobs_indicator,y=bind_avg))+
-  geom_jitter(width=0.2, alpha=0.25)+stat_summary(fun.y=median,geom="point",size=4,color="red",shape=18)+
-  xlab("mutation count in GISAID sequences")+ylab("delta_log10Ka,app (binding)")+
+  geom_boxplot(outlier.shape=16, width=0.4, outlier.alpha=0.5)+
+  #geom_jitter(width=0.2, alpha=0.1, shape=16)+
+  xlab("mutation count in GISAID sequences")+ylab("mutation effect on binding")+
   theme_classic()
 
 p2 <- ggplot(muts_temp[!is.na(nobs_indicator) & !is.na(expr_avg),],aes(x=nobs_indicator,y=expr_avg))+
-  geom_jitter(width=0.2, alpha=0.25)+stat_summary(fun.y=median,geom="point",size=4,color="red",shape=18)+
-  xlab("mutation count in GISAID sequences")+ylab("delta_meanF (expression)")+
+  geom_boxplot(outlier.shape=16, width=0.4, outlier.alpha=0.5)+
+  #geom_jitter(width=0.2, alpha=0.1, shape=16)+
+  xlab("mutation count in GISAID sequences")+ylab("mutation effect on expression")+
   theme_classic()
 
 grid.arrange(p1,p2,ncol=2)
