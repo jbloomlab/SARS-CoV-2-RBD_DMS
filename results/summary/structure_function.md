@@ -12,8 +12,6 @@ Tyler Starr
   - [Validation mutants](#validation-mutants)
   - [Epistasis in library double
     mutants](#epistasis-in-library-double-mutants)
-  - [Output for dms-view visualization of mutational
-    effects](#output-for-dms-view-visualization-of-mutational-effects)
 
 This notebook analyzes our single mutant effects on binding and
 expression in light of structural features of the RBD.
@@ -42,9 +40,6 @@ RBD_sites <- data.table(read.csv(file="data/RBD_sites.csv",stringsAsFactors=F))
 #make output directories
 if(!file.exists(config$structure_function_dir)){
   dir.create(file.path(config$structure_function_dir))
-}
-if(!file.exists(config$dms_view_dir)){
-  dir.create(file.path(config$dms_view_dir))
 }
 ```
 
@@ -572,6 +567,14 @@ these exploratory data, though other positions may be more important
 here in the SARS-CoV-2 side of the tree.
 
 <img src="structure_function_files/figure-gfm/heatmap_ACE2_contacts-1.png" style="display: block; margin: auto;" />
+
+To better represent these contact residue differences among these three
+CoV isolates and SARS-CoV-2, let’s make a more focused plot on interface
+residues, showing the average effect of the 19 mutations at that site
+and the effect of the mutation to the homolog state, faceted by the
+different homolog backgrounds.
+
+<img src="structure_function_files/figure-gfm/stripplot_ACE2_contacts_homologs-1.png" style="display: block; margin: auto;" />
 
 ## Validation mutants
 

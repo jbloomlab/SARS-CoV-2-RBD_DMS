@@ -25,6 +25,9 @@ import yaml
 import logomaker_utils  # custom module that uses logomaker to create plots
 ```
 
+    Matplotlib is building the font cache using fc-list. This may take a moment.
+
+
 Get the Uni Sans (all caps) font set up.
 Needed if we want to make plots where same letter is coded twice (for above and below line) and we want them to look like capital letters both thimes:
 
@@ -35,7 +38,7 @@ font_list = matplotlib.font_manager.createFontList(font_files)
 matplotlib.font_manager.fontManager.ttflist.extend(font_list)
 ```
 
-    /fh/fast/bloom_j/computational_notebooks/jbloom/2020/SARS-CoV-2-RBD_DMS/env/lib/python3.7/site-packages/ipykernel_launcher.py:2: MatplotlibDeprecationWarning: 
+    /fh/fast/bloom_j/computational_notebooks/tstarr/2020/SARS-CoV-2-RBD_DMS/env/lib/python3.7/site-packages/ipykernel_launcher.py:2: MatplotlibDeprecationWarning: 
     The createFontList function was deprecated in Matplotlib 3.2 and will be removed two minor releases later. Use FontManager.addfont instead.
       
 

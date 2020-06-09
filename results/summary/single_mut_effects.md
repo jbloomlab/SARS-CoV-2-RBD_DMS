@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 
 #list of packages to install/load
-packages = c("yaml","data.table","tidyverse")
+packages = c("yaml","data.table","tidyverse","gridExtra")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -75,10 +75,11 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ##  [1] forcats_0.4.0     stringr_1.4.0     dplyr_0.8.3      
-    ##  [4] purrr_0.3.2       readr_1.3.1       tidyr_0.8.3      
-    ##  [7] tibble_2.1.3      ggplot2_3.2.0     tidyverse_1.2.1  
-    ## [10] data.table_1.12.2 yaml_2.2.0        knitr_1.23       
+    ##  [1] gridExtra_2.3     forcats_0.4.0     stringr_1.4.0    
+    ##  [4] dplyr_0.8.3       purrr_0.3.2       readr_1.3.1      
+    ##  [7] tidyr_0.8.3       tibble_2.1.3      ggplot2_3.2.0    
+    ## [10] tidyverse_1.2.1   data.table_1.12.2 yaml_2.2.0       
+    ## [13] knitr_1.23       
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_1.0.1       cellranger_1.1.0 pillar_1.4.2     compiler_3.6.1  
@@ -98,37 +99,7 @@ sessionInfo()
 Read in tables of per-barcode measured and predicted phenotypes. With
 these, we can reproduce the plots from the global epistasis notebooks.
 
-``` r
-bc_bind <- data.table(read.csv(file=config$global_epistasis_binding_file,stringsAsFactors = F))
-bc_expr <- data.table(read.csv(file=config$global_epistasis_expr_file,stringsAsFactors = F))
-
-#reproduce figures from global epistasis notebooks for illustrating shape (and bc-level scatter) from curve fits:
-par(mfrow=c(3,2))
-plot(bc_bind[library=="lib1",latent_phenotype_Cauchy_1],bc_bind[library=="lib1",log10Ka],main="bind, lib1",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log10(Ka)")
-points(bc_bind[library=="lib1",latent_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],bc_bind[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_bind[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=1.5)
-
-plot(bc_bind[library=="lib2",latent_phenotype_Cauchy_2],bc_bind[library=="lib2",log10Ka],main="bind,lib2",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log10(Ka)")
-points(bc_bind[library=="lib2",latent_phenotype_Cauchy_2][order(bc_bind[library=="lib2",latent_phenotype_Cauchy_2])],bc_bind[library=="lib2",predicted_phenotype_Cauchy_2][order(bc_bind[library=="lib2",latent_phenotype_Cauchy_2])],type="l",col="red",lwd=1.5)
-
-plot(bc_expr[library=="lib1",latent_phenotype_Cauchy_1],bc_expr[library=="lib1",delta_ML_meanF],main="expr, lib1",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)")
-points(bc_expr[library=="lib1",latent_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],bc_expr[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=1.5)
-
-plot(bc_expr[library=="lib2",latent_phenotype_Cauchy_2],bc_expr[library=="lib2",delta_ML_meanF],main="expr,lib2",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)")
-points(bc_expr[library=="lib2",latent_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],bc_expr[library=="lib2",predicted_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],type="l",col="red",lwd=1.5)
-
-#zoom in on expression scale to see what's happening in the main bulk, not stretching the scale for e.g. multiple stop mutants that drive the weird patterning
-plot(bc_expr[library=="lib1",latent_phenotype_Cauchy_1],bc_expr[library=="lib1",delta_ML_meanF],main="expr, lib1",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)",xlim=c(-5,0.25))
-points(bc_expr[library=="lib1",latent_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],bc_expr[library=="lib1",predicted_phenotype_Cauchy_1][order(bc_expr[library=="lib1",latent_phenotype_Cauchy_1])],type="l",col="red",lwd=1.5)
-
-plot(bc_expr[library=="lib2",latent_phenotype_Cauchy_2],bc_expr[library=="lib2",delta_ML_meanF],main="expr,lib2",pch=16,col="#00000005",xlab="global epistasis latent phenotype",ylab="DMS measured log(MFI)",xlim=c(-5,0.25))
-points(bc_expr[library=="lib2",latent_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],bc_expr[library=="lib2",predicted_phenotype_Cauchy_2][order(bc_expr[library=="lib2",latent_phenotype_Cauchy_2])],type="l",col="red",lwd=1.5)
-```
-
 <img src="single_mut_effects_files/figure-gfm/bc_tables-1.png" style="display: block; margin: auto;" />
-
-``` r
-invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/global-epistasis-shapes.pdf",sep="")))
-```
 
 We also read in all parameters from global epistasis models, and
 collapse down to individual tables reporting the lib1, lib2, and joint
