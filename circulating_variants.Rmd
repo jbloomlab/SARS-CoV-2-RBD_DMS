@@ -460,7 +460,7 @@ hist(max_1_expr,xlab="max mutational effect on expression",col="gray50",main=pas
 
 hist(frac_pos_1_expr,xlab="fraction muts with positive effects on expression",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(frac_pos_1_expr>=sum(mutants[nobs>1,expr_avg]>0)/nrow(mutants[nobs>1,]))/length(frac_pos_1_expr)));abline(v=sum(mutants[nobs>1,expr_avg]>0)/nrow(mutants[nobs>1,]),lty=2)
 
-invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID.pdf",sep="")))
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID_expr.pdf",sep="")))
 ```
 
 ```{r permute_samples_5_expr, fig.width=10,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
@@ -483,5 +483,5 @@ hist(max_5_expr,xlab="max mutational effect on expression",col="gray50",main=pas
 
 hist(frac_pos_5_expr,xlab="fraction muts with positive effects on expression",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(frac_pos_5_expr>=sum(mutants[nobs>5,expr_avg]>0)/nrow(mutants[nobs>5,]))/length(frac_pos_5_expr)));abline(v=sum(mutants[nobs>5,expr_avg]>0)/nrow(mutants[nobs>5,]),lty=2)
 
-invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID.pdf",sep="")))
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID_expr.pdf",sep="")))
 ```

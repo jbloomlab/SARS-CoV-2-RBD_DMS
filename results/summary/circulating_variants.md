@@ -540,7 +540,7 @@ hist(frac_pos_1_expr,xlab="fraction muts with positive effects on expression",co
 <img src="circulating_variants_files/figure-gfm/permute_samples_1_expr-1.png" style="display: block; margin: auto;" />
 
 ``` r
-invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID.pdf",sep="")))
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID_expr.pdf",sep="")))
 ```
 
 ``` r
@@ -567,5 +567,5 @@ hist(frac_pos_5_expr,xlab="fraction muts with positive effects on expression",co
 <img src="circulating_variants_files/figure-gfm/permute_samples_5_expr-1.png" style="display: block; margin: auto;" />
 
 ``` r
-invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID.pdf",sep="")))
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID_expr.pdf",sep="")))
 ```
