@@ -1,0 +1,233 @@
+---
+title: "Isogenic validation experiments of point mutants"
+output:
+  github_document:
+    html_preview: false
+editor_options:
+  chunk_output_type: inline
+---
+
+```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+
+#list of packages to install/load
+packages = c("ggplot2", "data.table", "tidyverse", "dplyr", "broom", "gridExtra")
+#install any packages not already installed
+installed_packages <- packages %in% rownames(installed.packages())
+if(any(installed_packages == F)){
+  install.packages(packages[!installed_packages])
+}
+#load packages
+invisible(lapply(packages, library, character.only=T))
+
+#make results directory
+if(!file.exists("results")){
+ dir.create(file.path("results"))
+}
+
+
+```
+
+### Define colorblind-friendly palette
+```{r define_color_palette}
+# The palette with grey:
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+               "#0072B2", "#D55E00", "#CC79A7")
+# The palette with black
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+                "#0072B2", "#D55E00", "#CC79A7")
+```
+
+## Experiment: isogenic validation of yeast-display RBD mutants and homologs
+
+**2020-06-08**
+WT SARS-CoV-2 Spike RBD and 10 point mutants were validated in isogenic experiments.
+
+### Read in data table with mean bin at each concentration
+```{r read_input}
+dt <- read.csv(file="point-mut-validations.csv", stringsAsFactors=F)
+```
+
+### Calculate log-mean `geomean_FITC` and `FITC+` for each titration
+```{r calculate_expression_values}
+dt <- dt %>%
+  group_by(titration) %>%
+  mutate(mean_FITCpos = mean(FITCpos),
+         stderr_FITCpos = sd(FITCpos)/sqrt(length(FITCpos)),
+         log_geomean_FITC = log(geomean_FITC),
+         mean_logMFI_FITC = mean(log(geomean_FITC)),
+         stderr_logMFI_FITC = sd(log(geomean_FITC))/sqrt(length(geomean_FITC))
+         ) %>%
+  ungroup()
+
+head(dt, n=5)
+```
+
+### Use `broom` to get the results from fitting `nls` model by group
+```{r fit_titrations}
+nls_broom <- dt %>%
+  group_by(titration) %>%
+  do(tidy(nls(mean_bin ~ a*(conc_M/(conc_M+Kd))+b,
+              data=.,
+              start=list(a=3,b=1,Kd=1e-10),
+              lower=list(a=2,b=1,Kd=1e-15),
+              upper=list(a=3,b=1.5,Kd=1e-5),
+              algorithm="port"
+              )
+          )
+  )
+
+dt <- dt %>%
+  merge(nls_broom %>%
+          filter(term=="Kd") %>%
+          select(estimate, std.error) %>%
+          rename(Kd="estimate",
+                 Kd_SE="std.error"), by="titration")
+head(dt, n=5)
+```
+### Write summary table to CSV file
+```{r write_output_table}
+point_mutants_summary <- dt %>%
+  select(titration, genotype, Kd, Kd_SE, mean_FITCpos, stderr_FITCpos, mean_logMFI_FITC, stderr_logMFI_FITC) %>%
+  unique()
+
+point_mutants_summary
+write.csv(point_mutants_summary,"./results/point_mutants_summary.csv", row.names = FALSE)
+```
+
+### Now predict `mean_bin` using the models
+```{r predict_y}
+conc_M = c(1:20 %o% 10^(-13:-7)) # this should only generate 120 estimates per titration (faster!)
+
+nls_predictions <- dt %>%
+  select(titration, genotype, category) %>%
+  merge(nls_broom %>%
+          select(-statistic, -p.value, -std.error) %>%
+          spread(term, estimate),
+        by="titration") %>%
+  unique() %>%
+  merge(dt %>% select(titration, Kd_SE) %>% unique(), by="titration") %>%
+  merge(as.data.frame(conc_M), all=TRUE) %>%
+  mutate(mean_bin = a*(conc_M/(conc_M+Kd))+b)
+
+head(nls_predictions, n=5)
+```
+
+### Make plots for titration curves for June08 point mutant experiment
+```{r plot_point_mut_panel, fig.width=8,fig.height=8,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
+annotations <- dt %>%
+  select(titration, genotype, Kd, Kd_SE) %>%
+  unique() %>%
+  remove_rownames()
+
+ggplot(dt, aes(conc_M, mean_bin)) +
+  geom_point() +
+  geom_line(data = nls_predictions,
+            aes(conc_M, mean_bin),
+            color="red") + 
+  scale_x_log10(lim=c(2e-14,2e-07)) +
+  xlab("ACE2 (M)") +
+  ylab("mean bin") +
+  facet_wrap(~ genotype) +
+  geom_text(
+    data    = annotations,
+    mapping = aes(x = 1e-11,
+                  y = 3.75,
+                  label = c(paste(
+                    "Kd=", format(Kd, digits=2),
+                    "+/-", format(Kd_SE, digits=1), "M"))),
+    size=3) +
+  theme_bw()
+
+ggsave(
+  "./results/point-mut_titration.pdf",
+  scale = 1,
+  width = NA,
+  height = NA,
+  useDingbats=F
+)
+```
+### Multiple curves on one plot.
+```{r plot_by_category, fig.width=8,fig.height=5,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
+annotations <- dt %>%
+  select(titration, genotype, Kd, Kd_SE) %>%
+  unique() %>%
+  remove_rownames()
+
+p1<- ggplot(dt %>% filter(category=="wildtype" | category=="circulating"), aes(conc_M, mean_bin)) +
+  geom_point(aes(color=genotype)) +
+  geom_line(data = nls_predictions %>% filter(category=="wildtype" | category=="circulating"),
+            aes(conc_M, mean_bin, color=genotype),
+            ) + 
+  scale_x_log10(lim=c(2e-14,2e-07)) +
+  xlab("ACE2 (M)") +
+  ylab("mean bin") +
+  scale_color_manual(values=cbPalette) +
+  theme_bw()
+
+p2<- ggplot(dt %>% filter(category=="wildtype" | category=="other"), aes(conc_M, mean_bin)) +
+  geom_point(aes(color=genotype)) +
+  geom_line(data = nls_predictions %>% filter(category=="wildtype" | category=="other"),
+            aes(conc_M, mean_bin, color=genotype),
+            ) + 
+  scale_x_log10(lim=c(2e-14,2e-07)) +
+  xlab("ACE2 (M)") +
+  ylab("mean bin") +
+  scale_color_manual(values=cbPalette) +
+  theme_bw()
+
+grid.arrange(p1, p2, ncol=2, widths=c(6,6), heights=c(6))
+
+g <- arrangeGrob(p1, p2, ncol=2, widths=c(6,6), heights=c(6))
+
+ggsave(
+  "./results/point-mut_titration_multiple.pdf",
+  g,
+  scale = 1,
+  width = 9,
+  height = 3,
+  useDingbats=F
+)
+```
+
+### Plot FITC+ and geomean_FITC by genotype
+```{r expression_plots, fig.width=8,fig.height=5,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
+p1 <- ggplot(dt, aes(x=reorder(genotype, -log_geomean_FITC), y=FITCpos)) +
+  geom_boxplot() +
+  geom_point(shape=21, fill="grey", alpha=0.75) +
+  scale_y_continuous(lim=c(0, 100)) +
+  xlab("genotype") +
+  ylab("% FITC+") +
+  #facet_wrap(~ expt, scales="free_x") +
+  theme_bw() +
+  theme(text = element_text(size=12),
+        axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+p2 <- ggplot(dt, aes(x=reorder(genotype, -mean_logMFI_FITC), y=log_geomean_FITC)) +
+  geom_boxplot() +
+  geom_point(shape=21, fill="grey", alpha=0.75) +
+  xlab("genotype") +
+  ylab("mean FITC+ log-intensity") +
+  #facet_wrap(~ expt, scales="free_x") +
+  theme_bw() +
+  theme(text = element_text(size=12),
+        axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+grid.arrange(p1, p2, ncol=2, widths=c(6,6), heights=c(6))
+
+g <- arrangeGrob(p1, p2, ncol=2, widths=c(6,6), heights=c(6))
+
+ggsave(
+  "./results/point-mut_FITC_expression.pdf",
+  g,
+  scale = 1,
+  width = 8,
+  height = 4
+)
+```
