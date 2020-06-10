@@ -415,3 +415,73 @@ hist(frac_pos_5,xlab="fraction muts with positive effects on binding",col="gray5
 
 invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID.pdf",sep="")))
 ```
+
+```{r permute_samples_0_expr, fig.width=12,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
+set.seed(9248)
+n_rep <- 1000000
+median_0_expr <- vector(length=n_rep)
+max_0_expr <- vector(length=n_rep)
+frac_pos_0_expr <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(expr_avg),expr_avg],nrow(mutants[nobs>0,]))
+  median_0_expr[i] <- median(sample)
+  max_0_expr[i] <- max(sample)
+  frac_pos_0_expr[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_0_expr,xlab="median mutational effect on expression",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(median_0_expr>=median(mutants[nobs>0,expr_avg]))/length(median_0_expr)));abline(v=median(mutants[nobs>0,expr_avg]),lty=2)
+
+hist(max_0_expr,xlab="max mutational effect on expression",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(max_0_expr>=max(mutants[nobs>0,expr_avg]))/length(max_0_expr)));abline(v=max(mutants[nobs>0,expr_avg]),lty=2)
+
+hist(frac_pos_0_expr,xlab="fraction muts with positive effects on expression",col="gray50",main=paste(">0 GISAID observations\nP-value",sum(frac_pos_0_expr>=sum(mutants[nobs>0,expr_avg]>0)/nrow(mutants[nobs>0,]))/length(frac_pos_0_expr)));abline(v=sum(mutants[nobs>0,expr_avg]>0)/nrow(mutants[nobs>0,]),lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-zero-GISAID_expr.pdf",sep="")))
+```
+
+```{r permute_samples_1_expr, fig.width=12,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
+n_rep <- 1000000
+median_1_expr <- vector(length=n_rep)
+max_1_expr <- vector(length=n_rep)
+frac_pos_1_expr <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(expr_avg),expr_avg],nrow(mutants[nobs>1,]))
+  median_1_expr[i] <- median(sample)
+  max_1_expr[i] <- max(sample)
+  frac_pos_1_expr[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_1_expr,xlab="median mutational effect on expression",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(median_1_expr>=median(mutants[nobs>1,expr_avg]))/length(median_1_expr)));abline(v=median(mutants[nobs>1,expr_avg]),lty=2)
+
+hist(max_1_expr,xlab="max mutational effect on expression",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(max_1_expr>=max(mutants[nobs>1,expr_avg]))/length(max_1_expr)));abline(v=max(mutants[nobs>1,expr_avg]),lty=2)
+
+hist(frac_pos_1_expr,xlab="fraction muts with positive effects on expression",col="gray50",main=paste(">1 GISAID observations\nP-value",sum(frac_pos_1_expr>=sum(mutants[nobs>1,expr_avg]>0)/nrow(mutants[nobs>1,]))/length(frac_pos_1_expr)));abline(v=sum(mutants[nobs>1,expr_avg]>0)/nrow(mutants[nobs>1,]),lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-one-GISAID.pdf",sep="")))
+```
+
+```{r permute_samples_5_expr, fig.width=10,fig.height=4,fig.align="center", dpi=500,dev="png",echo=TRUE}
+n_rep <- 1000000
+median_5_expr <- vector(length=n_rep)
+max_5_expr <- vector(length=n_rep)
+frac_pos_5_expr <- vector(length=n_rep)
+
+for(i in 1:n_rep){
+  sample <- sample(mutants[singlemut==T & wildtype!=mutant & mutant!="stop" & !is.na(expr_avg),expr_avg],nrow(mutants[nobs>5,]))
+  median_5_expr[i] <- median(sample)
+  max_5_expr[i] <- max(sample)
+  frac_pos_5_expr[i] <- sum(sample>0)/length(sample)
+}
+
+par(mfrow=c(1,3))
+hist(median_5_expr,xlab="median mutational effect on expression",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(median_5_expr>=median(mutants[nobs>5,expr_avg]))/length(median_5_expr)));abline(v=median(mutants[nobs>5,expr_avg]),lty=2)
+
+hist(max_5_expr,xlab="max mutational effect on expression",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(max_5_expr>=max(mutants[nobs>5,expr_avg]))/length(max_5_expr)));abline(v=max(mutants[nobs>5,expr_avg]),lty=2)
+
+hist(frac_pos_5_expr,xlab="fraction muts with positive effects on expression",col="gray50",main=paste(">5 GISAID observations\nP-value",sum(frac_pos_5_expr>=sum(mutants[nobs>5,expr_avg]>0)/nrow(mutants[nobs>5,]))/length(frac_pos_5_expr)));abline(v=sum(mutants[nobs>5,expr_avg]>0)/nrow(mutants[nobs>5,]),lty=2)
+
+invisible(dev.print(pdf, paste(config$circulating_variants_dir,"/permutation_greater-than-five-GISAID.pdf",sep="")))
+```
