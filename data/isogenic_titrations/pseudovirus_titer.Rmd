@@ -76,18 +76,16 @@ dt <- dt %>% mutate(genotype = factor(genotype,
 ggplot(dt %>%
          filter(uL_virus == "50" | genotype=="none")
        ,
-       aes(genotype, virus_per_mL_stringent)
+       aes(genotype, virus_per_mL_stringent/exp(mean(log(dt[dt$genotype=="wildtype" & dt$uL_virus=="50","virus_per_mL_stringent"]))))
        ) +
-  geom_point(size=3.5, 
-             alpha=0.75, 
-             shape=21,
-             color="black", 
+  geom_point(size=3.5,
+             shape=16,
              position=position_jitter(width = 0.1, height = 0, seed = 0), 
              aes(fill=yeast_display)) +
-  geom_hline(yintercept=127, color="grey", linetype="dashed") + #Limit of detection
-  scale_y_log10(lim=c(1e2, 1e4)) +
+  geom_hline(yintercept=25/exp(mean(log(dt[dt$genotype=="wildtype" & dt$uL_virus=="50","virus_per_mL_stringent"]))), color="grey", linetype="dashed") + #Limit of detection
+  scale_y_log10(lim=c(8e-4, 1e1)) +
   xlab("Spike gene") +
-  ylab("infectious particles per mL") +
+  ylab("relative titer") +
   theme_bw()  +
   scale_fill_manual(name="effect on ACE2 binding \nin yeast display",
                          breaks=c("neutral", "beneficial", "deleterious", "none"),
@@ -100,6 +98,7 @@ ggsave(
   "./results/stringent_titers.pdf",
   scale = 1,
   width = 8,
-  height = 4
+  height = 4,
+  useDingbats=F
 )
 ```
