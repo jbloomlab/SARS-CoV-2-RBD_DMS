@@ -24,15 +24,15 @@ The [./alignments/](alignments) subdirectory contains alignments and phylogeneti
    - Two recent pangolin CoV sequences from [Lam _et al._ (2020)](https://www.nature.com/articles/s41586-020-2169-0), including the infectious virus isolated from a pangolin seized in Guanxi, and the consensus sequence from two closely related isolates from pangolins seized in Guangdong. The consensus sequence was constructed from an alignment of the GD pangolin CoV in GISAID accssion EPI\_ISL\_410544, and the reconstructed metagenomic viral genome reported in the [Lam _et al._ (2020)](https://www.nature.com/articles/s41586-020-2169-0) supplement.
    - BtKY72, a bat coronavirus isolated in Kenya which, along with the Bulgaria sample BM48-31 is used to root the phylogeny
 
-The [./alignments/Spike_GISAID/](alignments/Spike_GISAID) directory contains the `.zip` file of Spike files downloaded from GISAID, along with a script to modify header names to remove spaces and align sequences using `mafft`. The output of this script is used as input to the `circulating_variants` analysis.
+The [./alignments/Spike_GISAID/](alignments/Spike_GISAID) directory contains the `.zip` file of Spike files downloaded from GISAID, along with a script to modify header names to remove spaces and align sequences using `mafft`. The output of this script is used as input to the `circulating_variants` analysis. We acknowledge all GISAID contributors, listed in [./alignments/Spike_GISAID/gisaid_hcov-19_acknowledgement_table.xls](alignments/Spike_GISAID/gisaid_hcov-19_acknowledgement_table.xls)
 
 ## Input data from previous studies
 The [./lit-measurements](lit-measurements) subdirectory contains raw data on sarbecovirus functional properties from previous experimental studies, which we will in comparison to our deep mutational scanning measurements. Files include:
    - [./lit-measurements/Letko\_2020\_data\_1e.csv](lit-measurements/Letko_2020_data_1e.csv), which reports quantitative measurements of the ability of VSV pseudoviruses containing SARS-CoV-1 Spike as a chimera with various sarbecovirus RBDs to mediate entry into BHK (baby hamster kidney) cells expressing human ACE2. This data is represented in [Figure 1e](https://www.nature.com/articles/s41564-020-0688-y/figures/1) of [Letko _et al.__ 2020](https://www.nature.com/articles/s41564-020-0688-y).
    - [./lit-measurements/Shang\_2020\_data\_3b.csv](lit-measurements/Shang_2020_data_3b.csv), which reports quantitative measurement of the ability of retrovirus pseudoviruses bearing Spike from SARS-CoV-2 or RaTG13 to enter HEK293T cells expressing human ACE2. This data is represented in Figure 3b of [Shang _et al._ 2020](https://www.nature.com/articles/s41586-020-2179-y).
 
-## Isogenic titrations
-The [./isogenic_titrations/](isogenic_titrations) subdirectory contains processed data from isogenic titration experiments use to fit single-variant titration curves.
+## Isogenic validations
+The [./isogenic_titrations/](isogenic_titrations) subdirectory contains processed data from single-clone experiments to test out the yeast display system and validate mutational effects from our deep mutational scanning experiments. Details are provided in `.md` summaries from each `.Rmd` analysis conducted within this subdirectory.
 
 ## Structures
 The [./structures/](structures) directory contains information relevant for structural analyses.
