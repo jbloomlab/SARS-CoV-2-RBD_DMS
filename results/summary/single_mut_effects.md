@@ -58,7 +58,7 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 14.04.5 LTS
     ## 
     ## Matrix products: default
     ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
@@ -1100,7 +1100,10 @@ with larger measured expression defecits.
 
 <img src="single_mut_effects_files/figure-gfm/homolog_isogenic_validations-1.png" style="display: block; margin: auto;" />
 
-Second, single mutants of SARS-CoV-2:
+Second, single mutants of SARS-CoV-2. We can see expression and binding
+effects validate extremely well in this panel\!
+
+<img src="single_mut_effects_files/figure-gfm/single_mut_isogenic_validations-1.png" style="display: block; margin: auto;" />
 
 Furthermore, we can turn to other assays to validate the context of our
 yeast-based DMS measurements. First, we look at the functional
