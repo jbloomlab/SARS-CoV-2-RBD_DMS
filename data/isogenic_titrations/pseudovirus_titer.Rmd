@@ -74,7 +74,7 @@ dt <- dt %>% mutate(genotype = factor(genotype,
               )
 
 ggplot(dt %>%
-         filter(uL_virus == "10" | genotype=="none")
+         filter(uL_virus == "50" | genotype=="none")
        ,
        aes(genotype, virus_per_mL_stringent)
        ) +

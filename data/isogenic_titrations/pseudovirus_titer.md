@@ -83,7 +83,7 @@ dt <- dt %>% mutate(genotype = factor(genotype,
               )
 
 ggplot(dt %>%
-         filter(uL_virus == "10" | genotype=="none")
+         filter(uL_virus == "50" | genotype=="none")
        ,
        aes(genotype, virus_per_mL_stringent)
        ) +
@@ -108,6 +108,8 @@ ggplot(dt %>%
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
 
+    ## Warning: Removed 15 rows containing missing values (geom_point).
+
 ![](pseudovirus_titer_files/figure-gfm/unnamed-chunk-2-1.svg)<!-- -->
 
 ``` r
@@ -120,3 +122,5 @@ ggsave(
 ```
 
     ## Warning: Transformation introduced infinite values in continuous y-axis
+    
+    ## Warning: Removed 15 rows containing missing values (geom_point).

@@ -330,3 +330,35 @@ ggsave(
   height = 4
 )
 ```
+
+``` r
+p1 <- ggplot(dt, aes(x=genotype, y=log_geomean_FITC)) +
+  #stat_summary(fun.y=mean,geom="point",size=3,shape=16)+
+  stat_summary(fun.y=mean,
+               fun.ymin=function(x) mean(x) - sd(x)/sqrt(length(x)),
+               fun.ymax=function(x) mean(x) + sd(x)/sqrt(length(x)),
+               geom="pointrange")+
+  xlab("genotype") +
+  ylab("mean log(MFI) (expression)") +
+  #facet_wrap(~ expt, scales="free_x") +
+  theme_bw() +
+  theme(text = element_text(size=12),
+        axis.text.x=element_text(angle=90, hjust=1, vjust=0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+
+p1
+```
+
+<img src="point-mut-validations_files/figure-gfm/alt_expression_plots-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggsave(
+  "./results/point-mut_FITC_expression_mean-SE.pdf",
+  p1,
+  scale = 1,
+  width = 4,
+  height = 4,
+  useDingbats=F
+)
+```
