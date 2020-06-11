@@ -15,6 +15,8 @@ These files are used for the basic processing of the deep sequencing data to cal
    - [barcode_runs.csv](barcode_runs.csv): list of the Illumina runs used to count the barcodes for different samples. This file is built from [barcode_runs_orig-names.csv](barcode_runs_orig-names.csv) by the Jupyter notebook [build_barcode_runs.ipynb](build_barcode_runs.ipynb).
 
    - [RBD_sites.csv](RBD_sites.csv): gives site and residue information for SARS-CoV-2, including alignment of the RBD integer numbering with the Spike numbering for SARS-CoV-2 RBD, alignment to SARS-CoV, and structural annotations as detailed below.
+   
+   -[./plasmid_maps](plasmid_maps): gives our base SARS-CoV-2 yeast display vector sequence, including the modifications made for a barcode landing pad per our library generation scheme. 2649 illustrates what the plasmid looks like after the insertion of a mutagenized amplicon with an appended N16 barcode.
 
 ## Alignments of different Spikes / RBDs
 The [./alignments/](alignments) subdirectory contains alignments and phylogenetic trees of Spike and RBD constructs from human, bat, and other mammal sarbecovirus isolates. Sequences were aligned both as nucleotide gene sequecnes and as translated amino acid sequences. The script [./alignments/alignment-and-phylogeny.sh](alignments/alignment-and-phylogeny.sh) was used to align sequences with `mafft` and infer phylogenetic trees with `raxml`. The unaligned sequence inputs to this script are found in [./alignments/unaligned-sequences/](alignments/unaligned-sequences/), with each fasta header providing common names for sarbecovirus isolates and their genome accession number in NCBI or GISAID. Sequence selection includes:
