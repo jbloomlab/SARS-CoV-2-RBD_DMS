@@ -234,14 +234,14 @@ ggsave(
 
 ```{r alt_expression_plots, fig.width=4,fig.height=4,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
 
-p1 <- ggplot(dt, aes(x=genotype, y=log_geomean_FITC)) +
+p1 <- ggplot(dt, aes(x=genotype, y=log_geomean_FITC-mean(as.data.frame(dt[dt$genotype=="wildtype","log_geomean_FITC"])$log_geomean_FITC,na.rm=T))) +
   #stat_summary(fun.y=mean,geom="point",size=3,shape=16)+
   stat_summary(fun.y=mean,
                fun.ymin=function(x) mean(x) - sd(x)/sqrt(length(x)),
                fun.ymax=function(x) mean(x) + sd(x)/sqrt(length(x)),
                geom="pointrange")+
   xlab("genotype") +
-  ylab("mean log(MFI) (expression)") +
+  ylab("delta_log(MFI) (expression)") +
   #facet_wrap(~ expt, scales="free_x") +
   theme_bw() +
   theme(text = element_text(size=12),
