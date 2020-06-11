@@ -57,8 +57,8 @@ dt <- dt %>%
   mutate(mean_FITCpos = mean(FITCpos),
          stderr_FITCpos = sd(FITCpos)/sqrt(length(FITCpos)),
          log_geomean_FITC = log(geomean_FITC),
-         mean_logMFI_FITC = mean(log(geomean_FITC)),
-         stderr_logMFI_FITC = sd(log(geomean_FITC))/sqrt(length(geomean_FITC))
+         mean_logMFI_FITC = mean(log(geomean_FITC),na.rm=T),
+         stderr_logMFI_FITC = sd(log(geomean_FITC),na.rm=T)/sqrt(length(geomean_FITC))
          ) %>%
   ungroup()
 

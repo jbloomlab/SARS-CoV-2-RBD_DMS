@@ -52,8 +52,8 @@ dt <- dt %>%
   mutate(mean_FITCpos = mean(FITCpos),
          stderr_FITCpos = sd(FITCpos)/sqrt(length(FITCpos)),
          log_geomean_FITC = log(geomean_FITC),
-         mean_logMFI_FITC = mean(log(geomean_FITC)),
-         stderr_logMFI_FITC = sd(log(geomean_FITC))/sqrt(length(geomean_FITC))
+         mean_logMFI_FITC = mean(log(geomean_FITC),na.rm=T),
+         stderr_logMFI_FITC = sd(log(geomean_FITC),na.rm=T)/sqrt(length(geomean_FITC))
          ) %>%
   ungroup()
 
@@ -115,11 +115,11 @@ head(dt, n=5)
     ## 4 wildtype -11.66667 2.15443e-12 wildtype           NA             NA
     ## 5 wildtype -11.00000 1.00000e-11 wildtype           NA             NA
     ##   log_geomean_FITC mean_logMFI_FITC stderr_logMFI_FITC           Kd
-    ## 1         9.365804               NA                 NA 4.655741e-11
-    ## 2         9.314700               NA                 NA 4.655741e-11
-    ## 3         9.321882               NA                 NA 4.655741e-11
-    ## 4         9.278933               NA                 NA 4.655741e-11
-    ## 5               NA               NA                 NA 4.655741e-11
+    ## 1         9.365804         9.201997         0.03622582 4.655741e-11
+    ## 2         9.314700         9.201997         0.03622582 4.655741e-11
+    ## 3         9.321882         9.201997         0.03622582 4.655741e-11
+    ## 4         9.278933         9.201997         0.03622582 4.655741e-11
+    ## 5               NA         9.201997         0.03622582 4.655741e-11
     ##          Kd_SE
     ## 1 2.636883e-12
     ## 2 2.636883e-12
@@ -150,7 +150,7 @@ point_mutants_summary
     ## 109        10    V367F 3.267925e-11 1.391010e-12     59.28333
     ## 121        11    V483A 4.821330e-11 2.806203e-12     56.83333
     ##     stderr_FITCpos mean_logMFI_FITC stderr_logMFI_FITC
-    ## 1               NA               NA                 NA
+    ## 1               NA         9.201997         0.03622582
     ## 13       1.1460737         9.180942         0.04429979
     ## 25       0.8708234         9.289367         0.01911649
     ## 37       1.4275672         9.124061         0.03945146
