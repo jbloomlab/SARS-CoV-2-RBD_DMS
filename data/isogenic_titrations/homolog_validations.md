@@ -32,13 +32,13 @@ isogenic experiments.
 ### Read in data table with mean bin at each concentration
 
 ``` r
-dt <- read.csv(file="Table-all.csv", stringsAsFactors=F)
+dt <- read.csv(file="homolog_validations.csv", stringsAsFactors=F)
 ```
 
 ### Duplicate rows that correspond to May01 wild type triplicate experiment so we can fit models to the pooled replicates
 
 ``` r
-wildtype <- dt %>% 
+wildtype <- dt %>%
   filter(expt=="200501") %>%
   mutate(replicate = "pooled",
          titration = "wt_pooled")
@@ -53,7 +53,7 @@ print(nrow(dt))
 ### Calculate log-mean `geomean_FITC` and `FITC+` for each titration
 
 ``` r
-dt <- dt %>% 
+dt <- dt %>%
   group_by(titration) %>%
   mutate(mean_FITCpos = mean(FITCpos),
          stderr_FITCpos = sd(FITCpos)/sqrt(length(FITCpos)),
@@ -84,7 +84,7 @@ head(dt, n=5)
 ### Use `broom` to get the results from fitting `nls` model by group
 
 ``` r
-nls_broom <- dt %>% 
+nls_broom <- dt %>%
   group_by(titration) %>%
   do(tidy(nls(mean_bin ~ a*(conc_M/(conc_M+Kd))+b,
               data=.,
@@ -93,7 +93,7 @@ nls_broom <- dt %>%
               upper=list(a=3,b=1.5,Kd=1e-5),
               algorithm="port"
               )
-          ) 
+          )
   )
 
 dt <- dt %>%
@@ -144,7 +144,7 @@ head(dt, n=5)
 ### Write summary table to CSV file
 
 ``` r
-isogenic_titrations_summary <- dt %>% 
+isogenic_titrations_summary <- dt %>%
   select(expt, titration, genotype, replicate, Kd, Kd_SE, mean_FITCpos, stderr_FITCpos, mean_logMFI_FITC, stderr_logMFI_FITC) %>%
   unique()
 
@@ -189,7 +189,7 @@ nls_predictions <- dt %>%
   select(titration, expt, genotype, replicate) %>%
   merge(nls_broom %>%
           select(-statistic, -p.value, -std.error) %>%
-          spread(term, estimate), 
+          spread(term, estimate),
         by="titration") %>%
   unique() %>%
   merge(dt %>% select(titration, Kd_SE) %>% unique(), by="titration") %>%
@@ -215,8 +215,8 @@ head(nls_predictions, n=5)
 ### Make plots for titration curves for May08 homolog experiment
 
 ``` r
-annotations <- dt %>% 
-  filter(expt != "200501") %>% 
+annotations <- dt %>%
+  filter(expt != "200501") %>%
   select(titration, genotype, expt, replicate, Kd, Kd_SE) %>%
   unique() %>%
   remove_rownames()
@@ -232,8 +232,8 @@ ggplot(dt %>% filter(expt != "200501"), aes(conc_M, mean_bin)) +
   facet_wrap(~ genotype) +
   geom_text(
     data    = annotations,
-    mapping = aes(x = 2.5e-12, 
-                  y = 3.75, 
+    mapping = aes(x = 2.5e-12,
+                  y = 3.75,
                   label = c(paste(
                     "Kd=", format(Kd, digits=2),
                     "+/-", format(Kd_SE, digits=1), "M"))),
@@ -241,7 +241,7 @@ ggplot(dt %>% filter(expt != "200501"), aes(conc_M, mean_bin)) +
   theme_bw()
 ```
 
-<img src="isogenic_titrations_files/figure-gfm/titrations_plot_homolog_panel-1.png" style="display: block; margin: auto;" />
+<img src="homolog_validations_files/figure-gfm/titrations_plot_homolog_panel-1.png" style="display: block; margin: auto;" />
 
 ``` r
 ggsave(
@@ -256,8 +256,8 @@ ggsave(
 ### Make plots just for May01 wildtype triplicate titrations
 
 ``` r
-annotations <- dt %>% 
-  filter(expt == "200501") %>% 
+annotations <- dt %>%
+  filter(expt == "200501") %>%
   select(titration, genotype, expt, replicate, Kd, Kd_SE) %>%
   unique() %>%
   remove_rownames()
@@ -273,8 +273,8 @@ ggplot(dt %>% filter(expt == "200501"), aes(conc_M, mean_bin)) +
   facet_wrap(~ replicate) + # this time facet on replicate
   geom_text(
     data    = annotations,
-    mapping = aes(x = 2.5e-12, 
-                  y = 3.75, 
+    mapping = aes(x = 2.5e-12,
+                  y = 3.75,
                   label = c(paste(
                     "Kd=", format(Kd, digits=2),
                     "+/-", format(Kd_SE, digits=1), "M"))),
@@ -284,7 +284,7 @@ ggplot(dt %>% filter(expt == "200501"), aes(conc_M, mean_bin)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-<img src="isogenic_titrations_files/figure-gfm/wildtype_triplicate_titrations_plot-1.png" style="display: block; margin: auto;" />
+<img src="homolog_validations_files/figure-gfm/wildtype_triplicate_titrations_plot-1.png" style="display: block; margin: auto;" />
 
 ``` r
 ggsave(
@@ -303,14 +303,14 @@ because it is not really possible to compare across experiments due to
 variability with induction, etc.
 
 ``` r
-p1 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, FITCpos)) + 
+p1 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, FITCpos)) +
   geom_boxplot() +
   geom_point() +
   scale_y_continuous(lim=c(0, 100)) +
   ylab("% FITC+") +
   facet_wrap(~ expt, scales="free_x") +
   theme_bw() +
-  theme(text = element_text(size=12), 
+  theme(text = element_text(size=12),
         axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
 p2 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, log_geomean_FITC)) +
@@ -319,13 +319,13 @@ p2 <- ggplot(dt %>% filter(expt!="200501"), aes(genotype, log_geomean_FITC)) +
   ylab("mean FITC+ log-intensity") +
   facet_wrap(~ expt, scales="free_x") +
   theme_bw() +
-  theme(text = element_text(size=12), 
+  theme(text = element_text(size=12),
         axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 
 grid.arrange(p1, p2, ncol=2, widths=c(8,8), heights=c(6))
 ```
 
-<img src="isogenic_titrations_files/figure-gfm/expression_plots-1.png" style="display: block; margin: auto;" />
+<img src="homolog_validations_files/figure-gfm/expression_plots-1.png" style="display: block; margin: auto;" />
 
 ``` r
 g <- arrangeGrob(p1, p2, ncol=2, widths=c(8,8), heights=c(6))

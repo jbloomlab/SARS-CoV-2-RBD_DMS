@@ -711,7 +711,41 @@ arrows(x0=homologs$isogenic_log_MFI_FITC, y0=homologs$expr_avg-homologs$expr_SEM
 invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_homolog-bulk-v-isogeniic_bind-expr.pdf",sep="")))
 ```
 
-Second, single mutants of SARS-CoV-2:
+Second, single mutants of SARS-CoV-2. We can see expression and binding effects validate extremely well in this panel!
+
+```{r single_mut_isogenic_validations, fig.width=8, fig.height=4.25, fig.align="center",dpi=300,dev="png",echo=F}
+single_mut_validation <- data.table(read.csv(file="data/isogenic_titrations/results/point_mutants_summary.csv"))
+
+single_mut_validation[,log10Ka := log10(1/Kd),by=titration]
+single_mut_validation[,log10SE := 0.434*Kd_SE/Kd,by=titration]
+single_mut_validation[log10Ka<6,log10Ka:=6]
+single_mut_validation[,delta_log10Ka:=log10Ka - single_mut_validation[genotype=="wildtype",log10Ka],by=titration]
+single_mut_validation[,delta_logMFI_FITC := mean_logMFI_FITC - single_mut_validation[genotype=="wildtype",mean_logMFI_FITC],by=titration]
+single_mut_validation[,SE_delta_logMFI_FITC := sqrt(stderr_logMFI_FITC^2 + single_mut_validation[genotype=="wildtype",stderr_logMFI_FITC]^2),by=titration]
+
+#add bulk values
+for(i in 1:nrow(single_mut_validation)){
+  if(single_mut_validation$genotype[i] == "wildtype"){
+    single_mut_validation$bulk_delta_log10Ka[i] <- 0
+    single_mut_validation$bulk_delta_logMFI[i] <- 0
+  }else{
+    single_mut_validation$bulk_delta_log10Ka[i] <- betas[mutation==single_mut_validation$genotype[i], bind_avg]
+    single_mut_validation$bulk_delta_logMFI[i] <- betas[mutation==single_mut_validation$genotype[i], expr_avg]
+  }
+}
+
+
+par(mfrow=c(1,2))
+x <- single_mut_validation$delta_log10Ka; y <- single_mut_validation$bulk_delta_log10Ka; fit <- lm(y~x)
+plot(x,y,pch=16,cex=1.2,xlab="mutation effect on binding (isogenic validation)",ylab="mutation effect on binding (bulk DMS)",main=paste("R-squared:",format(summary(fit)$r.squared,digits=3)));abline(h=0,lty=2,col="gray50");abline(v=0,lty=2,col="gray50")
+
+x <- single_mut_validation$delta_logMFI_FITC; y <- single_mut_validation$bulk_delta_logMFI; fit <- lm(y~x)
+plot(x,y,pch=16,cex=1.42,xlab="mutation effect on expression (isogenic validation)",ylab="mutation effect on expression (bulk DMS)",main=paste("R-squared:",format(summary(fit)$r.squared,digits=3)));abline(h=0,lty=2,col="gray50");abline(v=0,lty=2,col="gray50")
+
+
+
+invisible(dev.print(pdf, paste(config$single_mut_effects_dir,"/correlation_single-mut-bulk-v-isogenic_bind-expr.pdf",sep=""),useDingbats=F))
+```
 
 Furthermore, we can turn to other assays to validate the context of our yeast-based DMS measurements. First, we look at the functional measurements from [Letko et al. 2020](https://www.nature.com/articles/s41564-020-0688-y), who determined the ability of all RBD variants known at that time (so, no RaTG13 or Pangolin RBD) to enter cells as chimeras with SARS-CoV-1 Spike in VSV-G pseudotyped viruses and a luciferase reporter of cellular entry. We integrated measurements across several of their experimental panels, including Figs. 1e, 2a and 3b, and 3d. For 1e, 2a, and 3d, entry was measured in ACE2-expressing BHK cells, so the experiments should be more directly comparable -- in 3b, they measured entry into Vero cells. For each experiment, we calculate the mean entry from triplicate measurements, and calculate the variant fold-entry relative to the mean SARS-CoV-1 entry (which is present in each panel). We then calculate the mean and SEM across each of the experiments for which a genotype was measured. We present comparisons of our measurements to the average fold-entry relative to SARS-CoV-1 across all four experiments on the left, and just the BHK experiments on the right. Error bars are SEM from between 2 and 4 measurements; the SARS-CoV-1 point does not have error bars as it is defined as 1 across each experiment, and SARS-CoV-2 does not have error bars because it was only included in one of the experiments. As we can see below, the variants for which we measure no binding also do not support cellular entry. Among the genotypes for which we measure quantitative differences in binding affinity, we can see these differences correlate with the extent of cellular entry, though the functional entry measurements show some variability depending whether or not we include the additional Vero cells measurements. (Should we "break" the y-axis to more clearly present these data?)
 
