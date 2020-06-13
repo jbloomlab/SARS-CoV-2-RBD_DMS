@@ -21,7 +21,7 @@
 title: SARS-CoV-2 RBD DMS
 description: >- # this means to ignore newlines until "baseurl:"
   here is where we could add a link to the github
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/SARS-CoV-2-RBD_DMS" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
