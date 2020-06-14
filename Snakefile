@@ -52,7 +52,8 @@ rule make_summary:
         homolog_effects_file=config['homolog_effects_file'],
         structure_function='results/summary/structure_function.md',
         logoplots_of_muteffects='results/summary/logoplots_of_muteffects.md',
-        dms_view_file=config['dms_view_file'],
+        dms_view_file_RBD=config['dms_view_file_RBD'],
+        dms_view_file_spike=config['dms_view_file_spike'],
         circulating_variants='results/summary/circulating_variants.md',
         antibody_epitopes='results/summary/antibody_epitopes.md',
         sarbecovirus_diversity='results/summary/sarbecovirus_diversity.md',
@@ -113,7 +114,7 @@ rule make_summary:
             10. [Structure-function analysis of mutational effects]({path(input.structure_function)}).
 
             11. [Logo plots of mutational effects]({path(input.logoplots_of_muteffects)}).
-                Also creates [input file for `dms-view`]({path(input.dms_view_file)}).
+                Also creates input files for `dms-view` of [RBD]({path(input.dms_view_file_RBD)}) and [spike]({path(input.dms_view_file_spike)}).
 
             12. [Mutational constraint within RBD antibody epitopes]({path(input.antibody_epitopes)})
 
@@ -211,7 +212,8 @@ rule logoplots_of_muteffects:
         config['single_mut_effects_file']
     output:
         nb_markdown=nb_markdown('logoplots_of_muteffects.ipynb'),
-        dms_view_file=config['dms_view_file']
+        dms_view_file_RBD=config['dms_view_file_RBD'],
+        dms_view_file_spike=config['dms_view_file_spike']
     params:
         nb='logoplots_of_muteffects.ipynb'
     shell:
