@@ -347,7 +347,7 @@ p1 <- ggplot(dt, aes(x=genotype, y=log_geomean_FITC-mean(as.data.frame(dt[dt$gen
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
-p1
+grid.arrange(p1)
 ```
 
 <img src="point-mut-validations_files/figure-gfm/alt_expression_plots-1.png" style="display: block; margin: auto;" />

@@ -235,7 +235,6 @@ ggsave(
 ```{r alt_expression_plots, fig.width=4,fig.height=4,fig.align="center", dpi=500,dev="png",message=FALSE,error=FALSE,warning=FALSE}
 
 p1 <- ggplot(dt, aes(x=genotype, y=log_geomean_FITC-mean(as.data.frame(dt[dt$genotype=="wildtype","log_geomean_FITC"])$log_geomean_FITC,na.rm=T))) +
-  #stat_summary(fun.y=mean,geom="point",size=3,shape=16)+
   stat_summary(fun.y=mean,
                fun.ymin=function(x) mean(x) - sd(x)/sqrt(length(x)),
                fun.ymax=function(x) mean(x) + sd(x)/sqrt(length(x)),
@@ -249,7 +248,7 @@ p1 <- ggplot(dt, aes(x=genotype, y=log_geomean_FITC-mean(as.data.frame(dt[dt$gen
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank())
 
-p1
+grid.arrange(p1)
 
 ggsave(
   "./results/point-mut_FITC_expression_mean-SE.pdf",

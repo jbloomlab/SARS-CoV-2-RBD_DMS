@@ -3,8 +3,6 @@ title: "Titer Spike pseudovirus by flow cytometry"
 output:
   github_document:
     html_preview: no
-  html_document:
-    df_print: paged
 editor_options:
   chunk_output_type: inline
 ---
