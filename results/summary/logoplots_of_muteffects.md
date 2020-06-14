@@ -1300,11 +1300,11 @@ plt.close(fig)
 ![png](logoplots_of_muteffects_files/logoplots_of_muteffects_36_0.png)
 
 
-## Create input file for `dms-view`
+## Create input files for `dms-view`
 
 
 ```python
-dms_view_df = (
+dms_view_df_RBD = (
     letter_heights
     .rename(columns={'site_RBD': 'site',
                      'site_SARS2': 'label_site',
@@ -1352,14 +1352,14 @@ dms_view_df = (
         )
     )
 
-print(f"Writing to {config['dms_view_file']}")
+print(f"Writing to {config['dms_view_file_RBD']}")
 os.makedirs(config['dms_view_dir'], exist_ok=True)
-dms_view_df.to_csv(config['dms_view_file'], index=False)
+dms_view_df_RBD.to_csv(config['dms_view_file_RBD'], index=False)
 
-dms_view_df
+dms_view_df_RBD
 ```
 
-    Writing to results/dms_view/dms-view_table.csv
+    Writing to results/dms_view/dms-view_table_RBD.csv
 
 
 
@@ -1577,6 +1577,298 @@ dms_view_df
       <td>T</td>
       <td>Y</td>
       <td>E</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.043603</td>
+      <td>-0.05</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+  </tbody>
+</table>
+<p>8040 rows × 14 columns</p>
+</div>
+
+
+
+
+```python
+dms_view_df_spike = (
+    letter_heights
+    .rename(columns={'site_RBD': 'site',
+                     'site_SARS2': 'label_site',
+                     'mutant': 'mutation',
+                     'prob_bind': 'ACE2-binding',
+                     'prob_expr': 'expression',
+                     })
+    .assign(protein_chain='A B C',
+            protein_site=lambda x: x['label_site'],
+            )
+    .melt(id_vars=['site', 'label_site', 'wildtype', 'mutation',
+                   'protein_chain', 'protein_site'],
+          value_vars=['ACE2-binding', 'expression'],
+          var_name='condition',
+          value_name='mut_preference',
+          )
+    .merge(letter_heights
+           .rename(columns={'bind_avg': 'ACE2-binding',
+                            'expr_avg': 'expression',
+                            'site_SARS2': 'label_site',
+                            'mutant': 'mutation',
+                            })
+           .melt(id_vars=['label_site', 'mutation'],
+                 value_vars=['ACE2-binding', 'expression'],
+                 var_name='condition',
+                 value_name='mut_delta_effect',
+                 ),
+           validate='one_to_one'
+           )
+    .assign(
+        site_entropy=lambda x: x.groupby(['site', 'condition'])
+                                ['mut_preference']
+                                .transform(lambda p: -sum(p[p > 0] * 
+                                                          numpy.log(p[p > 0]))),
+        site_n_effective=lambda x: numpy.exp(x['site_entropy']),
+        site_mean_effect=lambda x: x.groupby(['site', 'condition'])
+                                    ['mut_delta_effect']
+                                    .transform('mean'),
+        site_min_effect=lambda x: x.groupby(['site', 'condition'])
+                                    ['mut_delta_effect']
+                                    .transform('min'),
+        site_max_effect=lambda x: x.groupby(['site', 'condition'])
+                                   ['mut_delta_effect']
+                                   .transform('max'),
+        )
+    )
+
+print(f"Writing to {config['dms_view_file_spike']}")
+os.makedirs(config['dms_view_dir'], exist_ok=True)
+dms_view_df_spike.to_csv(config['dms_view_file_spike'], index=False)
+
+dms_view_df_spike
+```
+
+    Writing to results/dms_view/dms-view_table_spike.csv
+
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site</th>
+      <th>label_site</th>
+      <th>wildtype</th>
+      <th>mutation</th>
+      <th>protein_chain</th>
+      <th>protein_site</th>
+      <th>condition</th>
+      <th>mut_preference</th>
+      <th>mut_delta_effect</th>
+      <th>site_entropy</th>
+      <th>site_n_effective</th>
+      <th>site_mean_effect</th>
+      <th>site_min_effect</th>
+      <th>site_max_effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>A</td>
+      <td>A B C</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.050009</td>
+      <td>-0.03</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>C</td>
+      <td>A B C</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.041214</td>
+      <td>-0.09</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>D</td>
+      <td>A B C</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.060681</td>
+      <td>0.03</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>E</td>
+      <td>A B C</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.055087</td>
+      <td>0.00</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>331</td>
+      <td>N</td>
+      <td>F</td>
+      <td>A B C</td>
+      <td>331</td>
+      <td>ACE2-binding</td>
+      <td>0.039907</td>
+      <td>-0.10</td>
+      <td>2.984958</td>
+      <td>19.785669</td>
+      <td>-0.0335</td>
+      <td>-0.16</td>
+      <td>0.06</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>8035</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>S</td>
+      <td>A B C</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.054449</td>
+      <td>0.02</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8036</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>T</td>
+      <td>A B C</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.051101</td>
+      <td>0.00</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8037</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>V</td>
+      <td>A B C</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.042241</td>
+      <td>-0.06</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8038</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>W</td>
+      <td>A B C</td>
+      <td>531</td>
+      <td>expression</td>
+      <td>0.039643</td>
+      <td>-0.08</td>
+      <td>2.987268</td>
+      <td>19.831436</td>
+      <td>-0.0095</td>
+      <td>-0.08</td>
+      <td>0.08</td>
+    </tr>
+    <tr>
+      <th>8039</th>
+      <td>201</td>
+      <td>531</td>
+      <td>T</td>
+      <td>Y</td>
+      <td>A B C</td>
       <td>531</td>
       <td>expression</td>
       <td>0.043603</td>

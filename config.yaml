@@ -51,7 +51,8 @@ single_mut_effects_file: results/single_mut_effects/single_mut_effects.csv
 homolog_effects_file: results/single_mut_effects/homolog_effects.csv
 structure_function_dir: results/structure_function
 dms_view_dir: results/dms_view
-dms_view_file: results/dms_view/dms-view_table.csv
+dms_view_file_RBD: results/dms_view/dms-view_table_RBD.csv
+dms_view_file_spike: results/dms_view/dms-view_table_spike.csv
 circulating_variants_dir: results/circulating_variants
 antibody_epitopes_dir: results/antibody_epitopes
 sarbecovirus_diversity_dir: results/sarbecovirus_diversity

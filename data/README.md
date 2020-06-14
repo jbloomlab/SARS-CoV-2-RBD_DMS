@@ -16,7 +16,7 @@ These files are used for the basic processing of the deep sequencing data to cal
 
    - [RBD_sites.csv](RBD_sites.csv): gives site and residue information for SARS-CoV-2, including alignment of the RBD integer numbering with the Spike numbering for SARS-CoV-2 RBD, alignment to SARS-CoV, and structural annotations as detailed below.
    
-   -[./plasmid_maps](plasmid_maps): gives our base SARS-CoV-2 yeast display vector sequence, including the modifications made for a barcode landing pad per our library generation scheme. 2649 illustrates what the plasmid looks like after the insertion of a mutagenized amplicon with an appended N16 barcode.
+   - [./plasmid_maps](plasmid_maps): gives our base SARS-CoV-2 yeast display vector sequence, including the modifications made for a barcode landing pad per our library generation scheme. 2649 illustrates what the plasmid looks like after the insertion of a mutagenized amplicon with an appended N16 barcode.
 
    - [./primers/](primers/) contains important primer sequences used in the study, including the design of mutagenesis primer pools, and additional primers used in mutant library construction, amplicon barcoding, and Illumina sequencing preparation.
    
