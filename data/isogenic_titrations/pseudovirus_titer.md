@@ -48,27 +48,20 @@ dt <- read.csv(file="pseudovirus_titers.csv", stringsAsFactors=F)
 head(dt)
 ```
 
-    ##   cells single_cells single_cells2 single_cells2_FITC_geomean
-    ## 1  87.4         94.4          85.2                       3950
-    ## 2  84.5         93.9          80.9                       4269
-    ## 3  89.2         96.1          89.4                       3560
-    ## 4  85.5         95.7          82.1                       5634
-    ## 5  83.4         95.8          80.2                       6432
-    ## 6  84.1         96.3          80.8                       5089
-    ##   FITC_perc_polygon_gate FITC_perc_linegate WELL.ID plasmid genotype
-    ## 1                   87.3              11.60     C01    2736 wildtype
-    ## 2                   91.4              11.40     C02    2736 wildtype
-    ## 3                   86.7               6.08     C03    2736 wildtype
-    ## 4                   95.3              22.20     C04    2759    Q498Y
-    ## 5                   97.0              27.40     C05    2759    Q498Y
-    ## 6                   94.6              17.70     C06    2759    Q498Y
-    ##   expectation n_cells uL_virus virus_per_mL_stringent virus_per_mL_relaxed
-    ## 1     neutral   12700       50                  29500               222000
-    ## 2     neutral   12700       50                  29000               232000
-    ## 3     neutral   12700       50                  15400               220000
-    ## 4  beneficial   12700       50                  56400               242000
-    ## 5  beneficial   12700       50                  69600               246000
-    ## 6  beneficial   12700       50                  45000               240000
+    ##   FITC_perc_linegate genotype expectation n_cells uL_virus
+    ## 1              11.60 wildtype     neutral   12700       50
+    ## 2              11.40 wildtype     neutral   12700       50
+    ## 3               6.08 wildtype     neutral   12700       50
+    ## 4              22.20    Q498Y  beneficial   12700       50
+    ## 5              27.40    Q498Y  beneficial   12700       50
+    ## 6              17.70    Q498Y  beneficial   12700       50
+    ##   virus_per_mL_stringent  X X.1
+    ## 1                  31300 NA  NA
+    ## 2                  30700 NA  NA
+    ## 3                  15900 NA  NA
+    ## 4                  63800 NA  NA
+    ## 5                  81300 NA  NA
+    ## 6                  49500 NA  NA
 
 ### Plot titers
 
