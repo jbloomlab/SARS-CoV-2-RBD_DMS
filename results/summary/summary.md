@@ -54,4 +54,4 @@ workflow:
 14. [RBD variation in circulating SARS-CoV-2 isolates](circulating_variants.md).
 
 15. [Make interactive heat map](interactive_heatmap.md).
-    Creates [this heatmap](../../docs/_includes/interactive_heatmap.html).
+    Creates [this heatmap](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS/).
