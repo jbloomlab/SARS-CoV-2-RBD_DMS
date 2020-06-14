@@ -1,0 +1,7 @@
+﻿oligo,sequence,purpose
+o29,AATATACCTCTATACTTTAACGTC,"amplify mutagenesis template; external primer to use with reverse mutagenesis primer pool, joining PCRs, barcode addition PCR"
+o70,AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATTaattctcttaggattcgattcacattc,amplify mutagenesis template; primer addition of part of the sequence addition for constructing the barcode addition
+o73,agatcggaagagcgtcgtgtaggg,"external primer to use with forward mutagenesis primer pool, joining PCRs"
+o71,ccagtgaattgtaatacgactcactatagggcgaattggagctcGCGGCCGCNNNNNNNNNNNNNNNNAGATCGGAAGAGCGTCGTGTAG,primer addition of N16 barcode and homology to vector for assembly of mutant plasmid library
+o72,AATGATACGGCGACCACCGAGA,forward primer for prepping barcode sequences for Illumina sequencing
+NF8bp_x_Rnd2Rev,CAAGCAGAAGACGGCATACGAGATxxxxxxxxGTGACTGGAGTTCAGACGTGTGCTCTTCCGATCT,"reverse primer for prepping barcode sequences for Illumina sequencing, adds sample index (96 indexed primers differ in the xxxxxxxx sequence) and remaining Illumina sequencing adapter"
