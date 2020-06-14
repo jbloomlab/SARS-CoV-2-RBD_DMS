@@ -16,6 +16,8 @@ These files are used for the basic processing of the deep sequencing data to cal
 
    - [RBD_sites.csv](RBD_sites.csv): gives site and residue information for SARS-CoV-2, including alignment of the RBD integer numbering with the Spike numbering for SARS-CoV-2 RBD, alignment to SARS-CoV, and structural annotations as detailed below.
 
+   - [./primers/](primers/) contains important primer sequences used in the study, including the design of mutagenesis primer pools, and additional primers used in mutant library construction, amplicon barcoding, and Illumina sequencing preparation.
+   
 ## Alignments of different Spikes / RBDs
 The [./alignments/](alignments) subdirectory contains alignments and phylogenetic trees of Spike and RBD constructs from human, bat, and other mammal sarbecovirus isolates. Sequences were aligned both as nucleotide gene sequecnes and as translated amino acid sequences. The script [./alignments/alignment-and-phylogeny.sh](alignments/alignment-and-phylogeny.sh) was used to align sequences with `mafft` and infer phylogenetic trees with `raxml`. The unaligned sequence inputs to this script are found in [./alignments/unaligned-sequences/](alignments/unaligned-sequences/), with each fasta header providing common names for sarbecovirus isolates and their genome accession number in NCBI or GISAID. Sequence selection includes:
    - The curated set of 30 sequences from [Letko, Marzi, and Munster (2020)](https://www.nature.com/articles/s41564-020-0688-y), which contained all known unique RBD sequences at the time of its publication. See [Extended Data Fig 1](https://www.nature.com/articles/s41564-020-0688-y/figures/6) for more information.
