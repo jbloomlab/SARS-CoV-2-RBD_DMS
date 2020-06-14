@@ -1,0 +1,168 @@
+LOCUS       2649_o29_o70_amp        1487 bp    DNA        linear       21-MAR-2020
+DEFINITION  .
+ACCESSION   
+VERSION     
+SOURCE      .
+  ORGANISM  .
+COMMENT     
+COMMENT     
+COMMENT     ApEinfo:methylated:1
+FEATURES             Location/Qualifiers
+     5'UTR           1..37
+                     /note="Partial (all but the last 4 bases)"
+                     /locus_tag="Partial (all but the last 4 bases)"
+                     /label="Partial (all but the last 4 bases)"
+                     /ApEinfo_label="Partial (all but the last 4 bases)"
+                     /ApEinfo_fwdcolor="#ffd327"
+                     /ApEinfo_revcolor="#ffd327"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     5'UTR           53..76
+                     /locus_tag="5'UTR"
+                     /label="5'UTR"
+                     /ApEinfo_label="5'UTR"
+                     /ApEinfo_fwdcolor="#4bfb00"
+                     /ApEinfo_revcolor="#ffd327"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     CDS             77..337
+                     /locus_tag="CDS (Aga2p)"
+                     /label="CDS (Aga2p)"
+                     /ApEinfo_label="CDS (Aga2p)"
+                     /ApEinfo_fwdcolor="#e9d024"
+                     /ApEinfo_revcolor="#e9d024"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_feature    339..363
+                     /note="Geneious type: primer"
+                     /locus_tag="primer: o4 Aga2p_fwd"
+                     /label="primer: o4 Aga2p_fwd"
+                     /ApEinfo_label="primer: o4 Aga2p_fwd"
+                     /ApEinfo_fwdcolor="#7eff74"
+                     /ApEinfo_revcolor="#7eff74"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     CDS             371..406
+                     /locus_tag="CDS (HA tag)"
+                     /label="CDS (HA tag)"
+                     /ApEinfo_label="CDS (HA tag)"
+                     /ApEinfo_fwdcolor="#e9d024"
+                     /ApEinfo_revcolor="#e9d024"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     CDS             407..451
+                     /locus_tag="CDS (GGS linker)"
+                     /label="CDS (GGS linker)"
+                     /ApEinfo_label="CDS (GGS linker)"
+                     /ApEinfo_fwdcolor="#e9d024"
+                     /ApEinfo_revcolor="#e9d024"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_binding    458..463
+                     /locus_tag="NdeI"
+                     /label="NdeI"
+                     /ApEinfo_label="NdeI"
+                     /ApEinfo_fwdcolor="#ff4809"
+                     /ApEinfo_revcolor="#ff4809"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_binding    1067..1072
+                     /locus_tag="XhoI"
+                     /label="XhoI"
+                     /ApEinfo_label="XhoI"
+                     /ApEinfo_fwdcolor="#ff4809"
+                     /ApEinfo_revcolor="#ff4809"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     CDS             1073..1084
+                     /locus_tag="CDS"
+                     /label="CDS"
+                     /ApEinfo_label="CDS"
+                     /ApEinfo_fwdcolor="#e9d024"
+                     /ApEinfo_revcolor="#e9d024"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     CDS             1085..1114
+                     /locus_tag="CDS (Myc tag)"
+                     /label="CDS (Myc tag)"
+                     /ApEinfo_label="CDS (Myc tag)"
+                     /ApEinfo_fwdcolor="#e9d024"
+                     /ApEinfo_revcolor="#e9d024"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     3'UTR           1125..1429
+                     /note="yeast mating factor alpha 3' UTR"
+                     /locus_tag="yeast mating factor alpha 3' UTR"
+                     /label="yeast mating factor alpha 3' UTR"
+                     /ApEinfo_label="yeast mating factor alpha 3' UTR"
+                     /ApEinfo_fwdcolor="#f76ca1"
+                     /ApEinfo_revcolor="#008040"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     primer_bind     1..24
+                     /locus_tag="Gal1seq"
+                     /label="Gal1seq"
+                     /ApEinfo_label="Gal1seq"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="#00f900"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_feature    46..51
+                     /locus_tag="EcoRI"
+                     /label="EcoRI"
+                     /ApEinfo_label="EcoRI"
+                     /ApEinfo_fwdcolor="#ff2600"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_feature    429..436
+                     /locus_tag="NotI"
+                     /label="NotI"
+                     /ApEinfo_label="NotI"
+                     /ApEinfo_fwdcolor="#ff2600"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_feature    1430..1487
+                     /locus_tag="IlluminaP5"
+                     /label="IlluminaP5"
+                     /ApEinfo_label="IlluminaP5"
+                     /ApEinfo_fwdcolor="#00f900"
+                     /ApEinfo_revcolor="green"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+     misc_feature    464..1066
+                     /locus_tag="RBD-201aa"
+                     /label="RBD-201aa"
+                     /ApEinfo_label="RBD-201aa"
+                     /ApEinfo_fwdcolor="cyan"
+                     /ApEinfo_revcolor="#00fcff"
+                     /ApEinfo_graphicformat="arrow_data {{0 1 2 0 0 -1} {} 0}
+                     width 5 offset 0"
+ORIGIN
+        1 aatatacctc tatactttaa cgtcaaggag aaaaaacccc ggatcgaatt ccctacttca
+       61 tacattttca attaagatgc agttacttcg ctgtttttca atattttctg ttattgcttc
+      121 agttttagca caggaactga caactatatg cgagcaaatc ccctcaccaa ctttagaatc
+      181 gacgccgtac tctttgtcaa cgactactat tttggccaac gggaaggcaa tgcaaggagt
+      241 ttttgaatat tacaaatcag taacgtttgt cagtaattgc ggttctcacc cctcaacaac
+      301 tagcaaaggc agccccataa acacacagta tgtttttaag gacaatagct cgacgattga
+      361 aggtagatac ccatacgacg ttccagacta cgctctgcag gctagtggtg gaggaggctc
+      421 tggtggaggc ggccgcggag gcggagggtc ggctagccat atgAATATCA CGAACCTTTG
+      481 TCCTTTCGGT GAGGTCTTCA ATGCTACTAG ATTCGCATCC GTGTATGCAT GGAATAGAAA
+      541 GAGAATTAGT AATTGTGTAG CGGACTACTC TGTACTTTAT AACTCCGCCT CCTTCTCCAC
+      601 ATTCAAGTGT TACGGTGTAT CTCCCACCAA GTTGAATGAT CTATGCTTTA CAAACGTTTA
+      661 CGCCGATAGT TTCGTAATTA GAGGCGATGA AGTGCGTCAG ATCGCACCAG GCCAGACGGG
+      721 CAAGATAGCA GACTATAATT ATAAGCTGCC TGATGACTTC ACCGGCTGTG TGATAGCTTG
+      781 GAACTCAAAT AATCTAGATT CCAAGGTGGG AGGCAATTAC AATTATTTGT ACCGTCTGTT
+      841 CCGTAAAAGC AATTTGAAAC CATTTGAAAG AGACATTAGC ACTGAAATTT ATCAAGCAGG
+      901 GTCCACCCCG TGCAACGGCG TAGAAGGCTT TAACTGTTAT TTCCCATTAC AGTCTTATGG
+      961 TTTCCAACCT ACGAACGGAG TCGGGTATCA GCCGTACAGG GTTGTGGTTC TTTCATTTGA
+     1021 ACTGCTGCAC GCGCCCGCAA CCGTATGCGG GCCGAAGAAA TCAACGctcg aggggggcgg
+     1081 ttccgaacaa aagcttattt ctgaagagga cttgtaatag agatctgata acaacagtgt
+     1141 agatgtaaca aaatcgactt tgttcccact gtacttttag ctcgtacaaa atacaatata
+     1201 cttttcattt ctccgtaaac aacatgtttt cccatgtaat atccttttct atttttcgtt
+     1261 ccgttaccaa ctttacacat actttatata gctattcact tctatacact aaaaaactaa
+     1321 gacaatttta attttgctgc ctgccatatt tcaatttgtt ataaattcct ataatttatc
+     1381 ctattagtag ctaaaaaaag atgaatgtga atcgaatcct aagagaatta atgatacggc
+     1441 gaccaccgag atctacactc tttccctaca cgacgctctt ccgatct 
+//
