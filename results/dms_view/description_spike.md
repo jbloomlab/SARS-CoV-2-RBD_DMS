@@ -10,10 +10,10 @@ The receptor binding domain (RBD) of the SARS-CoV-2 spike mediates viral attachm
 
 We are showing the effects of all mutations to the SARS-CoV-2 RBD as measured in our [study](). Menu bars can alternate the view between our measurements of ACE2 receptor binding affinity and RBD expression (a correlate of protein stability). Within each phenotype, different metrics can be visualized at the per-site and per-mutation level:
 
-   - per-site entropy and n\_effective describe the degree of constraint reflected in the amino acid preferences illustrated in logoplots as in Figure S4 of the manuscript.
-   - per-site mean-effect, min-effect, and max-effect are statistics on the raw measurement values of mutational effects on binding and expression, as reflected in the heatmaps in Figure 3.
-   - per-mutation preference is a relative preference value useful for visualization in logoplots, as the sum of preferences for all 20 amino acids at a site sum to 1.
-   - per-mutation delta\_effect is the raw measurement value of mutational effect on binding and expression, either delta-log<sub>10</sub>(_K_<sub>D,app</sub>) for binding, or delta-log(MFI) for expression.
+   - per-site `entropy` and `n_effective` describe the degree of constraint reflected in the amino acid preferences illustrated in logoplots as in Figure S4 of the manuscript.
+   - per-site `mean-effect`, `min-effect`, and `max-effect` are statistics on the raw measurement values of mutational effects on binding and expression, as reflected in the heatmaps in Figure 3.
+   - per-mutation `preference` is a relative preference value useful for visualization in logoplots, as the sum of preferences for all 20 amino acids at a site sum to 1.
+   - per-mutation `delta_effect` is the raw measurement value of mutational effect on binding and expression, either delta-log<sub>10</sub>(_K_<sub>D,app</sub>) for binding, or delta-log(MFI) for expression.
 
 When sites are selected, their location is indicated on all three protomers of the cryo-EM spike trimer structure (PDB [6VXX](https://www.rcsb.org/structure/6VXX), from [Walls _et al._ 2020](https://www.sciencedirect.com/science/article/pii/S0092867420302622?via%3Dihub)
    
