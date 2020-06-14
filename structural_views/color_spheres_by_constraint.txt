@@ -1,4 +1,4 @@
-#commands to load in structures colored by mutational constraint, and output png images
+#commands to load in cartoon structures, and generate various sphere and stick based structural representations for figure panels
 
 load ../results/structure_function/6m0j_b-factor-mean-bind.pdb
 load ../results/structure_function/6m0j_b-factor-mean-expr.pdb
@@ -24,6 +24,8 @@ color atomic, ACE2 and resi 31+353 and sidechain and (not elem C)
 
 show sticks, RBD_bind and resn cys and sidechain or name ca
 color yellow, RBD_bind and resn cys and sidechain
+
+set valence, 0
 
 set ray_shadows, off
 
@@ -56,9 +58,9 @@ png ./images_global-sensitivity/RBD_bind-specific-constraint.png, ray=1, 1200, 1
 
 #image of positions that can tolerate putative NLGS introduction
 set_view (\
-     0.546591818,   -0.283837557,    0.787804663,\
-    -0.830965936,   -0.067824014,    0.552108169,\
-    -0.103299633,   -0.956419528,   -0.272931844,\
+     0.601893008,   -0.162380889,    0.781869888,\
+    -0.788035512,    0.037479468,    0.614429355,\
+    -0.129098371,   -0.985963702,   -0.105401658,\
      0.001816407,    0.000942402, -185.736541748,\
    -41.975131989,   18.776378632,   22.240188599,\
    105.770263672,  265.819946289,  -20.000000000 )
@@ -67,9 +69,92 @@ hide spheres, RBD_bind; hide spheres, RBD_expr; hide spheres, ACE2
 color gray60, RBD_bind; color gray60, RBD_expr
 show sticks, RBD_bind and resn cys and sidechain or name ca
 color yellow, RBD_bind and resn cys and sidechain
-show spheres, RBD_bind and resi 354+360+388+394+448+450+460+481+501
+show spheres, RBD_bind and resi 354+360+388+394+448+450+460+481+487+501
 color deepblue, RBD_bind and resi 354+360+388+394+448+450+460+481
-color ruby, RBD_bind and resi 501
+color ruby, RBD_bind and resi 487+501
 set ray_shadows, off
 png ./images_global-sensitivity/RBD_new-NLGS.png, ray=1, 1200, 1200
 
+#image of 493, 498, 501 contacts and resulting polar contacts
+hide spheres, RBD_bind; hide spheres, RBD_expr; hide spheres, ACE2
+color gray60, RBD_bind; color gray60, RBD_expr
+show sticks, RBD_bind and resn cys and sidechain or name ca
+color yellow, RBD_bind and resn cys and sidechain
+show sticks, ACE2 and resi 31+35+38+41+42+353 and (sidechain or name ca)
+color atomic, ACE2 and resi 31+35+38+41+42+353 and sidechain and (not elem C)
+show sticks, RBD_bind and resi 493+498+501 and (sidechain or name ca)
+show spheres, RBD_bind and resi 449+493+498+501 and name ca
+show sticks, RBD_bind and resi 496 and name c+o
+show sticks, RBD_bind and resi 449 and (sidechain or name ca)
+set sphere_scale, 0.5
+show sticks, RBD_bind and resi 496 and name c+o
+color lightblue, RBD_bind
+color atomic, RBD_bind and resi 493+498+501 and sidechain and (not elem C)
+color atomic, RBD_bind and resi 496 and name o
+color atomic, RBD_bind and resi 449 and sidechain and (not elem C)
+
+select network, (ACE2 and resi 31+35+38+41+42+353 and sidechain) or (RBD_bind and resi 493+498+501+449 and sidechain) or (RBD_bind and resi 496 and name c+o)
+
+show_contacts, network, network
+#manually, on the network selection, action > find> polar contacts > within selection
+
+set_view (\
+    -0.638941050,    0.173929766,   -0.749302506,\
+     0.750193477,    0.356021106,   -0.557086647,\
+     0.169903636,   -0.918066204,   -0.357967377,\
+    -0.003703107,   -0.001351073,  -56.787334442,\
+   -38.029052734,   22.884510040,    2.137789249,\
+  -165.607955933,  279.477355957,  -20.000000000 )
+  
+hide cartoon, ACE2 and resi 368-400+326-345+55-83
+show cartoon, RBD_bind and resi 411-430+400-412+504-512
+
+set cartoon_transparency, 0.35, ACE2
+set cartoon_transparency, 0.35, RBD_bind
+
+png ./images_global-sensitivity/example_interface_contacts.png, ray=1, 1200, 1200
+
+
+#image of G502 steric constraint
+as cartoon, RBD_bind; as cartoon, RBD_expr; as cartoon, ACE2
+color lightblue, RBD_bind
+show sticks, RBD_bind and resn cys and sidechain or name ca
+color yellow, RBD_bind and resn cys and sidechain
+show sticks, ACE2 and resi 31+353 and (sidechain or name ca)
+show sticks, ACE2 and resi 354
+show spheres, ACE2 and resi 354 and name ca
+color atomic, ACE2 and resi 31+353+354 and (not elem C)
+set cartoon_transparency, 0, ACE2
+set cartoon_transparency, 0, RBD_bind
+set sphere_scale, 0.5
+show sticks, RBD_bind and resi 502
+show spheres, RBD_bind and resi 502 and name ca
+color atomic, RBD_bind and resi 502 and (not elem C)
+hide cartoon, ACE2 and resi 380-390
+#manually add measurement from glycine ca to G354 ca, backbone carbonyl
+set_view (\
+     0.323543310,   -0.127235740,    0.937590718,\
+    -0.933086514,    0.121151283,    0.338456959,\
+    -0.156691030,   -0.984360576,   -0.079527684,\
+     0.003565863,    0.000299710,  -52.180191040,\
+   -32.455993652,   18.058343887,    2.396177769,\
+  -191.604217529,  297.989685059,  -20.000000000 )
+png ./images_global-sensitivity/G502_steric_contraint.png, ray=1, 1200, 1200
+
+#image of exposed interface hydrophobics
+as cartoon, RBD_bind; as cartoon, RBD_expr; as surface, ACE2
+color lightblue, RBD_bind; color gray40, ACE2
+
+set sphere_scale, 1
+show spheres, RBD_bind and resi 449+455+486+505 and (sidechain or name ca)
+color atomic, RBD_bind and resi 449+455+486+505 and sidechain and (not elem C)
+set cartoon_transparency, 0.5, RBD_bind
+
+set_view (\
+     0.295869023,   -0.472138762,   -0.830349147,\
+     0.796864629,   -0.357282430,    0.487058043,\
+    -0.526613653,   -0.805792630,    0.270553112,\
+    -0.003894351,   -0.000749066,  -87.712310791,\
+   -38.546657562,   34.432914734,    2.733957291,\
+  -156.594421387,  332.999420166,  -20.000000000 )
+png ./images_global-sensitivity/interface-hydrophobic_packing_constraint.png, ray=1, 1200, 1200

@@ -122,7 +122,7 @@ as surface, RBD_bind
 set ray_trace_mode, 0
 png ./images_epitope-outlines/RBD_bind_view3.png, ray=1, 1200, 1200
 
-select N343_NLGS, trimer_6wps and chain A and resi 1320+1321+1322+1323+1324+1325; color red, N343_NLGS
+select N343_NLGS, closed-trimer_6wps and chain A and resi 1320+1321+1322+1323+1324+1325; color red, N343_NLGS
 
 hide everything
 as surface, RBD_expr; as sticks, N343_NLGS
@@ -158,3 +158,27 @@ png ./images_epitope-outlines/hypothetical-epitope_view3_overlay.png, ray=1, 120
 
 
 #open up each xxx_overlay.png and xxx_base.png in Illustrator, align, trace outline in thicker black line, remove the overlay.png layer and keep traced outline. Then save each final png
+
+#show expression constraint relative to closed RBD trimer state
+hide everything
+show surface, RBD_expr
+show cartoon, closed-trimer_6wps
+show sticks, N343_NLGS
+#show sticks, closed-trimer_6wps and resn NAG
+#hide sticks, closed-trimer_6wps and chain A and resi 1320+1321+1322+1323+1324+1325
+color gray70, closed-trimer_6wps and chain B+E
+
+set cartoon_transparency, 0.25
+set ray_shadows, off
+set_view (\
+    -0.277553976,   -0.489980102,   -0.826339364,\
+     0.768641353,   -0.629239261,    0.114938371,\
+    -0.576287031,   -0.603278935,    0.551280022,\
+    -0.000700729,    0.001486599, -459.386840820,\
+     7.214858532,   49.152759552,   38.553726196,\
+   349.115112305,  569.591003418,  -20.000000000 )
+   
+png ./images_epitope-outlines/trimer-context_view1.png, ray=1, 1200, 1200
+
+
+
