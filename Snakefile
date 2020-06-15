@@ -123,7 +123,7 @@ rule make_summary:
             14. [RBD variation in circulating SARS-CoV-2 isolates]({path(input.circulating_variants)}).
 
             15. [Make interactive heat map]({path(input.interactive_heatmap)}).
-                Creates [this heatmap]({path(input.interactive_heatmap_html)}).
+                Creates [this heatmap](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS/).
 
             """
             ).strip())

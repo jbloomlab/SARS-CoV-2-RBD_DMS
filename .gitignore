@@ -45,3 +45,4 @@ results/structure_function/*
 
 !docs/*
 docs/_site/
+docs/.*
