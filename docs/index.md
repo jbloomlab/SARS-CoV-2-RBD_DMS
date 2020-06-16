@@ -10,4 +10,5 @@ layout: default
 - Select site subsets using the drop down menu below the plots.
 - Change which sites are displayed by brushing the zoom bar and dragging the brush.
 - Clear the zoom bar by double clicking it.
+- Structural visualizations of the data are available via `dms-view` [here](https://jbloomlab.github.io/SARS-CoV-2-RBD-DMS/structures) 
 - Raw data available [on GitHub](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS/blob/master/results/single_mut_effects/single_mut_effects.csv)
