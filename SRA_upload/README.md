@@ -1,7 +1,16 @@
 # Uploading FASTQ files to the SRA
-The script instructions and for how the raw sequencing files (FASTQ files) were uploaded to the NIH [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra):
 
-1. Go to the [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra) and manually create a *BioProject* and appropriate *BioSamples*.
+The Python Jupyter notebook [upload_to_SRA.ipynb](upload_to_SRA.ipynb) has instructions and does the uploading.
+
+
+## Old stuff from Perth/2009 MAP upload, eventually delete
+
+The script and instructions and for how the raw sequencing files (FASTQ files) were uploaded to the NIH [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra):
+
+1. Do you need to create a new *BioProject* or *BioSamples*?
+   If you are uploading sequencing that builds on an existing study, you may just want to add new *BioSamples* to an existing *BioProject*, for instance.
+   In any case, if you need to create either a new *BioProject* or new *BioSamples*, go to the [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra) and manually create a *BioProject* and appropriate *BioSamples*.
+   To do this, you first need to sign in using the box at the upper right of the webpage, and then go to the [SRA Submission Portal](https://submit.ncbi.nlm.nih.gov/subs/sra/).
    These are then entered into the Python script [make_sra_forms.py](make_sra_forms.py) near the top to specify the *BioProject* and *BioSamples* for the submission form that script automatically creates.
 
 2. Run [make_sra_forms.py](make_sra_forms.py), a Python script that reads in the [../data/serum_info.yaml](../data/serum_info.yaml) and [../data/sample_list.csv](../data/sample_list.csv) files and uses them to generate the files needed for submission.
