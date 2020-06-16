@@ -263,6 +263,7 @@ dependencies:
     - matplotlib==3.2.1
     - mizani==0.7.1
     - multiprocess==0.70.9
+    - natsort==7.0.1
     - palettable==3.3.0
     - pathos==0.2.5
     - patsy==0.5.1
