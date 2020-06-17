@@ -310,7 +310,7 @@ K403E
 ```
 What is the mutational tolerance of these positions?
 
-```{r escape_mut_tol_per_site, fig.width=4.5, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+```{r escape_mut_tol_per_mut, fig.width=4.5, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
 Baum_muts <- c("K417E","K444Q","V445A","N450D","Y453F","L455F","E484K","G485D","F486V","F490P","Q493K")
 Baum_sites <- c(417,444,445,450,453,455,484,485,486,490,493)
 
