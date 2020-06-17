@@ -114,7 +114,7 @@ rule make_summary:
             10. [Structure-function analysis of mutational effects]({path(input.structure_function)}).
 
             11. [Logo plots of mutational effects]({path(input.logoplots_of_muteffects)}).
-                Also creates input files for `dms-view` of [RBD]({path(input.dms_view_file_RBD)}) and [spike]({path(input.dms_view_file_spike)}).
+                Also creates input files for `dms-view` of [RBD]({path(input.dms_view_file_RBD)}) and [spike]({path(input.dms_view_file_spike)}), the visualizations of which can be seen [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS/structures/).
 
             12. [Mutational constraint within RBD antibody epitopes]({path(input.antibody_epitopes)})
 
