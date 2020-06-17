@@ -8,6 +8,7 @@ Tyler Starr
     epitopes](#compare-mutational-tolerance-within-antibody-epitopes)
   - [Comparison to natural sequence
     diversity](#comparison-to-natural-sequence-diversity)
+  - [in vitro escape mutations](#in-vitro-escape-mutations)
 
 This notebook analyzes the mutational tolerance of residues within
 epitopes of different monoclonal antibodies. I suggest opening the PyMol
@@ -55,10 +56,10 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.5 LTS
+    ## Running under: Ubuntu 18.04.4 LTS
     ## 
     ## Matrix products: default
-    ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
+    ## BLAS/LAPACK: /app/software/OpenBLAS/0.3.1-GCC-7.3.0-2.30/lib/libopenblas_haswellp-r0.3.1.so
     ## 
     ## locale:
     ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -73,23 +74,24 @@ sessionInfo()
     ## 
     ## other attached packages:
     ##  [1] bio3d_2.3-4       gridExtra_2.3     forcats_0.4.0    
-    ##  [4] stringr_1.4.0     dplyr_0.8.3       purrr_0.3.2      
-    ##  [7] readr_1.3.1       tidyr_0.8.3       tibble_2.1.3     
-    ## [10] ggplot2_3.2.0     tidyverse_1.2.1   data.table_1.12.2
-    ## [13] yaml_2.2.0        knitr_1.23       
+    ##  [4] stringr_1.4.0     dplyr_0.8.3       purrr_0.3.3      
+    ##  [7] readr_1.3.1       tidyr_1.0.0       tibble_2.1.3     
+    ## [10] ggplot2_3.2.1     tidyverse_1.2.1   data.table_1.12.6
+    ## [13] yaml_2.2.0        knitr_1.25       
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_1.0.1       cellranger_1.1.0 pillar_1.4.2     compiler_3.6.1  
-    ##  [5] tools_3.6.1      digest_0.6.20    lubridate_1.7.4  jsonlite_1.6    
-    ##  [9] evaluate_0.14    nlme_3.1-140     gtable_0.3.0     lattice_0.20-38 
-    ## [13] pkgconfig_2.0.2  rlang_0.4.0      cli_1.1.0        rstudioapi_0.10 
-    ## [17] parallel_3.6.1   haven_2.1.1      xfun_0.7         withr_2.1.2     
-    ## [21] xml2_1.2.0       httr_1.4.0       hms_0.4.2        generics_0.0.2  
-    ## [25] grid_3.6.1       tidyselect_0.2.5 glue_1.3.1       R6_2.4.0        
-    ## [29] readxl_1.3.1     rmarkdown_1.13   modelr_0.1.4     magrittr_1.5    
-    ## [33] backports_1.1.4  scales_1.0.0     htmltools_0.3.6  rvest_0.3.4     
-    ## [37] assertthat_0.2.1 colorspace_1.4-1 stringi_1.4.3    lazyeval_0.2.2  
-    ## [41] munsell_0.5.0    broom_0.5.2      crayon_1.3.4
+    ##  [1] tidyselect_0.2.5 xfun_0.10        haven_2.1.1      lattice_0.20-38 
+    ##  [5] colorspace_1.4-1 vctrs_0.2.0      generics_0.0.2   htmltools_0.4.0 
+    ##  [9] rlang_0.4.1      pillar_1.4.2     glue_1.3.1       withr_2.1.2     
+    ## [13] modelr_0.1.5     readxl_1.3.1     lifecycle_0.1.0  munsell_0.5.0   
+    ## [17] gtable_0.3.0     cellranger_1.1.0 rvest_0.3.4      evaluate_0.14   
+    ## [21] parallel_3.6.1   broom_0.5.2      Rcpp_1.0.2       scales_1.0.0    
+    ## [25] backports_1.1.5  jsonlite_1.6     hms_0.5.2        digest_0.6.22   
+    ## [29] stringi_1.4.3    grid_3.6.1       cli_1.1.0        tools_3.6.1     
+    ## [33] magrittr_1.5     lazyeval_0.2.2   crayon_1.3.4     pkgconfig_2.0.3 
+    ## [37] zeallot_0.1.0    xml2_1.2.2       lubridate_1.7.4  assertthat_0.2.1
+    ## [41] rmarkdown_1.16   httr_1.4.1       rstudioapi_0.10  R6_2.4.0        
+    ## [45] nlme_3.1-141     compiler_3.6.1
 
 Read in tables of variant effects on binding and expression for single
 mutations to the SARS-CoV-2 RBD and for homolog RBDs.
@@ -250,3 +252,52 @@ seems to bind sites that are more variable across the sarbecovirus
 clade.
 
 <img src="antibody_epitopes_files/figure-gfm/natural_diversity_epitopes-1.png" style="display: block; margin: auto;" />
+
+## in vitro escape mutations
+
+One recent SARS-CoV-2 antibody paper, by [Baum et
+al.](https://science.sciencemag.org/content/early/2020/06/15/science.abd0831),
+identified amino-acid mutations that enable escape of monoclonal
+antibodies (or Ab cocktails if epitopes are overlapping). A previous
+study in SARS-CoV-1 by [Rockx et
+al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2826557/) also
+identified escape mutations.
+
+Baum et al. identified the following escape mutations in SARS-CoV-2
+across their different selections:
+
+    K417E
+    K444Q
+    V445A
+    N450D
+    Y453F
+    L455F
+    E484K
+    G485D
+    F486V
+    F490P
+    Q493K
+
+Rockx et al. identified the following escape mutations in SARS-CoV-1
+(amino acids as in the original study, but I have changed the residue
+numberings to be the residue number within the SARS-CoV-2 RBD):
+
+    P475A
+    P475H
+    D476G
+    L456R
+    D494Y
+    F473C
+    T345I
+    K403Q
+    K403E
+
+What is the mutational tolerance of these positions?
+
+<img src="antibody_epitopes_files/figure-gfm/escape_mut_tol_per_mut-1.png" style="display: block; margin: auto;" />
+
+What is the mutational tolerance of these mutations in particular?
+
+    ## Warning: Removed 89 rows containing non-finite values (stat_boxplot).
+
+<img src="antibody_epitopes_files/figure-gfm/escape_mut_tol_per_site-1.png" style="display: block; margin: auto;" />
