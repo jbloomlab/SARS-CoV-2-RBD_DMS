@@ -30,7 +30,7 @@ Then activate it with:
 If you've previously built the environment into `./env`, just do the activation step.
 
 Setting up the `conda` environment above installs everything to run all parts of the analysis **except** the `R` markdown notebooks.
-For those, the pipeline currently uses the Fred Hutch computing cluster module `R/3.6.1-foss-2016b` as specified in `Snakefile`.
+For those, the pipeline currently uses the Fred Hutch computing cluster module `R/3.6.1-foss-2018b` as specified in `Snakefile`.
 That module is not packaged with this repo, so if you aren't on the Fred Hutch cluster you'll have to create a similar `R` environment yourself (all the `R` packages are listed at the beginning of their output in the [summary results](results/summary/summary.md).
 
 Now you can run the entire analysis.
