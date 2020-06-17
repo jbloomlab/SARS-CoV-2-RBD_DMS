@@ -156,7 +156,7 @@ rule sarbecovirus_diversity:
         md='results/summary/sarbecovirus_diversity.md',
         md_files = directory('results/summary/sarbecovirus_diversity_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='sarbecovirus_diversity.Rmd',
         md='sarbecovirus_diversity.md',
@@ -176,7 +176,7 @@ rule antibody_epitopes:
         md='results/summary/antibody_epitopes.md',
         md_files = directory('results/summary/antibody_epitopes_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='antibody_epitopes.Rmd',
         md='antibody_epitopes.md',
@@ -195,7 +195,7 @@ rule circulating_variants:
         md='results/summary/circulating_variants.md',
         md_files = directory('results/summary/circulating_variants_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='circulating_variants.Rmd',
         md='circulating_variants.md',
@@ -227,7 +227,7 @@ rule structure_function:
         md='results/summary/structure_function.md',
         md_files = directory('results/summary/structure_function_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='structure_function.Rmd',
         md='structure_function.md',
@@ -251,7 +251,7 @@ rule single_mut_effects:
         md='results/summary/single_mut_effects.md',
         md_files = directory('results/summary/single_mut_effects_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='single_mut_effects.Rmd',
         md='single_mut_effects.md',
@@ -294,7 +294,7 @@ rule compute_Titeseq_Kds:
         md='results/summary/compute_binding_Kd.md',
         md_files=directory('results/summary/compute_binding_Kd_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='compute_binding_Kd.Rmd',
         md='compute_binding_Kd.md',
@@ -315,7 +315,7 @@ rule compute_expression_meanFs:
         md='results/summary/compute_expression_meanF.md',
         md_files=directory('results/summary/compute_expression_meanF_files')
     envmodules:
-        'R/3.6.1-foss-2016b'
+        'R/3.6.1-foss-2018b'
     params:
         nb='compute_expression_meanF.Rmd',
         md='compute_expression_meanF.md',
