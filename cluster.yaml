@@ -2,64 +2,52 @@
 
 __default__:
   cpus: 1
-  partition: campus
   time: 0-4
   mem: 32000
   name: "{rule}"
 
 build_ccs:
   cpus: 16
-  partition: largenode
   time: 4-0
   mem: 100000
 
 process_ccs:
   cpus: 16
-  partition: largenode
   time: 1-0
   mem: 250000
 
 count_variants:
   cpus: 16
-  partition: largenode
   mem: 100000
 
 compute_Titeseq_Kds:
   cpus: 16
-  partition: largenode
   mem: 100000
 
 compute_expression_meanFs:
   cpus: 16
-  partition: largenode
   mem: 100000
 
 global_epistasis_binding:
   cpus: 16
-  partition: largenode
   mem: 100000
 
 global_epistasis_expression:
   cpus: 16
-  partition: largenode
   mem: 100000
 
 single_mut_effects:
   cpus: 8
-  partition: largenode
   mem: 50000
 
 structure_function:
   cpus: 8
-  partition: largenode
   mem: 50000
 
 circulating_variants:
   cpus: 8
-  partition: largenode
   mem: 50000
 
 sarbecovirus_diversity:
   cpus: 8
-  partition: largenode
   mem: 50000
