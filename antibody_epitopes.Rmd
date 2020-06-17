@@ -277,4 +277,83 @@ invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/distribution-Neff_
 
 ```
 
+## in vitro escape mutations
+
+One recent SARS-CoV-2 antibody paper, by [Baum et al.](https://science.sciencemag.org/content/early/2020/06/15/science.abd0831), identified amino-acid mutations that enable escape of monoclonal antibodies (or Ab cocktails if epitopes are overlapping). A previous study in SARS-CoV-1 by [Rockx et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2826557/) also identified escape mutations. 
+
+Baum et al. identified the following escape mutations in SARS-CoV-2 across their different selections:
+```
+K417E
+K444Q
+V445A
+N450D
+Y453F
+L455F
+E484K
+G485D
+F486V
+F490P
+Q493K
+```
+
+Rockx et al. identified the following escape mutations in SARS-CoV-1 (amino acids as in the original study, but I have changed the residue numberings to be the residue number within the SARS-CoV-2 RBD):
+```
+P475A
+P475H
+D476G
+L456R
+D494Y
+F473C
+T345I
+K403Q
+K403E
+```
+What is the mutational tolerance of these positions?
+
+```{r escape_mut_tol_per_site, fig.width=4.5, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+Baum_muts <- c("K417E","K444Q","V445A","N450D","Y453F","L455F","E484K","G485D","F486V","F490P","Q493K")
+Baum_sites <- c(417,444,445,450,453,455,484,485,486,490,493)
+
+#prep long form table giving mean effect per site for all RBD residues, RBM residues, ACE2 contact residues, and sites of Ab escape
+RBD_sites_all <- RBD_sites; RBD_sites_all$factor <- "all sites"
+RBD_sites_RBM <- RBD_sites[RBM==T,]; RBD_sites_RBM$factor <- "all RBM sites"
+RBD_sites_ACE2contact <- RBD_sites[SARS2_ACE2_contact==T,]; RBD_sites_ACE2contact$factor <- "ACE2 contacts"
+RBD_sites_escape <- RBD_sites[site_SARS2 %in% Baum_sites,]; RBD_sites_escape$factor <- "site of Ab escape"
+
+dt <- rbind(RBD_sites_all,RBD_sites_RBM,RBD_sites_ACE2contact,RBD_sites_escape);dt$factor <- factor(dt$factor,levels=c("all sites","all RBM sites","ACE2 contacts","site of Ab escape"))
+
+set.seed(1990)
+ggplot(dt,aes(x=factor,y=mean_bind))+
+  geom_jitter(width=0.15, alpha=0.5)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+theme_classic()+
+  xlab("sites")+ylab("mean binding effect per site")+theme(axis.text.x=element_text(angle=90,hjust=1))
+
+invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/jitterplots_escape-muts_sites.pdf",sep="")))
+
+```
+
+What is the mutational tolerance of these mutations in particular?
+
+```{r escape_mut_tol_per_site, fig.width=3.5, fig.height=4, fig.align="center",dpi=300,dev="png",echo=F}
+Baum_muts <- c("K417E","K444Q","V445A","N450D","Y453F","L455F","E484K","G485D","F486V","F490P","Q493K")
+
+
+#prep long form table giving mean effect per site for all RBD residues, RBM residues, ACE2 contact residues, and sites of Ab escape
+RBD_muts_all <- mutants; RBD_muts_all$factor <- "all mutations"
+RBD_muts_RBM <- mutants[SARS2_site %in% RBD_sites[RBM==T,site_SARS2],];RBD_muts_RBM$factor <- "all RBM mutations"
+RBD_muts_ACE2contact <- mutants[SARS2_site %in% RBD_sites[SARS2_ACE2_contact==T,site_SARS2],];RBD_muts_ACE2contact$factor <- "ACE2 contact mutations"
+RBD_muts_escape <- mutants[mutation %in% Baum_muts,]; RBD_muts_escape$factor <- "Ab escape mutations"
+
+dt <- rbind(RBD_muts_RBM,RBD_muts_ACE2contact,RBD_muts_escape);dt$factor <- factor(dt$factor,levels=c("all RBM mutations","ACE2 contact mutations","Ab escape mutations"))
+
+set.seed(1990)
+ggplot(dt[mutant != wildtype,],aes(x=factor,y=bind_avg))+
+  #geom_jitter(width=0.15, alpha=0.25)+stat_summary(fun.y=median,geom="point",size=3,color="red",shape=18)+
+  geom_boxplot(outlier.shape=16, width=0.3, outlier.alpha=0.25)+
+  theme_classic()+
+  xlab("mutation class")+ylab("mutation effect on binding")+theme(axis.text.x=element_text(angle=90,hjust=1))
+
+invisible(dev.print(pdf, paste(config$antibody_epitopes_dir,"/boxplot_escape-muts.pdf",sep="")))
+
+```
+
 
