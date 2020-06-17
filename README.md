@@ -54,6 +54,7 @@ You should modify the analysis by changing this configuration file; do **not** h
 The input files pointed to by [config.yaml](config.yaml) are in the [./data/](data) subdirectory.
 See the [./data/README.md](./data/README.md) file for details.
 
+Note that the raw sequencing data are on the SRA in BioProject [PRJNA639956](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA639956) as well as on the Hutch cluster.
 
 ## Cluster configuration
 There is a cluster configuration file [cluster.yaml](cluster.yaml) that configures [Snakefile](Snakefile) for the Fred Hutch cluster, as recommended by the [Snakemake documentation](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html).

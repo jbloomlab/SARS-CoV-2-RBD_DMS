@@ -1,6 +1,7 @@
 # Uploading FASTQ files to the SRA
 
 Details of how the raw sequencing files (FASTQ files) were uploaded to the NIH [Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra).
+The submitted files are in BioProject [PRJNA639956](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA639956).
 
 The Python Jupyter notebook [upload_to_SRA.ipynb](upload_to_SRA.ipynb) has instructions and does the uploading.
 
