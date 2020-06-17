@@ -24,3 +24,4 @@ dependencies:
     - alignparse
     - dms-variants
     - logomaker
+    - natsort
