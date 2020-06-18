@@ -1,8 +1,8 @@
 ## Deep mutational scanning of SARS-CoV-2 receptor binding domain
 
-Tyler N. Starr, Allison J. Greaney, Sarah K. Hilton, Katharine H.D. Crawford,  ..., David Veesler, Jesse D. Bloom
+Tyler N. Starr, Allison J. Greaney, Sarah K. Hilton, Katharine H.D. Crawford, Mary Jane Navarro, John E. Bowen, M. Alejandra Tortorici, Alexandra C. Walls, David Veesler, Jesse D. Bloom
 
-For background, see our paper [here]().
+For background, see our paper [here](https://www.biorxiv.org/content/10.1101/2020.06.17.157982v1).
 
 ## What data are shown here?
 
