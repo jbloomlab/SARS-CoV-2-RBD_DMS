@@ -1,0 +1,187 @@
+---
+title: "Output MaveDB uploads"
+author: "Tyler Starr"
+date: "6/18/2020"
+output:
+  github_document:
+    toc: true
+    html_preview: false
+editor_options: 
+  chunk_output_type: inline
+---
+
+This notebook outputs DMS measurements in the format required for upload to [MaveDB](https://www.mavedb.org)
+
+```{r setup, message=FALSE, warning=FALSE, error=FALSE}
+require("knitr")
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
+
+#list of packages to install/load
+packages = c("yaml","data.table","tidyverse","seqinr")
+#install any packages not already installed
+installed_packages <- packages %in% rownames(installed.packages())
+if(any(installed_packages == F)){
+  install.packages(packages[!installed_packages])
+}
+#load packages
+invisible(lapply(packages, library, character.only=T))
+
+#read in config file
+config <- read_yaml("../config.yaml")
+
+```
+
+## MaveDB organization
+
+I defined an "Experiment Set" on MaveDB, which contains to "Experiments": "Effects on binding of mutation in the SARS-CoV-2 RBD" and "Effects on expression of mutations in the SARS-CoV-2 RBD". Within each of these experiments, we will upload two "Score Sets", consisting of our measurements (delta-log<sub>10</sub>(_K_<sub>D,app</sub>) for binding and delta-log(MFI) for expression), at the level of individual barcodes, and our final single-mutation-effect dataset.
+
+## Per-barcode score set generation
+
+Let's read in the per-barcode binding and expression measurements.
+
+```{r bc_bind_input}
+bc_bind <- data.table(read.csv(file=paste("../",config$Titeseq_Kds_file,sep="")))
+head(bc_bind)
+```
+
+```{r bc_expr_input}
+bc_expr <- data.table(read.csv(file=paste("../",config$expression_sortseq_file,sep="")))
+head(bc_expr)
+```
+We need to rename the genotype column to `hgvs_pro` and conform to [HGVS guidelines](http://varnomen.hgvs.org/recommendations/general/). For protein mutations, we:
+
+   - Count from the first mutated position as position 1 (I believe we can add the offset for spike numbering later on)
+   - Convert to three-letter amino acid codes
+   - For single mutants, add the `p.` designator to specify amino acid changes, e.g. `p.Asn1Gln`
+   - For multiple mutants, format as `p.[Asn1Gln; Ile2Leu]`
+   - Stop mutants stay as single letter `*` character
+   
+We then rename our functional score for each table to be `score`
+
+We include as optional columns for the binding data:
+
+   - `avg_count` (currently named `avgcount`), `barcode`, and `library`
+   
+We include as optional columns for the expression data:
+
+  - `count` (currently named `total_count`), `barcode`, and `library`
+
+Below, we make these modifications and output the resulting `.csv` files
+
+```{r bc_bind_output}
+#modify aaa() function to not modify * to Stp, as HGVS still prefers * for stop even in three letter code
+aaa_stop <- function(x){if(x=="*"){return(x)}else{return(aaa(x))}}
+
+#function to return HGVS nomenclature mutants from our one letter code notation
+hgvs_naming <- function(x){
+  if(x==""){
+    return("")
+  }else{
+    muts <- strsplit(as.character(x),split=" ")[[1]]
+    if(length(muts)==1){
+      split <- strsplit(muts,split="")[[1]]
+      split[1] <- aaa_stop(split[1])
+      split[length(split)] <- aaa_stop(split[length(split)])
+      paste <- paste("p.",paste(split,collapse=""),sep="")
+      return(paste)
+    }else if(length(muts) > 1){
+      for(i in 1:length(muts)){
+        split <- strsplit(muts[i],split="")[[1]]
+        split[1] <- aaa_stop(split[1])
+        split[length(split)] <- aaa_stop(split[length(split)])
+        paste <- paste(split,collapse="")
+        muts[i] <- paste
+      }
+      paste("p.[",paste(muts, collapse="; "),"]",sep="")
+    }
+  }
+}
+
+bc_bind[, hgvs_pro := hgvs_naming(aa_substitutions),by="aa_substitutions"]
+
+setnames(bc_bind, "delta_log10Ka", "score"); setnames(bc_bind, "avgcount", "avg_count")
+
+bc_bind <- bc_bind[,.(hgvs_pro, score, avg_count, library)]
+
+bc_bind[library=="lib1",library:="1"]
+bc_bind[library=="lib2",library:="2"]
+
+head(bc_bind)
+
+write.csv(bc_bind,file="score-set_binding_bc.csv",row.names=F)
+```
+
+```{r bc_expr_output}
+bc_expr[, hgvs_pro := hgvs_naming(aa_substitutions),by="aa_substitutions"]
+
+setnames(bc_expr, "delta_ML_meanF", "score"); setnames(bc_expr, "total_count", "count")
+
+bc_expr <- bc_expr[,.(hgvs_pro, score, count, library)]
+
+bc_expr[library=="lib1",library:="1"]
+bc_expr[library=="lib2",library:="2"]
+
+head(bc_expr)
+
+write.csv(bc_expr,file="score-set_expression_bc.csv",row.names=F)
+```
+
+## Per-mutation score set generation
+
+We'll perform similar actions to output score sets consisting of our final estimates of single-mutant effects.
+
+```{r mut_bind_input}
+muts <- data.table(read.csv(file=paste("../",config$single_mut_effects_file,sep="")))
+head(muts)
+```
+
+We need to rename the `mutation_RBD` column to `hgvs_pro` and conform to [HGVS guidelines](http://varnomen.hgvs.org/recommendations/general/). For protein mutations, we:
+
+   - Count from the first mutated position as position 1 (I believe we can add the offset for spike numbering later on)
+   - Convert to three-letter amino acid codes
+   - Add the `p.` designator to specify amino acid changes, e.g. `p.Asn1Gln`
+   - Stop mutants stay as single letter `*` character
+   
+We then split the table into binding and expression tables, and rename our functional score for each table to be `score`
+
+We include as optional columns for the both datasets:
+
+   - `library` (so, collapse to long form instead of wide), and we'll also include the `average` with each row as the average of the two measurements
+   
+Below, we make these modifications and output the resulting `.csv` files
+
+```{r mut_output}
+muts[,hgvs_pro := paste("p.",aaa_stop(wildtype),site_RBD,aaa_stop(mutant),sep=""),by=mutation]
+mut_bind <- muts
+mut_expr <- muts
+
+mut_bind_lib1 <- muts[,.(hgvs_pro,bind_lib1,bind_avg)]
+mut_bind_lib1[,library:="1"]
+mut_bind_lib2 <- muts[,.(hgvs_pro,bind_lib2,bind_avg)]
+mut_bind_lib2[,library:="2"]
+
+mut_expr_lib1 <- muts[,.(hgvs_pro,expr_lib1,expr_avg)]
+mut_expr_lib1[,library:="1"]
+mut_expr_lib2 <- muts[,.(hgvs_pro,expr_lib2,expr_avg)]
+mut_expr_lib2[,library:="2"]
+
+setnames(mut_bind_lib1, c("bind_lib1", "bind_avg"), c("score", "average"))
+setnames(mut_bind_lib2, c("bind_lib2", "bind_avg"), c("score", "average"))
+setnames(mut_expr_lib1, c("expr_lib1", "expr_avg"), c("score", "average"))
+setnames(mut_expr_lib2, c("expr_lib2", "expr_avg"), c("score", "average"))
+
+mut_bind <- rbind(mut_bind_lib1, mut_bind_lib2)
+
+head(mut_bind)
+
+write.csv(mut_bind,file="score-set_binding_mut.csv",row.names=F)
+```
+
+```{r mut_expr_output}
+mut_expr <- rbind(mut_expr_lib1, mut_expr_lib2)
+
+head(mut_expr)
+
+write.csv(mut_expr,file="score-set_expression_mut.csv",row.names=F)
+```
