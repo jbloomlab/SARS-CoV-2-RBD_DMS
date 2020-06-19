@@ -517,6 +517,29 @@ grid.arrange(p1,p2,ncol=2)
 
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_contact-residues.pdf",sep="")))
 ```
+ Output heatmaps for illustrating stability/binding tradeoffs in particular
+```{r heatmap_stability_binding_tradeoffs, fig.width=6,fig.height=6,fig.align="center", dpi=500,dev="png",echo=FALSE}
+muts_temp <- mutants[SARS2_site %in% c(502,449, 455, 486, 505),];muts_temp$SARS2_site <- as.factor(muts_temp$SARS2_site)
+
+p1 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=bind_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,0.5),values=c(0,2.5/5.5,5/5.5,5.25/5.5,5.5/5.5),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+
+p2 <- ggplot(muts_temp,aes(SARS2_site,mutant))+geom_tile(aes(fill=expr_avg))+
+  scale_fill_gradientn(colours=c("#A94E35","#A94E35","#F48365","#FFFFFF","#7378B9","#383C6C"),limits=c(-5,1),values=c(0,1/6,3/6,5/6,5.5/6,6/6),na.value="gray")+
+  scale_x_discrete(expand=c(0,0))+
+  labs(x="RBD site",y="mutant")+theme_classic(base_size=9)+
+  coord_equal()+theme(axis.text.x = element_text(angle=45,hjust=1))+
+  geom_text(aes(label=wildtype_indicator),size=2,color="gray10")
+  
+grid.arrange(p1,p2,ncol=2)
+
+invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_contact-residues_stability-binding-tradeoff.pdf",sep="")))
+
+```
 
 To better represent these contact residue differences among these three CoV isolates and SARS-CoV-2, let's make a more focused plot on interface residues, showing the average effect of the 19 mutations at that site and the effect of the mutation to the homolog state, faceted by the different homolog backgrounds.
 

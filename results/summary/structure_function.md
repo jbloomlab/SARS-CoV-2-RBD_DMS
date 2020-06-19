@@ -51,10 +51,10 @@ sessionInfo()
 
     ## R version 3.6.1 (2019-07-05)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 14.04.6 LTS
+    ## Running under: Ubuntu 18.04.4 LTS
     ## 
     ## Matrix products: default
-    ## BLAS/LAPACK: /app/easybuild/software/OpenBLAS/0.2.18-GCC-5.4.0-2.26-LAPACK-3.6.1/lib/libopenblas_prescottp-r0.2.18.so
+    ## BLAS/LAPACK: /app/software/OpenBLAS/0.3.1-GCC-7.3.0-2.30/lib/libopenblas_haswellp-r0.3.1.so
     ## 
     ## locale:
     ##  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -70,23 +70,24 @@ sessionInfo()
     ## other attached packages:
     ##  [1] ggridges_0.5.1    egg_0.4.5         gridExtra_2.3    
     ##  [4] bio3d_2.3-4       forcats_0.4.0     stringr_1.4.0    
-    ##  [7] dplyr_0.8.3       purrr_0.3.2       readr_1.3.1      
-    ## [10] tidyr_0.8.3       tibble_2.1.3      ggplot2_3.2.0    
-    ## [13] tidyverse_1.2.1   data.table_1.12.2 yaml_2.2.0       
-    ## [16] knitr_1.23       
+    ##  [7] dplyr_0.8.3       purrr_0.3.3       readr_1.3.1      
+    ## [10] tidyr_1.0.0       tibble_2.1.3      ggplot2_3.2.1    
+    ## [13] tidyverse_1.2.1   data.table_1.12.6 yaml_2.2.0       
+    ## [16] knitr_1.25       
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] tidyselect_0.2.5 xfun_0.7         haven_2.1.1      lattice_0.20-38 
-    ##  [5] colorspace_1.4-1 generics_0.0.2   htmltools_0.3.6  rlang_0.4.0     
-    ##  [9] pillar_1.4.2     glue_1.3.1       withr_2.1.2      modelr_0.1.4    
-    ## [13] readxl_1.3.1     plyr_1.8.4       munsell_0.5.0    gtable_0.3.0    
-    ## [17] cellranger_1.1.0 rvest_0.3.4      evaluate_0.14    parallel_3.6.1  
-    ## [21] broom_0.5.2      Rcpp_1.0.1       scales_1.0.0     backports_1.1.4 
-    ## [25] jsonlite_1.6     hms_0.4.2        digest_0.6.20    stringi_1.4.3   
-    ## [29] grid_3.6.1       cli_1.1.0        tools_3.6.1      magrittr_1.5    
-    ## [33] lazyeval_0.2.2   crayon_1.3.4     pkgconfig_2.0.2  xml2_1.2.0      
-    ## [37] lubridate_1.7.4  assertthat_0.2.1 rmarkdown_1.13   httr_1.4.0      
-    ## [41] rstudioapi_0.10  R6_2.4.0         nlme_3.1-140     compiler_3.6.1
+    ##  [1] tidyselect_0.2.5 xfun_0.10        haven_2.1.1      lattice_0.20-38 
+    ##  [5] colorspace_1.4-1 vctrs_0.2.0      generics_0.0.2   htmltools_0.4.0 
+    ##  [9] rlang_0.4.1      pillar_1.4.2     glue_1.3.1       withr_2.1.2     
+    ## [13] modelr_0.1.5     readxl_1.3.1     plyr_1.8.4       lifecycle_0.1.0 
+    ## [17] munsell_0.5.0    gtable_0.3.0     cellranger_1.1.0 rvest_0.3.4     
+    ## [21] evaluate_0.14    parallel_3.6.1   broom_0.5.2      Rcpp_1.0.2      
+    ## [25] scales_1.0.0     backports_1.1.5  jsonlite_1.6     hms_0.5.2       
+    ## [29] digest_0.6.22    stringi_1.4.3    grid_3.6.1       cli_1.1.0       
+    ## [33] tools_3.6.1      magrittr_1.5     lazyeval_0.2.2   crayon_1.3.4    
+    ## [37] pkgconfig_2.0.3  zeallot_0.1.0    xml2_1.2.2       lubridate_1.7.4 
+    ## [41] assertthat_0.2.1 rmarkdown_1.16   httr_1.4.1       rstudioapi_0.10 
+    ## [45] R6_2.4.0         nlme_3.1-141     compiler_3.6.1
 
 ## Setup
 
@@ -567,6 +568,9 @@ these exploratory data, though other positions may be more important
 here in the SARS-CoV-2 side of the tree.
 
 <img src="structure_function_files/figure-gfm/heatmap_ACE2_contacts-1.png" style="display: block; margin: auto;" />
+Output heatmaps for illustrating stability/binding tradeoffs in
+particular
+<img src="structure_function_files/figure-gfm/heatmap_stability_binding_tradeoffs-1.png" style="display: block; margin: auto;" />
 
 To better represent these contact residue differences among these three
 CoV isolates and SARS-CoV-2, let’s make a more focused plot on interface
