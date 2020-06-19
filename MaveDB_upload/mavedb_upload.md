@@ -148,7 +148,7 @@ hgvs_naming <- function(x){
         paste <- paste(split,collapse="")
         muts[i] <- paste
       }
-      paste("p.[",paste(muts, collapse="; "),"]",sep="")
+      paste("p.[",paste(muts, collapse=";"),"]",sep="")
     }
   }
 }
@@ -162,16 +162,19 @@ bc_bind <- bc_bind[,.(hgvs_pro, score, avg_count, library)]
 bc_bind[library=="lib1",library:="1"]
 bc_bind[library=="lib2",library:="2"]
 
+#empty unmutated sequence not allowed. Try "p.="
+bc_bind[hgvs_pro=="",hgvs_pro:="p.="]
+
 head(bc_bind)
 ```
 
-    ##                                                  hgvs_pro score avg_count
-    ## 1:                                p.[Tyr91Leu; Lys199Tyr]    NA      0.00
-    ## 2: p.[Asn13Ser; Leu60Pro; Lys94Asn; Ser147Thr; Cys150Tyr]    NA      4.30
-    ## 3:          p.[Ala22Cys; Arg127Gly; Glu141Asp; Leu188Val] -2.05     74.50
-    ## 4:                                             p.Asn13Phe -0.42    146.32
-    ## 5:             p.[Cys6Lys; Thr15Trp; Lys94Tyr; Val103Trp]    NA      2.48
-    ## 6:                     p.[Val71Lys; Pro149Leu; Asn157Thr] -4.76     47.48
+    ##                                              hgvs_pro score avg_count
+    ## 1:                             p.[Tyr91Leu;Lys199Tyr]    NA      0.00
+    ## 2: p.[Asn13Ser;Leu60Pro;Lys94Asn;Ser147Thr;Cys150Tyr]    NA      4.30
+    ## 3:         p.[Ala22Cys;Arg127Gly;Glu141Asp;Leu188Val] -2.05     74.50
+    ## 4:                                         p.Asn13Phe -0.42    146.32
+    ## 5:            p.[Cys6Lys;Thr15Trp;Lys94Tyr;Val103Trp]    NA      2.48
+    ## 6:                   p.[Val71Lys;Pro149Leu;Asn157Thr] -4.76     47.48
     ##    library
     ## 1:       1
     ## 2:       1
@@ -194,23 +197,19 @@ bc_expr <- bc_expr[,.(hgvs_pro, score, count, library)]
 bc_expr[library=="lib1",library:="1"]
 bc_expr[library=="lib2",library:="2"]
 
+#empty unmutated sequence not allowed. Try "p.="
+bc_expr[hgvs_pro=="",hgvs_pro:="p.="]
+
 head(bc_expr)
 ```
 
-    ##                                                  hgvs_pro score  count
-    ## 1:                                p.[Tyr91Leu; Lys199Tyr]    NA   0.00
-    ## 2: p.[Asn13Ser; Leu60Pro; Lys94Asn; Ser147Thr; Cys150Tyr] -3.01  64.71
-    ## 3:          p.[Ala22Cys; Arg127Gly; Glu141Asp; Leu188Val] -2.54 117.96
-    ## 4:                                             p.Asn13Phe -1.53 244.34
-    ## 5:             p.[Cys6Lys; Thr15Trp; Lys94Tyr; Val103Trp] -4.25  95.35
-    ## 6:                     p.[Val71Lys; Pro149Leu; Asn157Thr] -2.73 212.43
-    ##    library
-    ## 1:       1
-    ## 2:       1
-    ## 3:       1
-    ## 4:       1
-    ## 5:       1
-    ## 6:       1
+    ##                                              hgvs_pro score  count library
+    ## 1:                             p.[Tyr91Leu;Lys199Tyr]    NA   0.00       1
+    ## 2: p.[Asn13Ser;Leu60Pro;Lys94Asn;Ser147Thr;Cys150Tyr] -3.01  64.71       1
+    ## 3:         p.[Ala22Cys;Arg127Gly;Glu141Asp;Leu188Val] -2.54 117.96       1
+    ## 4:                                         p.Asn13Phe -1.53 244.34       1
+    ## 5:            p.[Cys6Lys;Thr15Trp;Lys94Tyr;Val103Trp] -4.25  95.35       1
+    ## 6:                   p.[Val71Lys;Pro149Leu;Asn157Thr] -2.73 212.43       1
 
 ``` r
 write.csv(bc_expr,file="score-set_expression_bc.csv",row.names=F)
@@ -222,7 +221,8 @@ We’ll perform similar actions to output score sets consisting of our
 final estimates of single-mutant effects.
 
 ``` r
-muts <- data.table(read.csv(file=paste("../",config$single_mut_effects_file,sep="")))
+muts <- data.table(read.csv(file=paste("../",config$single_mut_effects_file,sep=""),stringsAsFactors=F))
+muts <- muts[mutant != wildtype,]
 head(muts)
 ```
 
@@ -265,7 +265,6 @@ Below, we make these modifications and output the resulting `.csv` files
 
 ``` r
 muts[,hgvs_pro := paste("p.",aaa_stop(wildtype),site_RBD,aaa_stop(mutant),sep=""),by=mutation]
-mut_bind <- muts
 mut_expr <- muts
 
 mut_bind_lib1 <- muts[,.(hgvs_pro,bind_lib1,bind_avg)]
