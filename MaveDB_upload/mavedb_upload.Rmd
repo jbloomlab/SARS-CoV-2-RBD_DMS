@@ -34,7 +34,7 @@ config <- read_yaml("../config.yaml")
 
 ## MaveDB organization
 
-I defined an "Experiment Set" on MaveDB, which contains to "Experiments": "Effects on binding of mutation in the SARS-CoV-2 RBD" and "Effects on expression of mutations in the SARS-CoV-2 RBD". Within each of these experiments, we will upload two "Score Sets", consisting of our measurements (delta-log<sub>10</sub>(_K_<sub>D,app</sub>) for binding and delta-log(MFI) for expression), at the level of individual barcodes, and our final single-mutation-effect dataset.
+I defined an "Experiment Set" on MaveDB, which contains two "Experiments": "Effects on binding of mutation in the SARS-CoV-2 RBD" and "Effects on expression of mutations in the SARS-CoV-2 RBD". Within each of these experiments, we will upload two "Score Sets", consisting of our measurements (delta-log<sub>10</sub>(_K_<sub>D,app</sub>) for binding and delta-log(MFI) for expression), at the level of individual barcodes, and our final single-mutation-effect dataset.
 
 ## Per-barcode score set generation
 

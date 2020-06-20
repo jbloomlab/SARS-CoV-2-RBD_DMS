@@ -33,7 +33,7 @@ config <- read_yaml("../config.yaml")
 
 ## MaveDB organization
 
-I defined an “Experiment Set” on MaveDB, which contains to
+I defined an “Experiment Set” on MaveDB, which contains two
 “Experiments”: “Effects on binding of mutation in the SARS-CoV-2
 RBD” and “Effects on expression of mutations in the SARS-CoV-2 RBD”.
 Within each of these experiments, we will upload two “Score Sets”,
@@ -109,7 +109,7 @@ protein mutations, we:
   - Convert to three-letter amino acid codes
   - For single mutants, add the `p.` designator to specify amino acid
     changes, e.g. `p.Asn1Gln`
-  - For multiple mutants, format as `p.[Asn1Gln; Ile2Leu]`
+  - For multiple mutants, format as `p.[Asn1Gln;Ile2Leu]`
   - Stop mutants stay as single letter `*` character
 
 We then rename our functional score for each table to be `score`
