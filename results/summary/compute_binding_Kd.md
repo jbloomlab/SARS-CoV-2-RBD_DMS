@@ -153,6 +153,18 @@ where the value of each bin is the integer value of the bin
 mean fluorescence of cells in each bin are equally spaced on a
 log-normal scale, so mean bin correlates with simple mean fluorescence.
 
+We do not use the fluorescence boundaries of the FACS bins in our calculations here, but we provide them for posterity's sake below. For the library 1 titration sorts, the fluorescence boundaries for bins 1-4 are as follows:
+
+```
+(-266, 165), (166, 1315), (1316, 10516), (10517, 262143)
+```
+
+For the library 2 titration sorts, the fluorescence boundaries for bins 1-4 are as follows:
+
+```
+(-288, 163), (164, 1303), (1304, 10603), (10604, 262143)
+```
+
 ``` r
 #function that returns mean bin and sum of counts for four bins cell counts
 calc.meanbin <- function(vec){return( list((vec[1]*1+vec[2]*2+vec[3]*3+vec[4]*4)/(vec[1]+vec[2]+vec[3]+vec[4]),
