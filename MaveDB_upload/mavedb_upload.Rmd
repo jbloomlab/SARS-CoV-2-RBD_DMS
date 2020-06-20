@@ -6,7 +6,7 @@ output:
   github_document:
     toc: true
     html_preview: false
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
 
@@ -54,15 +54,15 @@ We need to rename the genotype column to `hgvs_pro` and conform to [HGVS guideli
    - Count from the first mutated position as position 1 (I believe we can add the offset for spike numbering later on)
    - Convert to three-letter amino acid codes
    - For single mutants, add the `p.` designator to specify amino acid changes, e.g. `p.Asn1Gln`
-   - For multiple mutants, format as `p.[Asn1Gln; Ile2Leu]`
+   - For multiple mutants, format as `p.[Asn1Gln;Ile2Leu]`
    - Stop mutants stay as single letter `*` character
-   
+
 We then rename our functional score for each table to be `score`
 
 We include as optional columns for the binding data:
 
    - `avg_count` (currently named `avgcount`), `barcode`, and `library`
-   
+
 We include as optional columns for the expression data:
 
   - `count` (currently named `total_count`), `barcode`, and `library`
@@ -149,13 +149,13 @@ We need to rename the `mutation_RBD` column to `hgvs_pro` and conform to [HGVS g
    - Convert to three-letter amino acid codes
    - Add the `p.` designator to specify amino acid changes, e.g. `p.Asn1Gln`
    - Stop mutants stay as single letter `*` character
-   
+
 We then split the table into binding and expression tables, and rename our functional score for each table to be `score`
 
 We include as optional columns for the both datasets:
 
    - `library` (so, collapse to long form instead of wide), and we'll also include the `average` with each row as the average of the two measurements
-   
+
 Below, we make these modifications and output the resulting `.csv` files
 
 ```{r mut_output}
