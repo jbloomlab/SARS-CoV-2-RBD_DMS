@@ -466,6 +466,39 @@ ggarrange(p1,p2,p3,p4,nrow=1,widths=c(1,1,2.5,2.5))
 invisible(dev.print(pdf, paste(config$structure_function_dir,"/heatmaps_NLGS.pdf",sep="")))
 
 ```
+
+How does number of glycans in multi-muts correlate with binding and expression phenotypes?
+
+```{r n_NLGS_phenotype_corr, fig.width=6,fig.height=4,fig.align="center", dpi=300,dev="png",echo=FALSE,message=F,warning=F}
+#list of all mutations that add a glycan
+NLGS_KI <- c()
+for(i in 3:(nrow(RBD_sites)-2)){
+  if(!(RBD_sites$NLGS[i] %in% c("putative1","putative2"))){
+    if(RBD_sites$amino_acid_SARS2[i] == "N" & RBD_sites$amino_acid_SARS2[i+1] != "P"){
+      NLGS_KI <- c(NLGS_KI, paste(RBD_sites$amino_acid_SARS2[i+2],RBD_sites$site_RBD[i+2],"S",sep=""),paste(RBD_sites$amino_acid_SARS2[i+2],RBD_sites$site_RBD[i+2],"T",sep=""))
+    }
+    if(RBD_sites$amino_acid_SARS2[i] %in% c("S","T") & RBD_sites$amino_acid_SARS2[i-1] != "P"){
+      NLGS_KI <- c(NLGS_KI, paste(RBD_sites$amino_acid_SARS2[i-2],RBD_sites$site_RBD[i-2],"N",sep=""))
+    }
+  }
+}
+
+#add annotation to bc_bind about how many NLGS additions are present
+bc_bind[,n_NLGS_KI := sum(strsplit(aa_substitutions,split=" ")[[1]] %in% NLGS_KI),by=aa_substitutions]
+
+#not good coverage of multi-NLGS-KI muts
+
+#what about just the raw single mutant effects of NGLS KI's, and compare to other N/S/T mutaitons?
+par(mfrow=c(1,2))
+boxplot(mutants[mutation_RBD %in% NLGS_KI,bind_avg], mutants[mutant %in% c("N","S","T"),bind_avg],names=c("NLGS KI","all N/S/T muts"),ylab="mutation effect on binding",notch=T)
+#wilcox.test(mutants[mutation_RBD %in% NLGS_KI,bind_avg], mutants[mutant %in% c("N","S","T"),bind_avg])
+
+boxplot(mutants[mutation_RBD %in% NLGS_KI,expr_avg], mutants[mutant %in% c("N","S","T"),expr_avg],names=c("NLGS KI","all N/S/T muts"),ylab="mutation effect on expression",notch=T)
+#wilcox.test(mutants[mutation_RBD %in% NLGS_KI,expr_avg], mutants[mutant %in% c("N","S","T"),expr_avg])
+
+invisible(dev.print(pdf, paste(config$structure_function_dir,"/boxplots_NLGS-KI.pdf",sep=""),useDingbats=F))
+```
+
  
 Next, let's look at expression and binding effects for annotated contact residues. Below, we are looking at the 19 residues that form ACE2 contacts in the SARS-CoV-2 (6m0j) or SARS-CoV-1 (2ajf) ACE2-bound RBD crystal structures, where we annotated a residue as a contact if it contains non-hydrogen atoms within 4 Angstroms of ACE2. 14 residues were annotated as contacts in both structures, 3 contacts (417, 446, 475) are unique to the SARS-CoV-2 structure, and 2 (439, 503) are unique to SARS-CoV-1. We indicate the wildtype SARS-CoV-2 and -1 amino acids with an "x" and "o", respectively. We also add site 494, which although not a direct contact, is on the ACE2-contacting interface of the RBM, and is considered one of the sites of "key adaptation" from the SARS-CoV-1 literature.
 
