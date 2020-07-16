@@ -521,6 +521,11 @@ residue independent of the glycan effect.
 
 <img src="structure_function_files/figure-gfm/heatmap_bind_expr_NLGS-1.png" style="display: block; margin: auto;" />
 
+How does number of glycans in multi-muts correlate with binding and
+expression phenotypes?
+
+<img src="structure_function_files/figure-gfm/n_NLGS_phenotype_corr-1.png" style="display: block; margin: auto;" />
+
 Next, let’s look at expression and binding effects for annotated contact
 residues. Below, we are looking at the 19 residues that form ACE2
 contacts in the SARS-CoV-2 (6m0j) or SARS-CoV-1 (2ajf) ACE2-bound RBD
