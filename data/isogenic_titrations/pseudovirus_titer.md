@@ -6,7 +6,7 @@ require("knitr")
 knitr::opts_chunk$set(echo = T)
 knitr::opts_chunk$set(dev.args = list(png = list(type = "cairo")))
 #list of packages to install/load
-packages = c("ggplot2", "data.table", "tidyverse", "dplyr", "broom", "gridExtra")
+packages = c("ggplot2", "data.table", "tidyverse", "dplyr", "gridExtra")
 #install any packages not already installed
 installed_packages <- packages %in% rownames(installed.packages())
 if(any(installed_packages == F)){
@@ -41,7 +41,7 @@ cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442",
                 "#0072B2", "#D55E00", "#CC79A7")
 ```
 
-### Read in data from flow cytometry
+### Read in data from flow cytometry and p24 quantifications
 
 ``` r
 dt <- read.csv(file="pseudovirus_titers.csv", stringsAsFactors=F)
@@ -55,25 +55,22 @@ head(dt)
     ## 4              22.20    Q498Y  beneficial   12700       50
     ## 5              27.40    Q498Y  beneficial   12700       50
     ## 6              17.70    Q498Y  beneficial   12700       50
-    ##   virus_per_mL_stringent  X X.1
-    ## 1                  31300 NA  NA
-    ## 2                  30700 NA  NA
-    ## 3                  15900 NA  NA
-    ## 4                  63800 NA  NA
-    ## 5                  81300 NA  NA
-    ## 6                  49500 NA  NA
+    ##   virus_per_mL_stringent p24_pg_per_mL
+    ## 1                  31300       1258255
+    ## 2                  30700       1831364
+    ## 3                  15900       1135455
+    ## 4                  63800       1794519
+    ## 5                  81300       1788182
+    ## 6                  49500       1938636
 
-### Plot titers
+### Plot titers as measured by flow cytometry
 
 ``` r
 dt <- dt %>% mutate(genotype = factor(genotype, 
                                 levels=c("none", "VSV_G", "wildtype", 
                                          "N439K", "Q498Y", "N501F", 
                                          "N501D", "G502D", "L455Y", "C432D")),
-              uL_virus = factor(uL_virus),
-              yeast_display = factor(expectation,
-                                   levels=c("neutral", "beneficial", "deleterious", "none"))
-              )
+              uL_virus = factor(uL_virus))
 
 ggplot(dt %>%
          filter(uL_virus == "50" | genotype=="none")
@@ -82,17 +79,12 @@ ggplot(dt %>%
        ) +
   geom_point(size=3.5,
              shape=16,
-             position=position_jitter(width = 0.1, height = 0, seed = 0), 
-             aes(fill=yeast_display)) +
+             position=position_jitter(width = 0.1, height = 0, seed = 0)) +
   geom_hline(yintercept=25/exp(mean(log(dt[dt$genotype=="wildtype" & dt$uL_virus=="50","virus_per_mL_stringent"]))), color="grey", linetype="dashed") + #Limit of detection
   scale_y_log10(lim=c(8e-4, 1e1)) +
   xlab("Spike gene") +
   ylab("relative titer") +
   theme_bw()  +
-  scale_fill_manual(name="effect on ACE2 binding \nin yeast display",
-                         breaks=c("neutral", "beneficial", "deleterious", "none"),
-                         labels=c("neutral", "increased affinity", "decreased affinity", "no Spike"),
-                      values=c(cbPalette[1:3], "black")) +
   ggtitle("Spike-pseudotyped virus") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
@@ -105,7 +97,42 @@ ggplot(dt %>%
 ggsave(
   "./results/stringent_titers.pdf",
   scale = 1,
-  width = 8,
+  width = 6,
+  height = 4,
+  useDingbats=F
+)
+```
+
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+### Plot titers normalized by p24 quantity in viral supernatant
+
+``` r
+ggplot(dt %>%
+         filter(uL_virus == "50" | genotype=="none")
+       ,
+       aes(genotype, virus_per_mL_stringent/p24_pg_per_mL)
+       ) +
+  geom_point(size=3.5,
+             shape=16,
+             position=position_jitter(width = 0.1, height = 0, seed = 0)) +
+  scale_y_log10(lim=c(1e-4, 1e-1)) +
+  xlab("Spike gene") +
+  ylab("transducing units per pg p24") +
+  theme_bw()  +
+  ggtitle("Spike-pseudotyped virus") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+![](pseudovirus_titer_files/figure-gfm/unnamed-chunk-3-1.svg)<!-- -->
+
+``` r
+ggsave(
+  "./results/stringent_titers_p24_normalized.pdf",
+  scale = 1,
+  width = 6,
   height = 4,
   useDingbats=F
 )
