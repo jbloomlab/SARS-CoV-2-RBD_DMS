@@ -11,5 +11,5 @@ layout: default
 - Change which sites are displayed by brushing the zoom bar and dragging the brush.
 - Clear the zoom bar by double clicking it.
 - Structural visualizations of the data are available via `dms-view` [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS/structures) 
-- See the paper describing these data [here](https://www.biorxiv.org/content/10.1101/2020.06.17.157982v1)
+- See the paper describing these data [here](https://doi.org/10.1016/j.cell.2020.08.012)
 - Raw data available [on GitHub](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS/blob/master/results/single_mut_effects/single_mut_effects.csv)
