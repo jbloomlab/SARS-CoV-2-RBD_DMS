@@ -3,7 +3,7 @@ layout: dms-view
 permalink: /structures/
 ---
 
-Below are links to interactive visualizations of the SARS-CoV-2 RBD deep mutational scanning data (paper [here](https://www.biorxiv.org/content/10.1101/2020.06.17.157982v1)) mapped onto protein structures, enabled by [`dms-view`](https://dms-view.github.io/docs/).
+Below are links to interactive visualizations of the SARS-CoV-2 RBD deep mutational scanning data (paper [here](https://doi.org/10.1016/j.cell.2020.08.012) and preprint [here](https://www.biorxiv.org/content/10.1101/2020.06.17.157982v1)) mapped onto protein structures, enabled by [`dms-view`](https://dms-view.github.io/docs/).
 
    - <a href="https://dms-view.github.io/?markdown-url=https%3A%2F%2Fraw.githubusercontent.com%2Fjbloomlab%2FSARS-CoV-2-RBD_DMS%2Fmaster%2Fresults%2Fdms_view%2Fdescription_RBD.md&pdb-url=https%3A%2F%2Fraw.githubusercontent.com%2Fjbloomlab%2FSARS-CoV-2-RBD_DMS%2Fmaster%2Fdata%2Fstructures%2FACE2-bound%2F6m0j.pdb&data-url=https%3A%2F%2Fraw.githubusercontent.com%2Fjbloomlab%2FSARS-CoV-2-RBD_DMS%2Fmaster%2Fresults%2Fdms_view%2Fdms-view_table_RBD.csv&condition=ACE2-binding&site_metric=site_entropy&mutation_metric=mut_preference&selected_sites=498%2C501&protein-data-color=lightgray&protein-other-color=slategray" target="_blank">ACE2-bound RBD crystal structure</a>
    

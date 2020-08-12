@@ -3,7 +3,7 @@ Analysis of deep mutational scanning of barcoded codon variants of SARS-CoV-2 RB
 
 Study and analysis by Tyler Starr, Allie Greaney, [Jesse Bloom](https://research.fhcrc.org/bloom/en.html), and co-authors.
 
-For the full paper, see [Deep mutational scanning of SARS-CoV-2 receptor binding domain reveals constraints on folding and ACE2 binding](https://www.biorxiv.org/content/10.1101/2020.06.17.157982v1).
+For the full paper, see [Deep mutational scanning of SARS-CoV-2 receptor binding domain reveals constraints on folding and ACE2 binding](https://doi.org/10.1016/j.cell.2020.08.012).
 
 ## Summary of workflow and results
 For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
