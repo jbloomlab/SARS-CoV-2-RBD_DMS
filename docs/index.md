@@ -5,7 +5,7 @@
 layout: default
 ---
 
-NOTE added 3 March, 2022. We have an improved deep mutational scanning dataset that we recommend using in place of this 2020 dataset. Please find the updated data [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_variants/RBD-heatmaps/) and the preprint describing the new datasets [here](https://www.biorxiv.org/content/10.1101/2022.02.24.481899v1)
+**NOTE added 3 March, 2022. We have an improved deep mutational scanning dataset that we recommend using in place of this 2020 dataset. Please find the updated data [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_variants/RBD-heatmaps/), the preprint describing the new datasets [here](https://www.biorxiv.org/content/10.1101/2022.02.24.481899v1), and the new GitHub repository [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants).**
 
 ### Instructions
 - Hover over cells with mouse to reveal additional information.
