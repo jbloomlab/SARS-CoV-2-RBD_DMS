@@ -5,6 +5,8 @@ Study and analysis by Tyler Starr, Allie Greaney, [Jesse Bloom](https://research
 
 For the full paper, see [Deep mutational scanning of SARS-CoV-2 receptor binding domain reveals constraints on folding and ACE2 binding](https://doi.org/10.1016/j.cell.2020.08.012).
 
+**NOTE added 3 March, 2022. We have an improved deep mutational scanning dataset that we recommend using in place of this 2020 dataset. Please find the updated data [here](https://jbloomlab.github.io/SARS-CoV-2-RBD_DMS_variants/RBD-heatmaps/), the preprint describing the new datasets [here](https://www.biorxiv.org/content/10.1101/2022.02.24.481899v1), and the new GitHub repository [here](https://github.com/jbloomlab/SARS-CoV-2-RBD_DMS_variants).**
+
 ## Summary of workflow and results
 For a summary of the workflow and links to key results files, [click here](results/summary/summary.md).
 Reading this summary is the best way to understand the analysis.
